@@ -13,7 +13,9 @@ code, pre{
    font-family: "Barlow Semi Condensed", sans-serif;
 }
 
-
+body{
+  background-color: #f8f6f5 !important;
+}
 
 @keyframes spin-slow {
   from {

@@ -1,0 +1,213 @@
+.products-section {
+    text-align: center;
+    padding-top: 10%;
+  }
+  
+  .products-heading .subtitle {
+    font-size:30px;
+    font-weight: 500;
+    line-height: 1.38rem;
+    color: #B41F25;
+    margin-bottom: 30px;
+    font-family:"Yellowtail", Sans-serif;
+  }
+  
+  .products-heading .title {
+    font-size:3rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    width: 50%;
+    line-height: 1.2;
+    margin: auto;
+  }
+  
+  .products-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    list-style: none;
+    padding: 0;
+    margin:3% 0 0 0 ;
+  }
+  
+  .product-card {
+    width: 220px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+  
+  .product-image-wrap {
+    position: relative;
+    padding: 10px;
+    padding-bottom: 0;
+  }
+  
+  .product-image-wrap img {
+    width: 100%;
+  }
+  
+  .product-image-wrap .badge {
+    position: absolute;
+    top:10%;
+    left: 10%;
+    background: #e6141b;
+    color: #fff;
+    font-size:1rem;
+    padding: 6px 15px;
+    border-radius:20px;
+  }
+  
+  .product-info {
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .product-info h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  
+  .product-info h3 a {
+    text-decoration: none;
+    color: #222;
+  }
+  
+  .product-info .price {
+    font-size: 15px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .product-info .price del {
+    color: #b8b7b7;
+    margin-right:3%;
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
+  
+  .product-info .price ins {
+    color: #b41f25;
+    font-weight:bold;
+    font-size: 1.4rem;
+  }
+  
+  .add-to-cart {
+    padding: 8px 15px;
+    background: #b41f25;
+    border: none;
+    color: #fff;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .add-to-cart:hover {
+    background: #94161b;
+  }
+  
+  .swiper{
+    margin-top: 3%;
+    margin-bottom: 3%;
+  }
+  /* Swiper pagination container */
+.swiper-pagination {
+    position: relative; /* keep it below the slider */
+    display: flex;
+    justify-content: center;
+    gap:5px; /* spacing between dots */
+  }
+/* Move dots below the slider */
+.swiper-pagination {
+    position: relative !important;  /* remove absolute positioning */
+    margin-top: 40px;               /* now margin will work */
+    text-align: center;             /* keep dots centered */
+  }
+  
+  /* Default dot */
+  .swiper-pagination-bullet {
+    height: 12px ;
+    width: 12px;
+    background-color: #555; /* gray */
+    border-radius: 50%;
+    text-align: center;
+    opacity: 1; /* override swiper default */
+  }
+  
+  /* Active dot */
+  .swiper-pagination-bullet-active {
+    background-color: white !important; /* hollow look */
+    border: 3px solid #b41f25; /* red border */
+    padding: 3px;
+  }
+  
+ /* Actions container (cart + hover icons) */
+.product-actions {
+    position: absolute;
+    top: 41%;
+    right:9px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column-reverse; /* Cart stays at bottom */
+    align-items: center;
+    z-index: 10;
+  }
+  
+  /* Cart button */
+  .cart-btn {
+    background: #fff;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 18px;
+  }
+  
+  /* Hover icons container (hidden by default) */
+  .hover-icons {
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.4s ease;
+  }
+  
+  /* Hover icons style */
+  .hover-icons button {
+    background: #fff;
+    border: none;
+    padding: 8px 13px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+  }
+  
+  /* Hover animation: icons appear stacked above cart */
+  .product-card:hover .hover-icons {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  /* Stagger animation effect */
+  .product-card:hover .hover-icons button:nth-child(1) {
+    transition-delay: 0.1s;
+  }
+  .product-card:hover .hover-icons button:nth-child(2) {
+    transition-delay: 0.2s;
+  }
+  .product-card:hover .hover-icons button:nth-child(3) {
+    transition-delay: 0.3s;
+  }
+  
+  /* Hover effect for buttons */
+  .hover-icons button:hover,
+  .cart-btn:hover {
+    background: #b41f25;
+    color: #fff;
+  }
+  

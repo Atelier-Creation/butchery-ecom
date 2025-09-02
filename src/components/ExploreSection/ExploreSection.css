@@ -1,0 +1,141 @@
+.about-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 60px 3%;
+    gap: 100px;
+    position: relative;
+  }
+  
+  .about-left {
+    position: relative;
+    flex: 1;
+  }
+  .main-image{
+    height:100%;
+    width: 100%;
+    z-index: 10;
+  }
+  .about-main-img {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  
+  .about-rotated-text {
+    position: absolute;
+    top: 0;
+    left:8%;
+    font-size: 5rem;
+    font-weight: 700;
+    color: #f2f1f1;
+    line-height: 1.2;
+    transform: rotate(-15deg);
+    white-space: pre-line;
+    pointer-events: none;
+    text-transform: uppercase;
+    z-index: -10;
+  }
+  
+  .about-floating-vector {
+    position: absolute;
+    bottom: -40px;
+    right: -60px;
+    width: 180px;
+    animation: floatY 3s ease-in-out infinite alternate;
+  }
+  
+  .about-right {
+    flex: 1;
+    position: relative;
+  }
+  
+  .about-right-vector {
+    position: absolute;
+    top: -20%;
+    right: 10%;
+    width: 200px;
+    animation: floatX 3s ease-in-out infinite alternate;
+  }
+  
+  .about-subtitle {
+    font-size:26px;
+    font-weight: 500;
+    line-height: 1.38rem;
+    color: #B41F25;
+    margin-bottom: 30px;
+    font-family:"Yellowtail", Sans-serif;
+  }
+  
+  .about-title {
+    font-size: 60px;
+    line-height: 3.9rem;
+    letter-spacing: -4px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+  }
+  
+  .about-desc {
+    font-size: 18px;
+    color: #444;
+    margin-bottom: 30px;
+    max-width: 500px;
+  }
+  
+  .about-counters {
+    display: flex;
+    gap: 50px;
+    margin-bottom: 30px;
+  }
+  
+  .counter-title {
+    font-size: 1.2rem;
+    color: #666;
+    font-weight:500;
+    margin-bottom: 5px;
+    width: 80%;
+  }
+  
+  .counter-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #B41F25;
+    font-size: 50px;
+    font-weight: bold;
+  }
+  
+  .about-btn {
+    display: inline-block;
+    background: black;
+    color: #fff;
+    padding: 20px 24px;
+    border-radius: 30px;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.3s;
+  }
+  
+  .about-btn:hover {
+    background: #B41F25;
+  }
+  
+  @keyframes floatY {
+    from {
+      transform: translateY(0px);
+    }
+    to {
+      transform: translateY(25px);
+    }
+  }
+  
+  @keyframes floatX {
+    from {
+      transform: translateX(0px);
+    }
+    to {
+      transform: translateX(25px);
+    }
+  }
+  
