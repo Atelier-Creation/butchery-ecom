@@ -1,0 +1,131 @@
+/* Blog Section Container */
+.blog-section {
+    padding: 80px 3%;
+  }
+  
+  .blog-header {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+  
+  .blog-subtitle {
+    max-width: 100%;
+    margin-bottom: 20px;
+    font-size: 26px;
+    line-height: 1.38em;
+    font-family:"Yellowtail", Sans-serif;
+    color: #B41F25;
+  }
+  
+  .blog-title {
+    max-width: 50%;
+    margin: 0px 0px 50px 0px;
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 1.067em;
+    font-size: 60px;
+    letter-spacing: -2px;
+    margin: auto;
+  }
+  
+  /* Swiper Overrides */
+  .blog-swiper {
+    padding-bottom: 40px;
+  }
+  
+  .swiper-button-next,
+  .swiper-button-prev {
+    color: #ff0000; /* red arrows */
+  }
+  
+  /* Blog Card */
+  .blog-card {
+    overflow: hidden;
+  }
+  
+  .blog-image {
+    position: relative;
+    overflow: hidden;
+    height: 300px;
+  }
+  
+  .blog-image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+  
+  .blog-card:hover .blog-image img {
+    transform: scale(1.05);
+  }
+  
+  .blog-date {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: #B41F25;
+    color: #fff;
+    padding: 5px 10px;
+    font-size: 1rem;
+    border-radius: 5px;
+  }
+  
+  .blog-content {
+    padding: 20px 0;
+  }
+  .blog-category a{
+    color: white !important;
+  }
+  .blog-category{
+    background-color: #B41F25;
+
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 2px 10px;
+
+  }
+  
+  .blog-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    font-size: 0.9rem;
+    color: #999;
+    margin-bottom: 10px;
+  }
+  
+  .blog-meta a {
+    color: #999;
+    text-decoration: none;
+  }
+  
+  .blog-heading {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 10px 0;
+    color: #222;
+  }
+  
+  .blog-heading a {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  .blog-excerpt {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 15px;
+  }
+  
+  .blog-readmore a {
+    font-size: 14px;
+    color: black;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  
+  .blog-readmore a i {
+    margin-left: 5px;
+  }
+  

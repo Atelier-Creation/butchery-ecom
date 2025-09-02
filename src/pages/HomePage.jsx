@@ -8,6 +8,8 @@ import QualitySection from '../components/QualitySection/QualitySection'
 import HowItWorks from '../components/HowItWorks/HowItWorks'
 import DeliverSection from '../components/DeliverSection/DeliverSection'
 import TestimonialsSection from '../components/TestimonialsSection/TestimonialsSection'
+import FaqSection from '../components/FaqSection/FaqSection'
+import OurBlog from '../components/OurBlog/OurBlog'
 
 const HomePage = () => {
   return (
@@ -24,6 +26,8 @@ const HomePage = () => {
     <HowItWorks/>
     <DeliverSection/>
     <TestimonialsSection/>
+    <FaqSection/>
+    <OurBlog/>
     </>
   )
 }
