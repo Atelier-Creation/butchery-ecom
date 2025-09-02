@@ -1,0 +1,124 @@
+.deliver-container{
+    display: flex;
+    min-height: 880px;
+    flex-direction: row;
+    margin-bottom: 10%;
+    position: relative;
+    overflow: visible;
+    
+}
+.deliver-inner{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 5% 0 2%;
+}
+.deliver-banner{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+.deliver-heading-small{
+    max-width: 100%;
+    margin-bottom: 20px;
+    font-size: 26px;
+    line-height: 1.38em;
+    font-family:"Yellowtail", Sans-serif;
+    color: #B41F25;
+}
+.deliver-heading-main{
+    max-width: 100%;
+    margin: 0px 0px 50px 0px;
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 1.067em;
+    font-size: 60px;
+    letter-spacing: -2px;
+}
+.deliver-icons{
+    display: flex;
+    flex-direction: row;
+    gap: 50px;
+}
+.deliver-icon-box{
+    max-width: 100%;
+}
+.deliver-icon{
+    font-size: 4rem;
+    color: #B41F25;
+}
+.deliver-icon-title{
+    font-size: 1.5rem;
+    line-height: 1.1;
+    font-weight: bold;
+    margin-top: 20px;
+
+}
+.deliver-description{
+    font-size: 1.2rem;
+    width: 80%;
+    line-height: 1.2;
+    margin-top: 30px;
+    color: gray;
+}
+.deliver-btn-wrap{
+    background: #B41F25;
+    display: inline-block;
+    color: #fff;
+    padding: 10px 24px;
+    border-radius: 30px;
+    font-size:1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.3s;
+    width: fit-content;
+    text-transform: uppercase;
+    margin-top: 5%;
+}
+.deliver-banner-bg{
+    height: 100%;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    background-repeat: no-repeat;
+    transition: transform 0.6s ease-in-out;
+}
+.deliver-banner .deliver-banner-bg:hover {
+    transform: scale(1.10); /* zoom + move right */
+  }
+.deliver-banner-title{
+    max-width: 90%;
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height:1.1;
+    font-size: 60px;
+    color: white;
+}
+.deliver-banner-desc{
+    max-width: 60%;
+    line-height:1.1;
+    font-size:1.2rem;
+    color: white;
+    margin-top: 3%;
+}
+.deliver-banner-img {
+    position: absolute;
+    top: 38%;   /* or wherever you want it */
+    left:10%;
+  }
+  
+  .deliver-banner-content{
+    position: absolute;
+    top: 10%;
+    left: 10%;
+  }
+  .deliver-image {
+    position: absolute;
+    bottom: -20%;
+    left: 40%;
+    z-index: 10;         /* higher than banner */
+    pointer-events: none; /* prevents blocking clicks */
+  }

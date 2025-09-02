@@ -1,0 +1,135 @@
+.testimonials-container {
+    position: relative;
+    padding: 80px 20px;
+    overflow: hidden;
+  }
+  
+  .testimonials-inner {
+    margin: 0 auto;
+    text-align: center;
+    padding: 8% 3% 0 2%;
+  }
+  
+  .testimonials-subtitle {
+    font-size:26px;
+    font-weight: 500;
+    line-height: 1.38rem;
+    color: #B41F25;
+    margin-bottom: 30px;
+    font-family:"Yellowtail", Sans-serif;
+
+  }
+  
+  .testimonials-title {
+    font-size: 60px;
+    line-height: 3.9rem;
+    letter-spacing: -4px;
+    font-weight: 700;
+    text-transform: uppercase;
+    width: 60%;
+    margin: 0 auto 30px;
+  }
+  
+  .testimonials-swiper {
+    padding: 20px 0;
+  }
+  
+  .testimonial-card {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: left;
+  }
+  
+  .testimonial-rating {
+    color: #ffb400;
+    margin-bottom: 15px;
+  }
+  
+  .star-icon {
+    margin-right: 3px;
+    font-size: 1.2rem;
+  }
+  
+  .testimonial-content {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+  
+  .testimonial-details {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: 10%;
+  }
+  
+  .testimonial-info {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+  }
+  
+  .testimonial-name {
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+  
+  .testimonial-job {
+    font-size: 1rem;
+    color: #777;
+  }
+  
+  .testimonial-image img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+  }
+  
+  .testimonials-map-bg {
+    position: absolute;
+    opacity: 0.1;
+    z-index: -1;
+    width: 40%;
+  }
+  
+  .map-bg-1 {
+    top: 50px;
+    left: -100px;
+  }
+  
+  .map-bg-2 {
+    top: 50px;
+    right: -100px;
+  }
+  
+  /* Flash marquee container */
+.testimonials-flash {
+    width: 100%;
+    overflow: hidden;
+    margin-bottom: 2rem;
+    margin-top: 4rem;
+  }
+  
+  .flash-track {
+    display: flex;
+    width: max-content;
+    animation: scrollText 20s linear infinite;
+  }
+  
+  .flash-track span {
+    font-size: 8rem;
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 1px #aaa; /* outline effect */
+    margin-right: 3rem;
+    white-space: nowrap;
+    text-transform: uppercase;
+  }
+  
+  @keyframes scrollText {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  
