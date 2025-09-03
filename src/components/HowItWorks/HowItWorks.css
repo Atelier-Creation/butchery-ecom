@@ -48,13 +48,6 @@
     align-items:center;
     padding: 18px;
     border-radius: 10px;
-    transition: transform 220ms ease, box-shadow 220ms ease;
-    box-shadow: 0 6px 18px rgba(17,17,17,0.04);
-  }
-  
-  .hiw-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 14px 30px rgba(17,17,17,0.08);
   }
   
   /* Icon wrapper */
@@ -68,21 +61,23 @@
   .hiw-icon-outer {
     font-size: 54px;
     border-radius: 50%;
-    display: inline-block;
-    align-items: center;
-    justify-content: center;
+    display: flex;                 /* make it flex */
+    align-items: center;           /* vertical center */
+    justify-content: center; 
     background: #B41F25;
     box-shadow: 0 6px 16px rgba(180,31,37,0.06);
     color: #fff;
     padding: .5em;
     fill: #fff;
     text-align: center;
+
+    width: 90px;   /* equal width & height */
+    height: 90px;  
   }
   
   /* Icon style (uses bootstrap icons classes) */
   .hiw-icon {
     display: block;
-    height: 1em;
     position: relative;
     width: 1em;
   }
@@ -176,12 +171,13 @@
   }
 
   .hiw-card-title {
-    font-size: 18px;
+    font-size: 1.5rem;
+    width: 100%;
+    font-weight: 800;
   }
 
   .hiw-card-desc {
-    font-size: 0.95rem;
-    line-height: 1.4;
+    font-size:1.1rem;
   }
 
   .hiw-icon-outer {

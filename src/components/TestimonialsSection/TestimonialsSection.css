@@ -161,7 +161,7 @@
 /* Mobile */
 @media (max-width: 768px) {
   .testimonials-container {
-    padding: 60px 15px;
+    padding: 60px 15px 30px;
   }
 
   .testimonials-title {
@@ -200,17 +200,20 @@
     font-size: 3.5rem;
     margin-right: 2rem;
   }
+  .testimonials-flash{
+    margin: 0;
+  }
 }
 
 /* Small Mobile */
 @media (max-width: 480px) {
   .testimonials-title {
-    font-size: 24px;
-    line-height: 1.8rem;
+    font-size: 2rem;
+    font-weight: 800;
   }
 
   .testimonials-subtitle {
-    font-size: 18px;
+    font-size: 1.5rem;
   }
 
   .testimonial-card {

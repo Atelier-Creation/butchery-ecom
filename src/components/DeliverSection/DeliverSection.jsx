@@ -12,6 +12,8 @@ function DeliverSection() {
   const imageref = useRef(null)
 
   useEffect(()=>{
+
+    if (window.innerWidth <= 768) return;
     gsap.fromTo(
       imageref.current,
       { x : 0},
