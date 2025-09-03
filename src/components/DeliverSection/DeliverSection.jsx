@@ -24,7 +24,7 @@ function DeliverSection() {
           start:"top 50%",
           end : " top 60%",
           scrub : 2,
-          markers : true
+          markers : false
         }
       }
     )

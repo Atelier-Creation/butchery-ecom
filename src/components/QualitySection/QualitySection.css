@@ -211,3 +211,107 @@
     color: #fff;
   }
   
+  /* ============================= */
+/* 📱 Responsive Products Section */
+/* ============================= */
+
+/* Tablets & small desktops */
+@media (max-width: 992px) {
+  .products-heading .title {
+    font-size: 2.2rem;
+    width: 70%;
+  }
+
+  .products-heading .subtitle {
+    font-size: 24px;
+  }
+
+  .product-card {
+    width: 200px;
+  }
+
+  .product-info h3 {
+    font-size: 1.1rem;
+  }
+
+  .product-info .price ins {
+    font-size: 1.2rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .products-section {
+    padding-top: 15%;
+  }
+
+  .products-heading .title {
+    font-size: 1.8rem;
+    width: 90%;
+  }
+
+  .products-heading .subtitle {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+
+  .products-grid {
+    gap: 15px;
+  }
+
+  .product-card {
+    width: 45%; /* 2 per row */
+  }
+
+  .product-info h3 {
+    font-size: 1rem;
+  }
+
+  .product-info .price {
+    font-size: 14px;
+  }
+
+  .product-info .price del {
+    font-size: 1.2rem;
+  }
+
+  .product-info .price ins {
+    font-size: 1.2rem;
+  }
+
+  .add-to-cart {
+    font-size: 13px;
+    padding: 7px 12px;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .products-heading .title {
+    font-size: 2.3rem;
+    font-weight: 900;
+    width: 100%;
+    margin-bottom: 6%;
+  }
+
+  .products-heading .subtitle {
+    font-size: 1.5rem;
+  }
+
+  .product-card {
+    width: 100%; /* full width */
+  }
+
+  .product-info h3 {
+    font-size: 1.2rem;
+  }
+
+  .product-info .price {
+    font-size: 1.2rem;
+  }
+
+  .add-to-cart {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+}

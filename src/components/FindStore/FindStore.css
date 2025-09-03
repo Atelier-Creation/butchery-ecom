@@ -80,3 +80,84 @@
 .images-item-div:hover::after {
     background-color: rgba(0,0,0,0.5); /* black overlay on hover */
 }
+/* ============================= */
+/* 📱 Responsive Find Store      */
+/* ============================= */
+
+/* Large tablets & small desktops */
+@media (max-width: 1200px) {
+    .find-store-heading {
+      font-size: 48px;
+      line-height: 3rem;
+    }
+  
+    .find-store-inner {
+      width: 70%;
+    }
+  }
+  
+  /* Tablets */
+  @media (max-width: 992px) {
+    .findStore-container {
+      height: auto;
+      padding: 80px 5%;
+    }
+  
+    .find-store-inner {
+      width: 90%;
+    }
+  
+    .find-store-heading {
+      font-size: 40px;
+      line-height: 2.8rem;
+      letter-spacing: -2px;
+    }
+  
+    .images-data-div {
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+  
+    .images-item-div {
+      flex: 1 1 45%;
+      max-width: 45%;
+    }
+  }
+  
+  /* Mobile */
+  @media (max-width: 768px) {
+    .find-store-heading {
+      font-size: 28px;
+      line-height: 2rem;
+    }
+  
+    .find-store-btn {
+      font-size: 14px;
+      padding: 14px 20px;
+    }
+  
+    .images-item-div {
+      flex: 1 1 100%;
+      max-width: 100%;
+    }
+  }
+  
+  /* Small mobile */
+  @media (max-width: 480px) {
+    .find-store-heading {
+      font-size: 22px;
+      line-height: 1.6rem;
+    }
+  
+    .find-store-btn {
+      font-size: 12px;
+      padding: 12px 18px;
+    }
+  
+    .find-store-inner {
+      width: 100%;
+      gap: 20px;
+    }
+  }
+  

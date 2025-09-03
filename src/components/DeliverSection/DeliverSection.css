@@ -127,3 +127,118 @@
     z-index: 10;         /* higher than banner */
     pointer-events: none; /* prevents blocking clicks */
   }
+/* ============================= */
+/* 📱 Responsive Styles          */
+/* ============================= */
+
+/* Large tablets and small desktops (max 1200px) */
+@media (max-width: 1200px) {
+    .deliver-heading-main {
+      font-size: 48px;
+    }
+    .deliver-banner-title {
+      font-size: 48px;
+    }
+    .deliver-banner-desc {
+      max-width: 80%;
+    }
+  }
+  
+  /* Tablets (max 992px) */
+  @media (max-width: 992px) {
+    .deliver-container {
+      flex-direction: column;
+      min-height: auto;
+      margin-bottom: 5%;
+    }
+  
+    .deliver-heading-main {
+      font-size: 40px;
+      margin-bottom: 30px;
+    }
+  
+    .deliver-icons {
+      flex-wrap: wrap;
+      gap: 30px;
+    }
+  
+    .deliver-description {
+      width: 100%;
+    }
+  
+    .deliver-banner-title {
+      font-size: 42px;
+    }
+    .deliver-banner-desc {
+      font-size: 1rem;
+      max-width: 100%;
+    }
+    .deliver-banner-img {
+      top: 45%;
+      left: 5%;
+      max-width: 80%;
+    }
+    .deliver-image {
+      bottom: -10%;
+      left: 30%;
+      max-width: 60%;
+    }
+  }
+  
+  /* Mobile (max 768px) */
+  @media (max-width: 768px) {
+    .deliver-heading-small {
+      font-size: 20px;
+    }
+    .deliver-heading-main {
+      font-size: 32px;
+      letter-spacing: -1px;
+    }
+  
+    .deliver-icons {
+      flex-direction: column;
+      gap: 20px;
+    }
+    .deliver-icon {
+      font-size: 3rem;
+    }
+    .deliver-icon-title {
+      font-size: 1.2rem;
+    }
+  
+    .deliver-banner-title {
+      font-size: 30px;
+    }
+    .deliver-banner-desc {
+      font-size: 0.95rem;
+    }
+  
+    .deliver-banner-content {
+      top: 15%;
+      left: 5%;
+    }
+    .deliver-banner-img,
+    .deliver-image {
+      position: static;
+      margin: 20px auto;
+      display: block;
+    }
+  }
+  
+  /* Small mobile (max 480px) */
+  @media (max-width: 480px) {
+    .deliver-heading-main {
+      font-size: 26px;
+    }
+    .deliver-banner-title {
+      font-size: 24px;
+    }
+    .deliver-banner-desc {
+      font-size: 0.9rem;
+    }
+    .deliver-btn-wrap {
+      font-size: 0.9rem;
+      padding: 8px 18px;
+    }
+  }
+  

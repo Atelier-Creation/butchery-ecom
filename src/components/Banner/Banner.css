@@ -102,3 +102,75 @@
     background: #94171d;
   }
   
+  /* Tablet */
+@media (max-width: 992px) {
+  .banner-section {
+    grid-template-columns: 1fr; /* stack vertically */
+  }
+
+  .banner-bg {
+    height: 70vh; /* reduce height */
+  }
+
+  .banner-content {
+    top: 15%;
+    right: 10%;
+    max-width: 80%;
+  }
+
+  .banner-content.right {
+    left: 10%;
+    right: auto;
+  }
+
+  .banner-title {
+    font-size: 2.2rem;
+  }
+
+  .banner-desc {
+    font-size: 1rem;
+    text-align: center;
+    margin: 0 auto 10px;
+  }
+
+  .banner-price {
+    font-size: 18px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+  .banner-bg {
+    height: 120vh;
+  }
+
+  .banner-content {
+    top: 24%;
+    max-width: 90%;
+    text-align: right;
+  }
+
+  .banner-title {
+    font-size:2.5rem;
+    font-weight: 800;
+  }
+
+  .banner-desc {
+    font-size: 1.4rem;
+    max-width: 70%;
+    text-align: right;
+    margin: 20px 0 20px auto;
+    font-weight: 700;
+
+  }
+
+  .banner-price {
+    font-size: 1.4rem;
+  }
+
+  .banner-btn {
+    font-size: 14px;
+    border-radius: 30px;
+    padding: 8px 16px;
+  }
+}

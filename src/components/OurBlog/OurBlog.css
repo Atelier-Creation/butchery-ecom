@@ -131,4 +131,90 @@
   .blog-readmore a i {
     margin-left: 5px;
   }
-  
+  /* ============================= */
+/* 📱 Responsive Blog Section    */
+/* ============================= */
+
+/* Tablets & small desktops */
+@media (max-width: 992px) {
+  .blog-title {
+    font-size: 42px;
+    max-width: 70%;
+    margin-bottom: 40px;
+  }
+
+  .blog-subtitle {
+    font-size: 22px;
+  }
+
+  .blog-image {
+    height: 250px;
+  }
+
+  .blog-heading {
+    font-size: 1.3rem;
+  }
+
+  .blog-excerpt {
+    font-size: 1rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .blog-section {
+    padding: 50px 5%;
+  }
+
+  .blog-title {
+    font-size: 32px;
+    max-width: 100%;
+    margin-bottom: 30px;
+  }
+
+  .blog-subtitle {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+
+  .blog-image {
+    height: 220px;
+  }
+
+  .blog-heading {
+    font-size: 1.2rem;
+  }
+
+  .blog-excerpt {
+    font-size: 0.95rem;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .blog-section {
+    padding: 40px 4%;
+  }
+
+  .blog-title {
+    font-size: 26px;
+    line-height: 1.2em;
+  }
+
+  .blog-subtitle {
+    font-size: 18px;
+  }
+
+  .blog-image {
+    height: 200px;
+  }
+
+  .blog-heading {
+    font-size: 1.1rem;
+  }
+
+  .blog-excerpt {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+}

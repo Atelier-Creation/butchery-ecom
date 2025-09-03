@@ -166,31 +166,7 @@
   
   .footer-bottom a:hover {
     text-decoration: underline;
-  }
-  
-  /* Responsive */
-  @media (max-width: 992px) {
-    .footer-top {
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
-  
-    .footer-links {
-      flex-direction: column;
-      align-items: center;
-      gap: 30px;
-    }
-  
-    .footer-newsletter {
-      flex-direction: column;
-    }
-  
-    .footer-newsletter button {
-      width: 100%;
-    }
-  }
-  
+  }  
   
   /* Arrow swap inside button */
 .footer-btn-icon {
@@ -225,5 +201,99 @@
   .icons-chages:hover .right {
     opacity: 1;
     transform: translateX(0);
+  }
+  
+
+  /* ============================= */
+/* 📱 Responsive Footer Styles   */
+/* ============================= */
+
+/* Tablets */
+@media (max-width: 992px) {
+    .footer-container {
+      flex-direction: column;
+      gap: 40px;
+      margin-bottom: 10%;
+    }
+  
+    .footer-top {
+      width: 100%;
+      align-items: center;
+      text-align: center;
+    }
+  
+    .footer-contact p {
+      width: 100%;
+    }
+  
+    .footer-links {
+      flex-wrap: wrap;
+      gap: 30px;
+    }
+  
+    .footer-column {
+      flex: 1 1 45%;
+    }
+  }
+  
+  /* Mobile */
+  @media (max-width: 768px) {
+    .footer-column {
+      flex: 1 1 100%;
+      text-align: center;
+    }
+  
+    .footer-column h6 {
+      margin-bottom: 15px;
+    }
+  
+    .footer-column ul li {
+      justify-content: center;
+    }
+  
+    .footer-socials {
+      justify-content: center;
+    }
+  
+    .footer-newsletter {
+      align-items: center;
+      text-align: center;
+    }
+  
+    .footer-newsletter input[type="email"] {
+      width: 100%;
+    }
+  
+    .footer-newsletter button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+  
+  /* Small Mobile */
+  @media (max-width: 480px) {
+    .footer {
+      padding: 15% 5% 20px;
+    }
+  
+    .footer-column h6 {
+      font-size: 1.1rem;
+    }
+  
+    .footer-column ul li a,
+    .footer-contact p,
+    .footer-bottom {
+      font-size: 0.95rem;
+    }
+  
+    .footer-newsletter input[type="email"] {
+      font-size: 1rem;
+      padding: 8px 15px;
+    }
+  
+    .footer-newsletter button {
+      font-size: 0.9rem;
+      padding: 8px 20px;
+    }
   }
   
