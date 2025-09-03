@@ -4,6 +4,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
+import { LuArrowUpRight,LuArrowRight } from "react-icons/lu";
 const blogs = [
     {
       id: 1,
@@ -114,9 +115,12 @@ function OurBlog() {
                 </h3>
                 <p className="blog-excerpt">{blog.excerpt}</p>
                 <div className="blog-readmore">
-                  <a href={blog.link}>
-                    <span>Read More </span>
-                    <i className="meatlers-icon-right-arrow"></i>
+                  <a href={blog.link} className='icons-chages'>
+                    Read More
+                    <span className="footer-btn-icon">
+          <LuArrowUpRight className="icon upright" />
+          <LuArrowRight className="icon right" />
+        </span>
                   </a>
                 </div>
               </div>

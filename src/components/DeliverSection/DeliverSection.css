@@ -86,6 +86,11 @@
     background-repeat: no-repeat;
     transition: transform 0.6s ease-in-out;
 }
+.deliver-btn{
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
 .deliver-banner .deliver-banner-bg:hover {
     transform: scale(1.10); /* zoom + move right */
   }

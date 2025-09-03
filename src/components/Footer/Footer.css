@@ -1,0 +1,229 @@
+/* Footer.css */
+
+/* Footer Wrapper */
+.footer {
+    background-color: #111; /* dark background like the original */
+    color: #fff;
+    font-family: "Arial", sans-serif;
+    padding: 10% 3% 30px;
+  }
+  
+  /* Container */
+  .footer-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5%;
+  }
+  
+  /* Top section: logo + contact + socials */
+  .footer-top {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 50%;
+    margin-bottom: 50px;
+    gap: 20px;
+  }
+  
+  .footer-logo img {
+    max-width: 200px;
+    height: auto;
+  }
+  
+  .footer-contact p {
+    font-size: 1.1rem;
+    width: 75%;
+  }
+  
+  .primary-color {
+    color: #B41F25; /* match Elementor color-primary */
+  }
+  
+  /* Social icons */
+  .footer-socials {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+  }
+  
+  .footer-socials a svg {
+    width: 20px;
+    height: 20px;
+    fill: #fff;
+    transition: fill 0.3s ease;
+  }
+  
+  .footer-socials a:hover svg {
+    fill: #B41F25;
+  }
+  
+  /* Links section */
+  .footer-links {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 50px;
+  }
+  .footer-column {
+    flex: 1;               /* each column takes equal width */
+    text-align: left;      /* keep text aligned left */
+  }
+  
+  .footer-column h6 {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+  }
+  .footer-column ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .footer-column p {
+    color: white;
+    font-size: 1.1rem;
+  }
+  
+  .footer-column ul li {
+    margin-bottom:5px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  
+  .footer-column ul li a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 1.1rem;
+    transition: color 0.3s ease;
+    margin-bottom: 5px;
+  }
+  
+  .footer-column ul li a:hover {
+    color: #B41F25;
+  }
+  
+  /* Newsletter */
+  .footer-newsletter {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .footer-newsletter input[type="email"] {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 30px;
+    flex: 1;
+    font-size: 1.1rem;
+    color: black; /* <-- text inside input */
+    background-color: white; /* or dark background */
+    border: 1px solid #fff; /* optional: visible border */
+    margin-top: 10px;
+  }
+  
+  /* Style placeholder text */
+  .footer-newsletter input[type="email"]::placeholder {
+    color: gray; /* light gray so it's visible */
+    opacity: 1;  /* ensures consistent visibility across browsers */
+  }
+  
+  
+  .footer-newsletter button {
+    padding: 10px 35px;
+    width: fit-content;
+    background-color: #B41F25;
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s ease;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .footer-newsletter button:hover {
+    background-color: #B41F25;
+  }
+  
+  /* Bottom copyright */
+  .footer-bottom {
+    text-align: center;
+    font-size: 1.1rem;
+    border-top: 1px solid #333;
+    padding-top: 20px;
+  }
+  
+  .footer-bottom a {
+    color: #B41F25;
+    text-decoration: none;
+  }
+  
+  .footer-bottom a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Responsive */
+  @media (max-width: 992px) {
+    .footer-top {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+  
+    .footer-links {
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+    }
+  
+    .footer-newsletter {
+      flex-direction: column;
+    }
+  
+    .footer-newsletter button {
+      width: 100%;
+    }
+  }
+  
+  
+  /* Arrow swap inside button */
+.footer-btn-icon {
+    display: inline-flex;
+    position: relative;
+    width: 18px;
+    height: 18px;
+  }
+  
+  .footer-btn-icon .icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  
+  /* Default: show upright ↗ */
+  .footer-btn-icon .upright {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .footer-btn-icon .right {
+    opacity: 0;
+    transform: translateX(-5px);
+  }
+  
+  /* On hover: show → */
+  .icons-chages:hover .upright {
+    opacity: 0;
+    transform: translateX(5px);
+  }
+  .icons-chages:hover .right {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  

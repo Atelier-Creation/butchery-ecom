@@ -10,6 +10,8 @@ import DeliverSection from '../components/DeliverSection/DeliverSection'
 import TestimonialsSection from '../components/TestimonialsSection/TestimonialsSection'
 import FaqSection from '../components/FaqSection/FaqSection'
 import OurBlog from '../components/OurBlog/OurBlog'
+import FindStore from '../components/FindStore/FindStore'
+import Footer from '../components/Footer/Footer'
 
 const HomePage = () => {
   return (
@@ -28,6 +30,8 @@ const HomePage = () => {
     <TestimonialsSection/>
     <FaqSection/>
     <OurBlog/>
+    <FindStore/>
+    <Footer/>
     </>
   )
 }

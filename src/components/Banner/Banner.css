@@ -89,6 +89,13 @@
     border-radius: 6px;
     cursor: pointer;
     transition: 0.3s;
+    display:flex;
+    gap: 5px;
+    align-items: center;
+    justify-content: end;
+  }
+  .banner-btn.left{
+    margin-left: auto;
   }
   
   .banner-btn:hover {

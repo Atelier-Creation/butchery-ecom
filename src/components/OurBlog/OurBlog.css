@@ -123,6 +123,9 @@
     color: black;
     font-weight: 600;
     text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
   }
   
   .blog-readmore a i {

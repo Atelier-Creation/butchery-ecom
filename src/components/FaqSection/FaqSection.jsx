@@ -1,38 +1,56 @@
-import React,{useState} from 'react'
+import React,{useState,useEffect,useRef} from 'react'
+import gsap from 'gsap';
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+gsap.registerPlugin(ScrollTrigger)
 import './FaqSection.css'
 import { FaPlus, FaMinus } from 'react-icons/fa';
+const faqs = [
+  {
+    id: 1,
+    question: "How do you ensure the meat stays fresh during delivery?",
+    answer:
+      "The vast majority of products that we sell are fresh and have never been frozen. A small selection of our products, like some of our sausages, are frozen to ensure that they remain at their peak freshness.",
+  },
+  {
+    id: 2,
+    question: "Can I choose the cuts of meat in my order?",
+    answer:
+      "Yes, you can choose the cuts of meat when placing your order. We offer customization depending on the product.",
+  },
+  {
+    id: 3,
+    question: "What if I’m not home for my delivery?",
+    answer:
+      "If you’re not home, our team will follow the delivery instructions you provided at checkout to ensure safe storage.",
+  },
+  {
+    id: 4,
+    question: "Do you offer any guarantees on your meat?",
+    answer:
+      "Absolutely! We guarantee the quality and freshness of all our products. If you’re not satisfied, we’ll make it right.",
+  },
+];
 function FaqSection() {
-
-    const faqs = [
-        {
-          id: 1,
-          question: "How do you ensure the meat stays fresh during delivery?",
-          answer:
-            "The vast majority of products that we sell are fresh and have never been frozen. A small selection of our products, like some of our sausages, are frozen to ensure that they remain at their peak freshness.",
-        },
-        {
-          id: 2,
-          question: "Can I choose the cuts of meat in my order?",
-          answer:
-            "Yes, you can choose the cuts of meat when placing your order. We offer customization depending on the product.",
-        },
-        {
-          id: 3,
-          question: "What if I’m not home for my delivery?",
-          answer:
-            "If you’re not home, our team will follow the delivery instructions you provided at checkout to ensure safe storage.",
-        },
-        {
-          id: 4,
-          question: "Do you offer any guarantees on your meat?",
-          answer:
-            "Absolutely! We guarantee the quality and freshness of all our products. If you’re not satisfied, we’ll make it right.",
-        },
-      ];
-
-        // Default open first FAQ
   const [activeId, setActiveId] = useState(1);
-
+  const imageRef = useRef(null)
+  useEffect(()=>{
+    gsap.fromTo(
+      imageRef.current,
+      {x : 0},
+      { 
+        x : -300,
+        duration:2,
+        ease : "power2.out",
+        scrollTrigger : {
+          trigger : imageRef.current,
+          start:"top 50%",
+          end : " top 60%",
+          scrub : true,
+          markers:false
+        }
+      }
+    )
+  },[])
   const toggleFaq = (id) => {
     setActiveId((prev) => (prev === id ? null : id));
   };
@@ -68,7 +86,7 @@ function FaqSection() {
           ))}
         </div>
       </div>
-            <div className='faq-image-div'>
+            <div className='faq-image-div' ref={imageRef}>
               <img
           src="https://demo2.wpopal.com/meatlers/wp-content/uploads/2024/12/h2_img1.png"
           alt="FAQ Illustration"

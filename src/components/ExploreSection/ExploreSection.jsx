@@ -1,5 +1,6 @@
 import React from "react";
 import './ExploreSection.css'
+import { LuArrowUpRight,LuArrowRight } from "react-icons/lu";
 function ExploreSection() {
   return (
     <div className="about-container">
@@ -65,9 +66,13 @@ function ExploreSection() {
         {/* Button */}
         <a
           href="https://demo2.wpopal.com/meatlers/shop/"
-          className="about-btn"
+          className="about-btn icons-chages"
         >
-          SHOP ONLINE →
+          SHOP ONLINE
+          <span className="footer-btn-icon">
+          <LuArrowUpRight className="icon upright" />
+          <LuArrowRight className="icon right" />
+        </span>
         </a>
       </div>
     </div>

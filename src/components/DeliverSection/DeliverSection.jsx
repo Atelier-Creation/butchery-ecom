@@ -1,10 +1,34 @@
-import React from 'react'
+import React,{useEffect,useRef} from 'react'
 import './DeliverSection.css'
+import gsap from 'gsap';
+import ScrollTrigger from 'gsap/ScrollTrigger';
+gsap.registerPlugin(ScrollTrigger)
+import { LuArrowUpRight,LuArrowRight } from "react-icons/lu";
 // Bootstrap Icons
 import { BsThermometerHalf, BsShieldCheck, BsArrowRight } from "react-icons/bs";
 // FontAwesome fallback
 import { FaVirus } from "react-icons/fa";
 function DeliverSection() {
+  const imageref = useRef(null)
+
+  useEffect(()=>{
+    gsap.fromTo(
+      imageref.current,
+      { x : 0},
+      {
+        y : -150,
+        duration : 10,
+        ease : "power2.out",
+        scrollTrigger : {
+          trigger : imageref.current,
+          start:"top 50%",
+          end : " top 60%",
+          scrub : 2,
+          markers : true
+        }
+      }
+    )
+  },[])
   return (
     <div className="deliver-container">
       <div className="deliver-inner">
@@ -49,13 +73,13 @@ function DeliverSection() {
         {/* Button */}
         <div className="deliver-btn-wrap">
           <a
-            className="deliver-btn"
+            className="deliver-btn icons-chages"
             href="https://demo2.wpopal.com/meatlers/about-us/"
-          >
-            <span className="deliver-btn-icon">
-              <i className="meatlers-icon- meatlers-icon-right-arrow"></i>
-            </span>
-            <span className="deliver-btn-text">discover now</span>
+          >discover now
+                      <span className="footer-btn-icon">
+          <LuArrowUpRight className="icon upright" />
+          <LuArrowRight className="icon right" />
+        </span>
           </a>
         </div>
       </div>
@@ -86,7 +110,7 @@ function DeliverSection() {
         </div>
       </div>
               {/* Floating Image */}
-              <div className="deliver-image">
+              <div className="deliver-image" ref={imageref}>
           <img
             src="https://demo2.wpopal.com/meatlers/wp-content/uploads/2024/12/h2_img4.png"
             alt="quality meat"

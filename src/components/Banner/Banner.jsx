@@ -1,5 +1,6 @@
 import React from 'react'
 import './Banner.css'
+import { LuArrowUpRight,LuArrowRight } from "react-icons/lu";
 function Banner() {
   return (
     <div className="banner-section">
@@ -22,8 +23,11 @@ function Banner() {
               </p>
               </div>
               <p className="banner-price">$199.9</p>
-              <button className="banner-btn">
-                Shop Now <i className="meatlers-icon-right-arrow"></i>
+              <button className="banner-btn left icons-chages">
+                Shop Now             <span className="footer-btn-icon">
+          <LuArrowUpRight className="icon upright" />
+          <LuArrowRight className="icon right" />
+        </span>
               </button>
             </div>
           </div>
@@ -49,8 +53,11 @@ function Banner() {
               </p>
               </div>
               <p className="banner-price">$179.9</p>
-              <button className="banner-btn">
-                Shop Now <i className="meatlers-icon-right-arrow"></i>
+              <button className="banner-btn icons-chages">
+                Shop Now <span className="footer-btn-icon">
+          <LuArrowUpRight className="icon upright" />
+          <LuArrowRight className="icon right" />
+        </span>
               </button>
             </div>
           </div>

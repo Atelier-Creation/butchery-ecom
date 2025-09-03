@@ -106,7 +106,10 @@
   }
   
   .about-btn {
-    display: inline-block;
+    display:flex;
+    align-items: center;
+    gap: 5px;
+    width: fit-content;
     background: black;
     color: #fff;
     padding: 20px 24px;
@@ -115,6 +118,7 @@
     font-weight: 600;
     text-decoration: none;
     transition: 0.3s;
+
   }
   
   .about-btn:hover {
