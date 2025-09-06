@@ -20,8 +20,6 @@ const HomePage = () => {
     <BannerSlider />
     <FeaturesSection />
     <ShopByCategory />
-    <div className='h-[30vh] bg-white'>
-    </div>
     <ExploreSection/>
     <Banner/>
     <QualitySection/>

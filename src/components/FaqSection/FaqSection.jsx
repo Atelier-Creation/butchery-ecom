@@ -88,7 +88,7 @@ function FaqSection() {
       </div>
             <div className='faq-image-div' ref={imageRef}>
               <img
-          src="https://demo2.wpopal.com/meatlers/wp-content/uploads/2024/12/h2_img1.png"
+          src="./chicken-legs-with-herbs.png"
           alt="FAQ Illustration"
           className="faq-image"
         />

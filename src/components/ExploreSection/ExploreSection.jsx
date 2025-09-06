@@ -1,18 +1,18 @@
 import React from "react";
-import './ExploreSection.css'
-import { LuArrowUpRight,LuArrowRight } from "react-icons/lu";
+import "./ExploreSection.css";
+import { LuArrowUpRight, LuArrowRight } from "react-icons/lu";
 function ExploreSection() {
   return (
     <div className="about-container">
       <div className="about-left">
         {/* Main Image */}
         <div className="main-image">
-        <img
-          className="about-main-img"
-          src="https://demo2.wpopal.com/meatlers/wp-content/uploads/2024/12/h2_img6.png"
-          alt="about"
-        />
-</div>
+          <img
+            className="about-main-img"
+            src="/chicken-legs.png"
+            alt="about"
+          />
+        </div>
         {/* Rotated Background Heading */}
         <h2 className="about-rotated-text">
           About meat <br />
@@ -20,7 +20,6 @@ function ExploreSection() {
           About meat <br />
           About meat <br />
           About meat <br />
-          About meat
         </h2>
 
         {/* Floating Vector */}
@@ -36,7 +35,7 @@ function ExploreSection() {
         {/* Floating Small Vector */}
         <img
           className="about-right-vector"
-          src="https://demo2.wpopal.com/meatlers/wp-content/uploads/2024/12/ab-vector3.png"
+          src="/chicken.png"
           alt="vector"
         />
 
@@ -52,12 +51,10 @@ function ExploreSection() {
         {/* Counters */}
         <div className="about-counters">
           <div className="counter">
-
             <h3 className="counter-value">180K+</h3>
             <p className="counter-title">Types of meat products</p>
           </div>
           <div className="counter">
-
             <h3 className="counter-value">380K+</h3>
             <p className="counter-title">Projects completed in 30 years</p>
           </div>
@@ -70,9 +67,9 @@ function ExploreSection() {
         >
           SHOP ONLINE
           <span className="footer-btn-icon">
-          <LuArrowUpRight className="icon upright" />
-          <LuArrowRight className="icon right" />
-        </span>
+            <LuArrowUpRight className="icon upright" />
+            <LuArrowRight className="icon right" />
+          </span>
         </a>
       </div>
     </div>

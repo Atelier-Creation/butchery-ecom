@@ -2,9 +2,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 60px 3%;
+    padding: 90px 3%;
     gap: 100px;
     position: relative;
+    background-color: #fff;
+    z-index:21;
   }
   
   .about-left {
@@ -54,6 +56,7 @@
     position: absolute;
     top: -20%;
     right: 10%;
+    z-index: 15;
     width: 200px;
     animation: floatX 3s ease-in-out infinite alternate;
   }

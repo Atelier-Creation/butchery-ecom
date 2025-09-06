@@ -41,11 +41,18 @@ export default function Navbar() {
           </ul>
 
           {/* Logo (Centered on mobile) */}
-          <div className="flex-grow-0 md:flex-grow flex justify-center">
+          {/* <div className="flex-grow-0 md:flex-grow flex justify-center ">
             <img
-              src="/logo-white.svg"
+              src="/ik-logo.svg"
               alt="Logo"
-              className="w-40 md:w-50 h-auto object-cover"
+              className="w-40 md:w-60 h-25 object-contain "
+            />
+          </div> */}
+          <div className="flex-grow-0 md:flex-grow flex justify-center ">
+            <img
+              src="/logo.svg"
+              alt="Logo"
+              className="w-40 md:w-30 h-auto object-contain bg-white rounded-full p-2"
             />
           </div>
 

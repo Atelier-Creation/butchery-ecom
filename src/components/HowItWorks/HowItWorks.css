@@ -1,113 +1,128 @@
 /* Container */
 .hiw-section {
-    background-image: url(https://demo2.wpopal.com/meatlers/wp-content/uploads/2024/12/h2_bg2.jpg);
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    width: 100%;
-    height: 120vh;
-  /* Center .hiw-inner */
+  position: relative; /* Needed for overlay */
+  background-image: url(./indian-chicken-gravy.webp);
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 100%;
+  height: 120vh;
+
   display: flex;
-  justify-content: center;   /* horizontal center */
-  align-items: center;       /* vertical center */
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* Ensures overlay stays inside */
 }
+
+.hiw-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Black overlay with 50% opacity */
+  z-index: 1; /* Overlay above bg, but below content */
+}
+
 
 .hiw-inner {
   width: 100%;
+   position: relative;
+  z-index: 2;
   padding: 0 20px;
 }
-  .hiw-heading-wrap {
-    text-align: center;
-    margin: 0px 0px 60px 0px;
+.hiw-heading-wrap {
+  text-align: center;
+  margin: 0px 0px 60px 0px;
+}
 
-  }
-  
-  .hiw-heading {
-    font-size: 60px;
-    line-height: 1.067em;
-    letter-spacing: -1px;
-    color: white;
-    font-weight: 700;
-    text-transform: uppercase;
-  }
-  
-  /* Grid */
-  .hiw-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 22px;
-    align-items: start;
-  }
-  
-  /* Card */
-  .hiw-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 16px;
-    align-items:center;
-    padding: 18px;
-    border-radius: 10px;
-  }
-  
-  /* Icon wrapper */
-  .hiw-icon-wrap {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 30px;
-  }
-  
-  .hiw-icon-outer {
-    font-size: 54px;
-    border-radius: 50%;
-    display: flex;                 /* make it flex */
-    align-items: center;           /* vertical center */
-    justify-content: center; 
-    background: #B41F25;
-    box-shadow: 0 6px 16px rgba(180,31,37,0.06);
-    color: #fff;
-    padding: .5em;
-    fill: #fff;
-    text-align: center;
+.hiw-heading {
+  font-size: 60px;
+  line-height: 1.067em;
+  letter-spacing: -1px;
+  color: white;
+  font-weight: 700;
+  text-transform: uppercase;
+}
 
-    width: 90px;   /* equal width & height */
-    height: 90px;  
-  }
-  
-  /* Icon style (uses bootstrap icons classes) */
-  .hiw-icon {
-    display: block;
-    position: relative;
-    width: 1em;
-  }
-  
-  /* Text content */
-  .hiw-content {
-    flex: 1;
-    text-align: center;
-    color: white;
-  }
-  
-  .hiw-card-title {
-    font-size: 26px;
-    line-height: 1.0769230769;
+/* Grid */
+.hiw-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  align-items: start;
+}
 
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: #FFFFFF;
-    font-weight: 700;
-    font-style: normal;
-    text-transform: uppercase;
-  }
-  
-  .hiw-card-desc {
-    margin: 0;
-    font-size: 1.2rem;
-    font-weight: 500;
-    line-height: 1.5;
-  }
-  
+/* Card */
+.hiw-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  align-items: center;
+  padding: 18px;
+  border-radius: 10px;
+}
+
+/* Icon wrapper */
+.hiw-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.hiw-icon-outer {
+  font-size: 54px;
+  border-radius: 50%;
+  display: flex; /* make it flex */
+  align-items: center; /* vertical center */
+  justify-content: center;
+  background: #b41f25;
+  box-shadow: 0 6px 16px rgba(180, 31, 37, 0.06);
+  color: #fff;
+  padding: 0.5em;
+  fill: #fff;
+  text-align: center;
+
+  width: 90px; /* equal width & height */
+  height: 90px;
+}
+
+/* Icon style (uses bootstrap icons classes) */
+.hiw-icon {
+  display: block;
+  position: relative;
+  width: 1em;
+}
+
+/* Text content */
+.hiw-content {
+  flex: 1;
+  text-align: center;
+  color: white;
+}
+
+.hiw-card-title {
+  font-size: 26px;
+  line-height: 1.0769230769;
+
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #ffffff;
+  font-weight: 700;
+  font-style: normal;
+  text-transform: uppercase;
+}
+
+.hiw-card-desc {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
 /* ============================= */
 /* 📱 Responsive HIW Section     */
 /* ============================= */
@@ -177,7 +192,7 @@
   }
 
   .hiw-card-desc {
-    font-size:1.1rem;
+    font-size: 1.1rem;
   }
 
   .hiw-icon-outer {
@@ -185,5 +200,3 @@
     padding: 0.3em;
   }
 }
-
-  

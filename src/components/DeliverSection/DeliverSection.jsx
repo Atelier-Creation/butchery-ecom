@@ -1,64 +1,61 @@
-import React,{useEffect,useRef} from 'react'
-import './DeliverSection.css'
-import gsap from 'gsap';
-import ScrollTrigger from 'gsap/ScrollTrigger';
-gsap.registerPlugin(ScrollTrigger)
-import { LuArrowUpRight,LuArrowRight } from "react-icons/lu";
+import React, { useEffect, useRef } from "react";
+import "./DeliverSection.css";
+import gsap from "gsap";
+import ScrollTrigger from "gsap/ScrollTrigger";
+gsap.registerPlugin(ScrollTrigger);
+import { LuArrowUpRight, LuArrowRight } from "react-icons/lu";
 // Bootstrap Icons
 import { BsThermometerHalf, BsShieldCheck, BsArrowRight } from "react-icons/bs";
 // FontAwesome fallback
 import { FaVirus } from "react-icons/fa";
 function DeliverSection() {
-  const imageref = useRef(null)
+  const imageref = useRef(null);
 
-  useEffect(()=>{
-
+  useEffect(() => {
     if (window.innerWidth <= 768) return;
     gsap.fromTo(
       imageref.current,
-      { x : 0},
+      { x: 0 },
       {
-        y : -150,
-        duration : 10,
-        ease : "power2.out",
-        scrollTrigger : {
-          trigger : imageref.current,
-          start:"top 50%",
-          end : " top 60%",
-          scrub : 2,
-          markers : false
-        }
+        y: -130,
+        duration: 10,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: imageref.current,
+          start: "top 50%",
+          end: " top 60%",
+          scrub: 2,
+          markers: false,
+        },
       }
-    )
-  },[])
+    );
+  }, []);
   return (
     <div className="deliver-container">
       <div className="deliver-inner">
         {/* Section Headings */}
         <div className="deliver-heading-small">What We Deliver</div>
-        <h2 className="deliver-heading-main">
-          quality control and production
-        </h2>
+        <h2 className="deliver-heading-main">quality control and production</h2>
 
         {/* Icon Boxes */}
         <div className="deliver-icons">
           <div className="deliver-icon-box">
             <span className="deliver-icon">
-            <BsThermometerHalf />
+              <BsThermometerHalf />
             </span>
             <h6 className="deliver-icon-title">Temperature Control</h6>
           </div>
 
           <div className="deliver-icon-box">
             <span className="deliver-icon">
-            <BsShieldCheck />
+              <BsShieldCheck />
             </span>
             <h6 className="deliver-icon-title">quality safety check</h6>
           </div>
 
           <div className="deliver-icon-box">
             <span className="deliver-icon">
-            <FaVirus />
+              <FaVirus />
             </span>
             <h6 className="deliver-icon-title">Antibacterial Treatment</h6>
           </div>
@@ -74,14 +71,12 @@ function DeliverSection() {
 
         {/* Button */}
         <div className="deliver-btn-wrap">
-          <a
-            className="deliver-btn icons-chages"
-            href="https://demo2.wpopal.com/meatlers/about-us/"
-          >discover now
-                      <span className="footer-btn-icon">
-          <LuArrowUpRight className="icon upright" />
-          <LuArrowRight className="icon right" />
-        </span>
+          <a className="deliver-btn icons-chages" href="#">
+            discover now
+            <span className="footer-btn-icon">
+              <LuArrowUpRight className="icon upright" />
+              <LuArrowRight className="icon right" />
+            </span>
           </a>
         </div>
       </div>
@@ -92,10 +87,10 @@ function DeliverSection() {
           className="deliver-banner-bg"
           style={{
             backgroundImage:
-              "url(https://demo2.wpopal.com/meatlers/wp-content/uploads/2024/12/h2_img5.jpg)",
+              "url(https://origin-provisions.com/cdn/shop/files/Capturadepantalla2023-12-28alas11.49.26.png?v=1704277875&width=1900)",
           }}
         >
-          <div className="deliver-banner-overlay"></div>
+          {/* <div className="deliver-banner-overlay"></div> */}
           <div className="deliver-banner-content">
             <h1 className="deliver-banner-title">FRESH &amp; QUALITY MEAT</h1>
             <div className="deliver-banner-desc">
@@ -103,23 +98,23 @@ function DeliverSection() {
             </div>
           </div>
         </div>
-                            {/* Decorative Image */}
-                            <div className="deliver-banner-img">
+        {/* Decorative Image */}
+        <div className="deliver-banner-img">
           <img
             src="https://demo2.wpopal.com/meatlers/wp-content/uploads/2024/12/h2_vector1.png"
             alt="vector"
           />
         </div>
       </div>
-              {/* Floating Image */}
-              <div className="deliver-image" ref={imageref}>
-          <img
-            src="https://demo2.wpopal.com/meatlers/wp-content/uploads/2024/12/h2_img4.png"
-            alt="quality meat"
-          />
-        </div>
+      {/* Floating Image */}
+      <div className="deliver-image" ref={imageref}>
+        <img
+          src="./country-chicken-full-laying.png"
+          alt="quality meat"
+        />
+      </div>
     </div>
-  )
+  );
 }
 
-export default DeliverSection
+export default DeliverSection;

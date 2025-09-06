@@ -10,7 +10,7 @@
   }
   
   .faq-left {
-    background-image: url("https://demo2.wpopal.com/meatlers/wp-content/uploads/2024/12/h2_img3.jpg");
+    background-image: url("./art-of-butchery-Bellwether.jpg");
     display: flex;
     justify-content: center;
     align-items: center;
@@ -23,7 +23,7 @@
   
   
   .faq-image {
-    max-width: 100%;
+    max-width: 500px;
     height: auto;
   }
   
