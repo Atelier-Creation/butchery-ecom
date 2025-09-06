@@ -12,7 +12,7 @@ export default function BannerSlider() {
   const slides = [
     {
       id: 1,
-      image: "https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&w=1500&q=80",
+      image: "./slider-1.jpg",
       subtitle: "Fresh Meat",
       title: "BEST MEATS & MUCH MORE",
       description: "Discover organic, sustainable and seasonal food from our farm",
@@ -20,7 +20,7 @@ export default function BannerSlider() {
     },
     {
       id: 2,
-      image: "https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&w=1500&q=80",
+      image: "./country-chicken-plater.jpg",
       subtitle: "Organic Cuts",
       title: "PREMIUM QUALITY MEAT",
       description: "From farm to table – freshness guaranteed",

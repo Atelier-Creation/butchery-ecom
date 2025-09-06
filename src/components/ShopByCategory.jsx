@@ -32,7 +32,7 @@ export default function ShopByCategory() {
     <div className="relative w-full bg-black pt-8 md:pt-16">
       <div className="absolute inset-0">
         <img
-          src="https://images.unsplash.com/photo-1471623817296-aa07ae5c9f47?w=1200&q=100"
+          src="./chicken-shade.jpg"
           alt="background"
           className="w-full h-full object-cover"
         />
