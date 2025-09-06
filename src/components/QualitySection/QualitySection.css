@@ -1,6 +1,6 @@
 .products-section {
     text-align: center;
-    padding-top: 10%;
+    padding-top: 5%;
   }
   
   .products-heading .subtitle {
@@ -125,7 +125,7 @@
 /* Move dots below the slider */
 .swiper-pagination {
     position: relative !important;  /* remove absolute positioning */
-    margin-top: 40px;               /* now margin will work */
+    margin-top: 5px;               /* space above dots */
     text-align: center;             /* keep dots centered */
   }
   

@@ -55,7 +55,7 @@ function FaqSection() {
     setActiveId((prev) => (prev === id ? null : id));
   };
   return (
-    <section className="faq-container">
+    <section className="faq-container mt-15">
       <div className="faq-left">
 
       </div>

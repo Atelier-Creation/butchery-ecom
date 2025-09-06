@@ -87,7 +87,7 @@ function DeliverSection() {
           className="deliver-banner-bg"
           style={{
             backgroundImage:
-              "url(https://origin-provisions.com/cdn/shop/files/Capturadepantalla2023-12-28alas11.49.26.png?v=1704277875&width=1900)",
+              "url(https://godavaricuts.com/cdn/shop/products/Godavari-Cuts-Day-1-_51-of-65.jpg)",
           }}
         >
           {/* <div className="deliver-banner-overlay"></div> */}
