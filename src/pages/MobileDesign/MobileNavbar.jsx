@@ -8,7 +8,7 @@ function MobileNavbar() {
   return (
     <div className="md:hidden w-full">
       {/* Top Info Bar */}
-      <div className="bg-red-700 text-white text-center text-xs font-semibold py-2">
+      <div className="bg-red-800 text-white text-center text-xs font-semibold py-2">
         Customer Service Only in Coimbatore (For Order +91 88074 08962)
       </div>
 

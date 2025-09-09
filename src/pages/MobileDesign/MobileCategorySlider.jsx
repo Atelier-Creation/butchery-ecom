@@ -29,13 +29,14 @@ const MobileCategorySlider = () => {
   ];
 
   return (
-    <div className="w-full my-2 max-w-lg ms-2 block md:hidden">
-        <p className="py-4 mb-2 text-2xl text-center font-medium">What do you want on your plate?</p>
+    <div className="w-full overflow-hidden my-2 px-2 block md:hidden">
+      <p className="py-4 mb-2 text-2xl text-center font-medium">
+        What do you want on your plate?
+      </p>
       <Swiper
         modules={[Pagination]}
         spaceBetween={12}
         slidesPerView={2}
-        autoplay={{ delay: 2500, disableOnInteraction: false }}
         pagination={{ clickable: true }}
         className="pb-8"
       >
@@ -43,12 +44,12 @@ const MobileCategorySlider = () => {
           <SwiperSlide key={idx}>
             <a
               href={item.link}
-              className="block  overflow-hidden text-center"
+              className="block overflow-hidden text-center"
             >
               <img
                 src={item.img}
                 alt={item.title}
-                className="w-full rounded-xl h-50 object-cover"
+                className="w-full h-auto rounded-xl object-cover"
               />
               <p className="py-2 text-md font-medium">{item.title}</p>
             </a>

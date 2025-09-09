@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import MobileDesign from "./pages/MobileDesign/MobileDesign";
 
@@ -7,19 +8,20 @@ function App() {
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    handleResize(); // run once
+    handleResize(); // run once on mount
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (
-    <>
-      {isMobile ? (
-        <MobileDesign/>
-      ) : (
-        <HomePage />
-      )}
-    </>
+    <Router>
+      <Routes>
+        <Route
+          path="/*"
+          element={isMobile ? <MobileDesign /> : <HomePage />}
+        />
+      </Routes>
+    </Router>
   );
 }
 
