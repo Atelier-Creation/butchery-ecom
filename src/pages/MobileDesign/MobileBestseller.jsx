@@ -9,8 +9,8 @@ const MobileBestseller = ({
 }) => {
   return (
     <div className="block px-4 py-6">
-      {subtitle && <p className="text-xs text-gray-600 mb-1">{subtitle}</p>}
-      <h2 className="text-xl font-bold mb-4">{title}</h2>
+      {subtitle && <p className="text-xs text-gray-600 mb-1 lg:text-base">{subtitle}</p>}
+      <h2 className="text-xl font-bold mb-4 lg:text-4xl lg:font-bold">{title}</h2>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {products.map((item) => (
