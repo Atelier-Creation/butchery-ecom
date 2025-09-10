@@ -29,8 +29,8 @@ const MobileCategorySlider = () => {
   ];
 
   return (
-    <div className="w-full overflow-hidden my-2 px-2 block">
-      <p className="py-4 mb-2 text-2xl text-center font-medium lg:text-3xl lg:font-bold">
+    <div className="w-full overflow-hidden my-2 px-2 block ">
+      <p className="py-4 mb-2 lg:mb-8 text-2xl text-center font-medium lg:text-3xl lg:font-bold">
         What do you want on your plate?
       </p>
       <Swiper

@@ -9,9 +9,23 @@ const MobileBestseller = ({
 }) => {
   return (
     <div className="block px-4 py-6">
+      <div className="lg:flex lg:justify-between">
+      <div>
       {subtitle && <p className="text-xs text-gray-600 mb-1 lg:text-base">{subtitle}</p>}
-      <h2 className="text-xl font-bold mb-4 lg:text-4xl lg:font-bold">{title}</h2>
-
+      <h2 className="text-xl font-bold mb-4 lg:mb-8 lg:text-4xl lg:font-bold">{title}</h2>
+      </div>
+            {/* View All Button */}
+            {onViewAll && (
+        <div className="hidden lg:block mt-6 text-center">
+          <button
+            onClick={onViewAll}
+            className="bg-red-800 text-white px-6 py-2 rounded-md font-medium"
+          >
+            View all
+          </button>
+        </div>
+      )}
+      </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {products.map((item) => (
           <div
@@ -58,7 +72,7 @@ const MobileBestseller = ({
 
       {/* View All Button */}
       {onViewAll && (
-        <div className="mt-6 text-center">
+        <div className="mt-6 text-center lg:hidden">
           <button
             onClick={onViewAll}
             className="bg-red-800 text-white px-6 py-2 rounded-md font-medium"
