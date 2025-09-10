@@ -35,7 +35,7 @@ function MobileNavbar() {
       </div>
 
       {/* Navbar */}
-      <div className="flex items-center sticky top-0 justify-between bg-[#fdd9cc] px-4 py-3 shadow-md">
+      <div className="flex items-center z-50 sticky top-0 justify-between bg-[#fdd9cc] px-4 py-3 shadow-md">
         {/* Left Hamburger */}
         <div className="w-20 flex justify-start lg:hidden">
           <button onClick={() => setMenuOpen(true)} className="text-xl">
@@ -51,7 +51,7 @@ function MobileNavbar() {
         /></Link>
         <div className="lg:flex lg:w-110 lg:justify-between lg:align-middle hidden">
           <a href="/">Home</a>
-          <div className="relative">
+          <div className="relative z-100">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
               className="flex gap-2 items-center hover:text-red-700"
