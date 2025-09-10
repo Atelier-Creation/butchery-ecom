@@ -20,13 +20,13 @@ function MobileNavbar() {
   return (
     <div className="w-full">
       {/* Top Info Bar */}
-      <div className="bg-red-800 text-white text-center text-xs lg:text-base font-semibold py-2 md:py-3 lg:flex lg:justify-around">
-        <div className="hidden lg:flex lg:gap-4">
+      <div className="bg-red-800 text-white text-center text-xs items-center lg:text-base font-semibold py-2 md:py-1 lg:flex lg:justify-around">
+        <div className="hidden lg:flex items-center lg:gap-4">
           <FiFacebook size={20} />
           <FiInstagram size={20} />
           <FiYoutube size={20} />
         </div>
-        <p>Customer Service Only in Coimbatore (For Order +91 88074 08962)</p>
+        <p className="text-sm">Customer Service Only in Coimbatore (For Order +91 88074 08962)</p>
 
         <select className="hidden lg:block lg:border-0 lg:border-b-2 lg:border-red-800 focus:outline-none focus:border-red-600 lg:text-sm lg:px-2 lg:py-1">
           <option className="bg-red-800 text-white">English</option>
@@ -35,7 +35,7 @@ function MobileNavbar() {
       </div>
 
       {/* Navbar */}
-      <div className="flex items-center z-50 sticky top-0 justify-between bg-[#fdd9cc] px-4 py-3 shadow-md">
+      <div className="flex items-center sticky top-0 justify-between bg-[#fdd9cc] px-4 py-3 shadow-md">
         {/* Left Hamburger */}
         <div className="w-20 flex justify-start lg:hidden">
           <button onClick={() => setMenuOpen(true)} className="text-xl">
@@ -47,7 +47,7 @@ function MobileNavbar() {
         <Link to={'/'}><img
           src="/logo.svg"
           alt="Logo"
-          className="h-18 lg:h-20 lg:w-full lg:object-cover object-contain "
+          className="h-18 lg:h-24 lg:w-40 object-contain object-right"
         /></Link>
         <div className="lg:flex lg:w-110 lg:justify-between lg:align-middle hidden">
           <a href="/">Home</a>
