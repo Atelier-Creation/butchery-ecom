@@ -24,7 +24,7 @@ function MobileNavbar() {
       </div>
 
       {/* Navbar */}
-      <div className="flex items-cente sticky top-0 justify-between bg-[#ffeee8] px-4 py-3 shadow-md">
+      <div className="flex items-cente sticky top-0 justify-between bg-[#fdd9cc] px-4 py-3 shadow-md">
         {/* Left Hamburger */}
         <div className="w-20 flex justify-start md:hidden">
           <button onClick={() => setMenuOpen(true)} className="text-xl">

@@ -26,11 +26,11 @@ const FeatureSlider = ({features}) => {
       >
         {features?.map((item, idx) => (
           <SwiperSlide key={idx}>
-            <div className="flex flex-col items-center text-center bg-white rounded-xl p-6 shadow hover:shadow-lg transition">
+            <div className="flex flex-col items-center text-center rounded-xl py-3 transition">
               <img
                 src={item.img}
                 alt={item.title}
-                className="w-32 h-32 object-contain mb-4"
+                className="w-28 h-28 object-contain mb-4"
               />
               <h3 className="text-lg font-semibold text-gray-800">
                 {item.title}
