@@ -38,6 +38,12 @@ const MobileCategorySlider = () => {
         spaceBetween={12}
         slidesPerView={2}
         pagination={{ clickable: true }}
+        breakpoints={{
+          1024: {
+            slidesPerView: 4,
+            spaceBetween: 20,
+          },
+        }}
         className="pb-8"
       >
         {collections.map((item, idx) => (
