@@ -52,11 +52,13 @@ const MobileCategorySlider = () => {
               href={item.link}
               className="block overflow-hidden text-center"
             >
-              <img
-                src={item.img}
-                alt={item.title}
-                className="w-full h-auto rounded-xl object-cover"
-              />
+  <div className="w-full h-full aspect-square overflow-hidden rounded-xl">
+    <img
+      src={item.img}
+      alt={item.title}
+      className="w-full h-full object-cover"
+    />
+  </div>
               <p className="py-2 text-md font-medium">{item.title}</p>
             </a>
           </SwiperSlide>

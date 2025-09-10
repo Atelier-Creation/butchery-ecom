@@ -30,7 +30,7 @@ const MobileBestseller = ({
               <img
                 src={item.img}
                 alt={item.title}
-                className="w-full rounded-xl h-auto object-cover"
+                className="w-full rounded-xl h-full aspect-square object-cover"
               />
 
               <span className="absolute bottom-2 right-2 bg-red-800 text-white text-xs px-2.5 py-2 rounded-md">
