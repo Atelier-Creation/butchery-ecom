@@ -47,7 +47,7 @@ function MobileNavbar() {
         <Link to={'/'}><img
           src="/logo.svg"
           alt="Logo"
-          className="h-18 lg:h-20 lg:w-40 lg:object-cover object-contain "
+          className="h-18 lg:h-20 lg:w-full lg:object-cover object-contain "
         /></Link>
         <div className="lg:flex lg:w-110 lg:justify-between lg:align-middle hidden">
           <a href="/">Home</a>
