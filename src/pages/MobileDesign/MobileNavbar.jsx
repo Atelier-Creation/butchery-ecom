@@ -1,49 +1,87 @@
 import { useState } from "react";
 import { FaFacebookF, FaInstagram, FaYoutube } from "react-icons/fa";
-import { FiMenu, FiX, FiSearch, FiUser, FiShoppingBag,FiFacebook,FiInstagram,FiYoutube } from "react-icons/fi";
+import { FiMenu,FiChevronDown, FiX, FiSearch, FiUser, FiShoppingBag,FiFacebook,FiInstagram,FiYoutube } from "react-icons/fi";
 
 function MobileNavbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   return (
     <div className="w-full">
       {/* Top Info Bar */}
-      <div className="bg-red-800 text-white text-center text-xs md:text-base font-semibold py-2 md:py-3 md:flex md:justify-around">
+      <div className="bg-red-800 text-white text-center text-xs lg:text-base font-semibold py-2 md:py-3 lg:flex lg:justify-around">
         
-        <div className="md:flex md:gap-4">
+        <div className="hidden lg:flex lg:gap-4">
             <FiFacebook size={20}/>
             <FiInstagram size={20}/>
             <FiYoutube size={20}/>
         </div>
         <p>Customer Service Only in Coimbatore (For Order +91 88074 08962)</p>
 
-        <select className="border-0 border-b-2 border-red-800 focus:outline-none focus:border-red-600 text-sm px-2 py-1">
-    <option className="bg-red-800 text-white">English</option>
-    <option className="bg-red-800 text-white">Tamil</option>
-  </select>
+        <select className="hidden lg:block lg:border-0 lg:border-b-2 lg:border-red-800 focus:outline-none focus:border-red-600 lg:text-sm lg:px-2 lg:py-1">
+  <option className="bg-red-800 text-white">English</option>
+  <option className="bg-red-800 text-white">Tamil</option>
+</select>
+
       </div>
 
       {/* Navbar */}
-      <div className="flex items-cente sticky top-0 justify-between bg-[#ffeee8] px-4 py-3 shadow-md">
+      <div className="flex items-center sticky top-0 justify-between bg-[#ffeee8] px-4 py-3 shadow-md ">
         {/* Left Hamburger */}
-        <div className="w-20 flex justify-start md:hidden">
+        <div className="w-20 flex justify-start lg:hidden">
           <button onClick={() => setMenuOpen(true)} className="text-xl">
             <FiMenu />
           </button>
         </div>
 
         {/* Logo */}
-        <img src="/logo.svg" alt="Logo" className="h-18 object-contain" />
-        <div>
-          <a>Home</a>
-          <a>Meat-Product</a>
-          <a>Recipe</a>
-          <a>About Us</a>
-          <a>About Us</a>
+        <img src="/logo.svg" alt="Logo" className="h-18 lg:h-20 lg:w-40 lg:object-cover object-contain " />
+        <div className="lg:flex lg:w-110 lg:justify-between lg:align-middle hidden">
+          <a href="/">Home</a>
+          <div className="relative">
+            <button
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              className="flex gap-2 items-center hover:text-red-700"
+            >
+              <p>Meat-Product</p>
+              <FiChevronDown
+                className={`transition-transform ${
+                  dropdownOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            {dropdownOpen && (
+              <div className="absolute left-0 mt-2 w-40 shadow-md rounded border-0 z-100  bg-[#f8f6f5]" style={{backgroundColor:"#f8f6f5"}}>
+                <a
+                  href="/chicken"
+                  className="block px-4 py-2 hover:bg-red-600 hover:text-white"
+                >
+                  Chicken
+                </a>
+                <a
+                  href="/mutton"
+                  className="block px-4 py-2 hover:bg-red-600 hover:text-white"
+                >
+                  Mutton
+                </a>
+                <a
+                  href="/fish"
+                  className="block px-4 py-2 hover:bg-red-600 hover:text-white"
+                >
+                  Fish
+                </a>
+              </div>
+            )}
+          </div>
+
+          <a href="/">Recipe</a>
+          <a href="/">About Us</a>
+          <a href="/">Contact Us</a>
         </div>
 
         {/* Right Icons */}
-        <div className="flex items-center gap-4 text-lg">
+        <div className="flex items-center gap-4 text-lg lg:text-2xl">
           <FiSearch />
           <FiUser />
           <FiShoppingBag />

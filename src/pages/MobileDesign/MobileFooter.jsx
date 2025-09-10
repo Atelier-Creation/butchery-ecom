@@ -1,6 +1,32 @@
 import React, { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
+const footerGridData = [
+  {starCount : "4",
+  head : "Paati-Approved Taste",
+  comment :`            I've tried many brands, but LeNaturel mutton/chicken tastes just like
+  the fresh chicken my paati used to cook in the village. No smell,
+  tender – perfect for Sunday curries.`,
+  name : "Revathi",
+  place : "Coimbatore"
+  },
+  {starCount : "5",
+  head : "Paati-Approved Taste",
+  comment :`            I've tried many brands, but LeNaturel mutton/chicken tastes just like
+  the fresh chicken my paati used to cook in the village. No smell,
+  tender – perfect for Sunday curries.`,
+  name : "Revathi",
+  place : "Coimbatore"
+  },
+  {starCount : "4",
+  head : "Paati-Approved Taste",
+  comment :`            I've tried many brands, but LeNaturel mutton/chicken tastes just like
+  the fresh chicken my paati used to cook in the village. No smell,
+  tender – perfect for Sunday curries.`,
+  name : "Revathi",
+  place : "Coimbatore"
+  },
+]
 const FooterSection = ({ title, children }) => {
   const [open, setOpen] = useState(false);
 
@@ -21,14 +47,14 @@ const FooterSection = ({ title, children }) => {
 const MobileFooter = () => {
   return (
     <footer className="bg-red-800 px-5 py-8 text-white">
-      <div className="mb-8">
+      <div className="mb-8 ">
         <h2 className="text-xl font-bold mb-2">
           The Trusted Choice for Premium Meat
         </h2>
         <p className="text-sm mb-4">
           Iraichi Kadai is the top choice for premium quality meat
         </p>
-        <div className="bg-red-700 p-4 rounded-lg text-sm my-4">
+        <div className="bg-red-700 p-4 rounded-lg text-sm my-4 lg:hidden">
           <p className="font-semibold mb-2">★ ★ ★ ★ ★</p>
           <p className="italic mb-2">"Paati-Approved Taste"</p>
           <p className="mb-1">
@@ -38,6 +64,8 @@ const MobileFooter = () => {
           </p>
           <p className="font-semibold">Revathi M, Coimbatore</p>
         </div>
+
+        
       </div>
 
       <div className="my-8">

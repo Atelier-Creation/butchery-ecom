@@ -12,7 +12,7 @@ const MobileBestseller = ({
       {subtitle && <p className="text-xs text-gray-600 mb-1">{subtitle}</p>}
       <h2 className="text-xl font-bold mb-4">{title}</h2>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {products.map((item) => (
           <div
             key={item.id}
