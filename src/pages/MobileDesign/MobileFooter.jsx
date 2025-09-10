@@ -58,7 +58,7 @@ const MobileFooter = () => {
           <p className="font-semibold mb-2">★ ★ ★ ★ ★</p>
           <p className="italic mb-2">"Paati-Approved Taste"</p>
           <p className="mb-1">
-            I've tried many brands, but LeNaturel mutton/chicken tastes just like
+            I've tried many brands, but Iraichi Kadai mutton/chicken tastes just like
             the fresh chicken my paati used to cook in the village. No smell,
             tender – perfect for Sunday curries.
           </p>

@@ -1,6 +1,17 @@
 import { useState } from "react";
 import { FaFacebookF, FaInstagram, FaYoutube } from "react-icons/fa";
-import { FiMenu,FiChevronDown, FiX, FiSearch, FiUser, FiShoppingBag,FiFacebook,FiInstagram,FiYoutube } from "react-icons/fi";
+import {
+  FiMenu,
+  FiChevronDown,
+  FiX,
+  FiSearch,
+  FiUser,
+  FiShoppingBag,
+  FiFacebook,
+  FiInstagram,
+  FiYoutube,
+} from "react-icons/fi";
+import { Link } from "react-router-dom";
 
 function MobileNavbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -10,23 +21,21 @@ function MobileNavbar() {
     <div className="w-full">
       {/* Top Info Bar */}
       <div className="bg-red-800 text-white text-center text-xs lg:text-base font-semibold py-2 md:py-3 lg:flex lg:justify-around">
-        
         <div className="hidden lg:flex lg:gap-4">
-            <FiFacebook size={20}/>
-            <FiInstagram size={20}/>
-            <FiYoutube size={20}/>
+          <FiFacebook size={20} />
+          <FiInstagram size={20} />
+          <FiYoutube size={20} />
         </div>
         <p>Customer Service Only in Coimbatore (For Order +91 88074 08962)</p>
 
         <select className="hidden lg:block lg:border-0 lg:border-b-2 lg:border-red-800 focus:outline-none focus:border-red-600 lg:text-sm lg:px-2 lg:py-1">
-  <option className="bg-red-800 text-white">English</option>
-  <option className="bg-red-800 text-white">Tamil</option>
-</select>
-
+          <option className="bg-red-800 text-white">English</option>
+          <option className="bg-red-800 text-white">Tamil</option>
+        </select>
       </div>
 
       {/* Navbar */}
-      <div className="flex items-center sticky top-0 justify-between bg-[#ffeee8] px-4 py-3 shadow-md ">
+      <div className="flex items-cente sticky top-0 justify-between bg-[#fdd9cc] px-4 py-3 shadow-md">
         {/* Left Hamburger */}
         <div className="w-20 flex justify-start lg:hidden">
           <button onClick={() => setMenuOpen(true)} className="text-xl">
@@ -35,7 +44,11 @@ function MobileNavbar() {
         </div>
 
         {/* Logo */}
-        <img src="/logo.svg" alt="Logo" className="h-18 lg:h-20 lg:w-40 lg:object-cover object-contain " />
+        <Link to={'/'}><img
+          src="/logo.svg"
+          alt="Logo"
+          className="h-18 lg:h-20 lg:w-40 lg:object-cover object-contain "
+        /></Link>
         <div className="lg:flex lg:w-110 lg:justify-between lg:align-middle hidden">
           <a href="/">Home</a>
           <div className="relative">
@@ -52,7 +65,10 @@ function MobileNavbar() {
             </button>
 
             {dropdownOpen && (
-              <div className="absolute left-0 mt-2 w-40 shadow-md rounded border-0 z-100  bg-[#f8f6f5]" style={{backgroundColor:"#f8f6f5"}}>
+              <div
+                className="absolute left-0 mt-2 w-40 shadow-md rounded border-0 z-100  bg-[#f8f6f5]"
+                style={{ backgroundColor: "#f8f6f5" }}
+              >
                 <a
                   href="/chicken"
                   className="block px-4 py-2 hover:bg-red-600 hover:text-white"

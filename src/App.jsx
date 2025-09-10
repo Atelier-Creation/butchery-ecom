@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import MobileDesign from "./pages/MobileDesign/MobileDesign";
+import Collections from "./pages/Collections/Collections";
 
 function App() {
   const [isMobile, setIsMobile] = useState(false);
@@ -21,8 +22,12 @@ function App() {
           element={isMobile ? <MobileDesign /> : <HomePage />}
         /> */}
         <Route
-          path="/*"
+          path="/"
           element={<MobileDesign/>}
+        />
+        <Route
+          path="/collections/*"
+          element={<Collections/>}
         />
       </Routes>
     </Router>
