@@ -1,13 +1,10 @@
-import React, { useState } from "react";
-import { Eye, Heart, ShoppingCart } from "lucide-react";
+import React from "react";
+import { Eye } from "lucide-react";
 import SidebarFilters from "./SidebarFilters";
+import MobileFilterDrawer from "./MobileFilterDrawer";
+import SortDropdown from "./SortDropdown";
 
 const Collectiongrid = () => {
-  //   const [filters, setFilters] = useState({
-  //     chicken: false,
-  //     countryChicken: false,
-  //   });
-
   const products = [
     {
       id: 1,
@@ -44,33 +41,37 @@ const Collectiongrid = () => {
   ];
 
   return (
-    <div className="flex flex-col md:flex-row gap-6 px-8 py-18 bg-[#fdd9cc]">
+    <div className="flex flex-col md:flex-row gap-6 px-4 md:px-8 py-16 bg-[#fdd9cc]">
       {/* Sidebar Filters */}
-      <SidebarFilters />
+      {/* Desktop Sidebar */}
+      <aside className="hidden md:block w-full md:w-1/4 lg:w-1/5">
+        <SidebarFilters />
+      </aside>
+
+      {/* Mobile Drawer */}
+      <div className="md:hidden">
+        <MobileFilterDrawer productsLength={products.length} />
+      </div>
 
       {/* Product Grid */}
-      <main className="w-full md:w-3/4 bg-transparent">
+      <main className="w-full md:w-3/4 lg:w-4/5 bg-transparent">
         {/* Sort bar */}
-        <div className="flex justify-between items-center mb-4">
+        <div className=" hidden md:flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
           <p className="text-sm text-gray-500">{products.length} products</p>
 
           <div className="flex items-center gap-2 text-sm">
             <span className="text-gray-700">Sort by:</span>
-            <select className="bg-transparent border-0 focus:ring-0 text-gray-800 cursor-pointer">
-              <option>Best selling</option>
-              <option>Price: Low to High</option>
-              <option>Price: High to Low</option>
-              <option>Newest First</option>
-            </select>
+            
+            <SortDropdown />
           </div>
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-4">
           {products.map((item) => (
             <div
               key={item.id}
-              className="rounded-lg shadow hover:shadow-md transition overflow-hidden relative group cursor-pointer bg-transparent"
+              className="rounded-lg shadow hover:shadow-md transition overflow-hidden relative group cursor-pointer bg-white"
             >
               {/* Product Image Wrapper */}
               <div className="relative w-full aspect-square overflow-hidden">
@@ -85,17 +86,17 @@ const Collectiongrid = () => {
                 <img
                   src={item.img}
                   alt={item.title}
-                  className="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-0 rounded"
+                  className="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-0"
                 />
 
                 {/* Hover Image */}
                 <img
                   src={item.img}
                   alt={item.title}
-                  className="w-full h-full object-cover absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 rounded"
+                  className="w-full h-full object-cover absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                 />
 
-                {/* Quick Shop Button (on hover) */}
+                {/* Quick Shop Button */}
                 <button className="absolute inset-x-4 bottom-4 bg-red-800 text-white text-sm py-2 cursor-pointer rounded-md opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-1 z-20">
                   Quick Shop <Eye size={14} />
                 </button>
