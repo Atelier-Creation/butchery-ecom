@@ -34,7 +34,7 @@ const products = [
   {
     id: 1,
     title: "Country Chicken (Naattu Kozhi) Curry Cut Meat",
-    img: "https://lenaturelmeat.com/cdn/shop/files/NT4.png?v=1719991493",
+    img: "https://lenaturelmeat.com/cdn/shop/files/NT4.png?v=1719991493&width=533",
     price: "₹385.00",
     oldPrice: "₹420.00",
     tag: "Sale",
@@ -42,7 +42,7 @@ const products = [
   {
     id: 2,
     title: "Country Chicken (Naattu Kozhi) Boneless",
-    img: "https://lenaturelmeat.com/cdn/shop/files/Goat_Keema_3.jpg?v=1746256020",
+    img: "https://lenaturelmeat.com/cdn/shop/files/Goat_Keema_3.jpg?v=1746256020&width=533",
     price: "₹250.00",
     oldPrice: "₹300.00",
     tag: "Sale",
@@ -50,7 +50,7 @@ const products = [
   {
     id: 3,
     title: "Country Chicken (Naattu Kozhi) Lollipop Pack of 6",
-    img: "https://lenaturelmeat.com/cdn/shop/files/top-view-delicious-salmon-table.jpg?v=1753342530",
+    img: "https://lenaturelmeat.com/cdn/shop/files/top-view-delicious-salmon-table.jpg?v=1753342530&width=533",
     price: "₹520.00",
     oldPrice: "₹600.00",
     tag: "",
@@ -58,7 +58,7 @@ const products = [
   {
     id: 4,
     title: "Country Chicken (Naattu Kozhi) Chicken Mince/Keema",
-    img: "https://lenaturelmeat.com/cdn/shop/files/Broiler1.jpg?v=1686210766",
+    img: "https://lenaturelmeat.com/cdn/shop/files/Broiler1.jpg?v=1686210766&width=533",
     price: "₹250.00",
     oldPrice: "₹280.00",
     tag: "Sale",
@@ -68,7 +68,7 @@ const Broilerproducts = [
   {
     id: 1,
     title: "Broiler Chicken (Broiler Kozhi) Curry Cut Meat",
-    img: "https://lenaturelmeat.com/cdn/shop/files/NT4.png?v=1719991493",
+    img: "https://lenaturelmeat.com/cdn/shop/files/NT4.png?v=1719991493&width=533",
     price: "₹385.00",
     oldPrice: "₹420.00",
     tag: "Sale",
