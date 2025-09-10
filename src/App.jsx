@@ -16,9 +16,13 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route
+        {/* <Route
           path="/*"
           element={isMobile ? <MobileDesign /> : <HomePage />}
+        /> */}
+        <Route
+          path="/*"
+          element={<MobileDesign/>}
         />
       </Routes>
     </Router>

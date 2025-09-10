@@ -14,7 +14,7 @@ const MobileBanner = () => {
   ];
 
   return (
-    <div className="w-full h-90 max-w-md md:hidden mx-auto overflow-hidden">
+    <div className="w-full h-90 max-w-md mx-auto overflow-hidden">
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         spaceBetween={10}

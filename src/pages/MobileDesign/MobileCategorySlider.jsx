@@ -29,7 +29,7 @@ const MobileCategorySlider = () => {
   ];
 
   return (
-    <div className="w-full overflow-hidden my-2 px-2 block md:hidden">
+    <div className="w-full overflow-hidden my-2 px-2 block">
       <p className="py-4 mb-2 text-2xl text-center font-medium">
         What do you want on your plate?
       </p>

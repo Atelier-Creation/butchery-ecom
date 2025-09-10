@@ -1,21 +1,32 @@
 import { useState } from "react";
 import { FaFacebookF, FaInstagram, FaYoutube } from "react-icons/fa";
-import { FiMenu, FiX, FiSearch, FiUser, FiShoppingBag } from "react-icons/fi";
+import { FiMenu, FiX, FiSearch, FiUser, FiShoppingBag,FiFacebook,FiInstagram,FiYoutube } from "react-icons/fi";
 
 function MobileNavbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="md:hidden w-full">
+    <div className="w-full">
       {/* Top Info Bar */}
-      <div className="bg-red-800 text-white text-center text-xs font-semibold py-2">
-        Customer Service Only in Coimbatore (For Order +91 88074 08962)
+      <div className="bg-red-800 text-white text-center text-xs md:text-base font-semibold py-2 md:py-3 md:flex md:justify-around">
+        
+        <div className="md:flex md:gap-4">
+            <FiFacebook size={20}/>
+            <FiInstagram size={20}/>
+            <FiYoutube size={20}/>
+        </div>
+        <p>Customer Service Only in Coimbatore (For Order +91 88074 08962)</p>
+
+        <select className="border-0 border-b-2 border-red-800 focus:outline-none focus:border-red-600 text-sm px-2 py-1">
+    <option className="bg-red-800 text-white">English</option>
+    <option className="bg-red-800 text-white">Tamil</option>
+  </select>
       </div>
 
       {/* Navbar */}
       <div className="flex items-cente sticky top-0 justify-between bg-[#ffeee8] px-4 py-3 shadow-md">
         {/* Left Hamburger */}
-        <div className="w-20 flex justify-start">
+        <div className="w-20 flex justify-start md:hidden">
           <button onClick={() => setMenuOpen(true)} className="text-xl">
             <FiMenu />
           </button>
@@ -23,6 +34,13 @@ function MobileNavbar() {
 
         {/* Logo */}
         <img src="/logo.svg" alt="Logo" className="h-18 object-contain" />
+        <div>
+          <a>Home</a>
+          <a>Meat-Product</a>
+          <a>Recipe</a>
+          <a>About Us</a>
+          <a>About Us</a>
+        </div>
 
         {/* Right Icons */}
         <div className="flex items-center gap-4 text-lg">

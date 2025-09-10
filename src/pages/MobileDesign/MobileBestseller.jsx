@@ -8,7 +8,7 @@ const MobileBestseller = ({
   onViewAll 
 }) => {
   return (
-    <div className="block md:hidden  px-4 py-6">
+    <div className="block px-4 py-6">
       {subtitle && <p className="text-xs text-gray-600 mb-1">{subtitle}</p>}
       <h2 className="text-xl font-bold mb-4">{title}</h2>
 
