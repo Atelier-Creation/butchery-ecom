@@ -51,7 +51,7 @@ function MobileNavbar() {
         /></Link>
         <div className="lg:flex lg:w-110 lg:justify-between lg:align-middle hidden">
           <a href="/">Home</a>
-          <div className="relative">
+          <div className="relative z-100">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
               className="flex gap-2 items-center hover:text-red-700"

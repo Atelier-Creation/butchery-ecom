@@ -30,7 +30,7 @@ const MobileCategorySlider = () => {
 
   return (
     <div className="w-full overflow-hidden my-2 px-2 block">
-      <p className="py-4 mb-2 text-2xl text-center font-medium">
+      <p className="py-4 mb-2 text-2xl text-center font-medium lg:text-3xl lg:font-bold">
         What do you want on your plate?
       </p>
       <Swiper
@@ -52,11 +52,13 @@ const MobileCategorySlider = () => {
               href={item.link}
               className="block overflow-hidden text-center"
             >
-              <img
-                src={item.img}
-                alt={item.title}
-                className="w-full h-auto rounded-xl object-cover"
-              />
+  <div className="w-full h-full aspect-square overflow-hidden rounded-xl">
+    <img
+      src={item.img}
+      alt={item.title}
+      className="w-full h-full object-cover"
+    />
+  </div>
               <p className="py-2 text-md font-medium">{item.title}</p>
             </a>
           </SwiperSlide>
