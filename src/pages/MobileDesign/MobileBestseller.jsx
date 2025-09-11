@@ -8,7 +8,7 @@ const MobileBestseller = ({
   onViewAll 
 }) => {
   return (
-    <div className="block px-4 py-6">
+    <div className="block px-4 py-6 lg:px-10 lg:mt-10">
       <div className="lg:flex lg:justify-between">
       <div>
       {subtitle && <p className="text-xs text-gray-600 mb-1 lg:text-base">{subtitle}</p>}

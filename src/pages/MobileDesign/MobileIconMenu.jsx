@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 const IconMenu = ({ items }) => {
   return (
-    <div className="icon-menu-wrapper py-2 bg-red-800">
+    <div className="icon-menu-wrapper py-2 bg-red-800 lg:px-10">
       <ul className="flex justify-center gap-6">
         {items.map((item, idx) => (
           <li key={idx} className="flex flex-col items-center">

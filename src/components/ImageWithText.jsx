@@ -3,18 +3,18 @@ import { Leaf, CheckCircle2, ShieldCheck, HeartPulse } from "lucide-react";
 
 const ImageWithText = () => {
   return (
-    <div className="bg-[#C41E3A] text-white rounded-lg p-0 md:p-8 mx-4 md:mx-5 flex flex-col md:flex-row gap-10 justify-center items-center">
+    <div className="bg-[#C41E3A] text-white rounded-lg p-0  mx-4 md:mx-5 flex flex-col md:flex-row gap-10 justify-center items-center lg:mx-10 lg:mt-15">
       {/* Left Image */}
       <div className="w-full md:w-1/2">
         <img
           src="https://lenaturelmeat.com/cdn/shop/files/raw-chicken-meat-legs-with-spices-herbs.jpg?v=1753961198&width=1500"
           alt="Country Chicken"
-          className="rounded-lg shadow-lg w-full h-50 md:h-[80vh] object-cover"
+          className="rounded-lg shadow-lg w-full h-50 md:h-[80vh] object-cover lg:rounded-none"
         />
       </div>
 
       {/* Right Content */}
-      <div className="w-full md:w-1/2 px-4 pb-4 flex flex-col justify-center">
+      <div className="w-full md:w-1/2 px-4 pb-4 flex flex-col justify-center lg:p-8 ">
         <h2 className="text-2xl md:text-4xl font-bold mb-4">
           Welcome To Iraichi Kadai
         </h2>

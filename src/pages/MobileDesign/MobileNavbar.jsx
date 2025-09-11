@@ -35,7 +35,7 @@ function MobileNavbar() {
       </div>
 
       {/* Navbar */}
-      <div className="flex items-center sticky top-0 justify-between bg-[#fdd9cc] px-4 py-3 shadow-md">
+      <div className="flex items-center sticky top-0 justify-between bg-[#fdd9cc] px-4 py-3 shadow-md lg:relative z-100">
         {/* Left Hamburger */}
         <div className="w-20 flex justify-start lg:hidden">
           <button onClick={() => setMenuOpen(true)} className="text-xl">
@@ -49,7 +49,7 @@ function MobileNavbar() {
           alt="Logo"
           className="h-18 lg:h-24 lg:w-40 object-contain object-right"
         /></Link>
-        <div className="lg:flex lg:w-110 lg:justify-between lg:align-middle hidden">
+        <div className="lg:flex lg:w-110 lg:justify-between lg:align-middle hidden lg:relative z-100">
           <a href="/">Home</a>
           <div className="relative z-100">
             <button
@@ -97,7 +97,7 @@ function MobileNavbar() {
         </div>
 
         {/* Right Icons */}
-        <div className="flex items-center gap-4 text-lg lg:text-2xl">
+        <div className="flex items-center gap-4 text-lg lg:text-2xl lg:mr-10">
           <FiSearch />
           <FiUser />
           <FiShoppingBag />
