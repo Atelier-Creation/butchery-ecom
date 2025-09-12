@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { FiStar } from "react-icons/fi";
+import { Link } from "react-router-dom";
 const footerGridData = [
   {starCount : "4",
   head : "Paati-Approved Taste",
@@ -46,7 +47,7 @@ const FooterSection = ({ title, children }) => {
 
 const MobileFooter = () => {
   return (
-    <footer className="bg-red-800 px-5 py-8 text-white">
+    <footer className="bg-[#EE1c25] px-5 py-8 text-white">
       <div className="mb-8 ">
         <h2 className="text-xl font-bold mb-2 lg:text-4xl lg:font-semibold">
           The Trusted Choice for Premium Meat
@@ -54,7 +55,7 @@ const MobileFooter = () => {
         <p className="text-sm mb-4 lg:text-lg lg:font-semibold">
           Iraichi Kadai is the top choice for premium quality meat
         </p>
-        <div className="bg-red-700 p-4 rounded-lg text-sm my-4 lg:hidden">
+        <div className="bg-[#EE1c25] p-4 rounded-lg text-sm my-4 lg:hidden">
           <p className="font-semibold mb-2">★ ★ ★ ★ ★</p>
           <p className="italic mb-2">"Paati-Approved Taste"</p>
           <p className="mb-1">
@@ -70,16 +71,20 @@ const MobileFooter = () => {
             <div className="border border-white rounded-lg flex flex-col gap-3 p-4">
               <FiStar/>
               <p className="text-lg font-semibold">"{data.head}"</p>
-              <p className="text-lg font-semibold">{data.comment}</p>
-              <p className="text-lg font-semibold">{data.name}</p>
-              <p className="text-lg font-semibold">{data.place}</p>
+              <p className="text-lg ">{data.comment}</p>
+              <p className="text-lg ">{data.name}</p>
+              <p className="text-lg ">{data.place}</p>
             </div>
           ))}
         </div>
       </div>
       
-      <div className="my-8 lg:hidden">
-        <h3 className="text-center font-cursive text-2xl mb-2">Iraichi Kadai</h3>
+      <div className="my-8 lg:hidden flex flex-col items-center justify-center gap-2">
+      <Link to={'/'}><img
+          src="/logo.svg"
+          alt="Logo"
+          className="h-18 lg:h-24 lg:w-40 object-contain object-right"
+        /></Link>
         <p className="text-sm text-center mb-4">
           Having had very bitter experiences with the local meat shops and
           seeing that my free range Country Chicken were sold alongside the
@@ -116,8 +121,12 @@ const MobileFooter = () => {
       </div>
       <div className="hidden lg:flex justify-around lg:mt-20 lg:pb-20 lg:border-b border-white">
       <div className="w-80">
-        <h3 className="text-start font-cursive text-2xl font-semibold mb-2">Iraichi Kadai</h3>
-        <p className="text-sm text-start mb-4 font-semibold">
+      <Link to={'/'}><img
+          src="/logo.svg"
+          alt="Logo"
+          className="h-18 lg:h-24 lg:w-40 object-contain object-right"
+        /></Link>
+        <p className="text-sm text-start mb-4">
           Having had very bitter experiences with the local meat shops and
           seeing that my free range Country Chicken were sold alongside the
           other poultry, I decided to bring them directly to customers. Thus the
@@ -127,28 +136,28 @@ const MobileFooter = () => {
       <div className="lg:flex flex-col gap-2">
       
       <h4 className="text-2xl font-semibold">Quick Links</h4>
-            <a href="/" className="font-semibold hover:border-b-1 w-fit">Search</a>
-            <a href="/" className="font-semibold hover:border-b-1 w-fit">Product Link</a>
-            <a href="/"className="font-semibold hover:border-b-1 w-fit">Contact Us</a>
-            <a href="/" className="font-semibold hover:border-b-1 w-fit">Special Product</a>
-            <a href="/" className="font-semibold hover:border-b-1 w-fit">Recipe</a>
+            <a href="/" className=" hover:border-b-1 w-fit">Search</a>
+            <a href="/" className=" hover:border-b-1 w-fit">Product Link</a>
+            <a href="/"className=" hover:border-b-1 w-fit">Contact Us</a>
+            <a href="/" className=" hover:border-b-1 w-fit">Special Product</a>
+            <a href="/" className=" hover:border-b-1 w-fit">Recipe</a>
       </div>
       <div className="lg:flex flex-col gap-2">
       
       <h4 className="text-2xl font-semibold">Policies</h4>
-            <a href="/" className="font-semibold hover:border-b-1 w-fit">Privacy Policy</a>
-            <a href="/" className="font-semibold hover:border-b-1 w-fit">Terms of Service</a>
-            <a href="/" className="font-semibold hover:border-b-1 w-fit">Shipping policy</a>
-            <a href="/" className="font-semibold hover:border-b-1 w-fit">Return and refund policy</a>
+            <a href="/" className=" hover:border-b-1 w-fit">Privacy Policy</a>
+            <a href="/" className=" hover:border-b-1 w-fit">Terms of Service</a>
+            <a href="/" className=" hover:border-b-1 w-fit">Shipping policy</a>
+            <a href="/" className=" hover:border-b-1 w-fit">Return and refund policy</a>
       </div>
       <div className="lg:flex flex-col gap-2">
       
       <h4 className="text-2xl font-semibold">Settings</h4>
-            <a href="/" className="font-semibold hover:border-b-1 w-fit">Home</a>
-            <a href="/" className="font-semibold hover:border-b-1 w-fit">Meat-Product</a>
-            <a href="/" className="font-semibold hover:border-b-1 w-fit">Recipe</a>
-            <a href="/" className="font-semibold hover:border-b-1 w-fit">About us</a>
-            <a href="/" className="font-semibold hover:border-b-1 w-fit">Contact us</a>
+            <a href="/" className=" hover:border-b-1 w-fit">Home</a>
+            <a href="/" className=" hover:border-b-1 w-fit">Meat-Product</a>
+            <a href="/" className=" hover:border-b-1 w-fit">Recipe</a>
+            <a href="/" className=" hover:border-b-1 w-fit">About us</a>
+            <a href="/" className=" hover:border-b-1 w-fit">Contact us</a>
       </div>
       </div>
 

@@ -89,6 +89,14 @@ const Broilerproducts = [
     oldPrice: "₹600.00",
     tag: "",
   },
+  {
+    id: 3,
+    title: "Country Chicken (Broiler Kozhi) Lollipop Pack of 6",
+    img: "	https://lenaturelmeat.com/cdn/shop/files/Lalipop1.webp?v=1756895386&width=360",
+    price: "₹520.00",
+    oldPrice: "₹600.00",
+    tag: "",
+  },
 ];
 
 const muttonProducts = [
@@ -149,26 +157,26 @@ const featuresData = [
 ];
 const MobileDesign = () => {
   return (
-    <div className="bg-[#ffeee8] min-h-screen">
+    <div className="bg-white min-h-screen">
       <MobileNavbar />
       <IconMenu items={menuItems} />
       <MobileBanner />
       <MobileCategorySlider />
       <MobileBestseller
-        title="Best Seller"
+        title="We Produce The Best Selected Meats For You"
         subtitle="Most popular product near you!"
         products={products}
         onViewAll={() => console.log("View all clicked")}
       />
       <MobileBestseller
-        title="Broiler Chicken"
+        title="We Produce The Best Selected Broiler Chicken For You"
         subtitle="Most popular product near you!"
         products={Broilerproducts}
         onViewAll={() => console.log("View all clicked")}
       />
       <ImageWithText/>
       <MobileBestseller
-        title="Mutoom"
+        title="We Produce The Best Selected Mutoom For You"
         subtitle="Most popular product near you!"
         products={muttonProducts}
         onViewAll={() => console.log("View all clicked")}

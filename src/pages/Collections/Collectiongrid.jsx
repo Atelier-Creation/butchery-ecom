@@ -3,8 +3,9 @@ import { Eye } from "lucide-react";
 import SidebarFilters from "./SidebarFilters";
 import MobileFilterDrawer from "./MobileFilterDrawer";
 import SortDropdown from "./SortDropdown";
-
+import { useNavigate } from "react-router-dom";
 const Collectiongrid = () => {
+  const navigate = useNavigate()
   const products = [
     {
       id: 1,
@@ -41,7 +42,7 @@ const Collectiongrid = () => {
   ];
 
   return (
-    <div className="flex flex-col md:flex-row gap-6 px-4 md:px-8 py-16 bg-[#fdd9cc]">
+    <div className="flex flex-col md:flex-row gap-6 px-4 md:px-8 py-16 bg-white">
       {/* Sidebar Filters */}
       {/* Desktop Sidebar */}
       <aside className="hidden md:block w-full md:w-1/4 lg:w-1/5">
@@ -71,6 +72,7 @@ const Collectiongrid = () => {
           {products.map((item) => (
             <div
               key={item.id}
+              onClick={()=>navigate('/products')}
               className="rounded-lg shadow hover:shadow-md transition overflow-hidden relative group cursor-pointer bg-white"
             >
               {/* Product Image Wrapper */}

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 const IconMenu = ({ items }) => {
   return (
-    <div className="icon-menu-wrapper py-2 bg-red-800">
+    <div className="icon-menu-wrapper py-2 bg-[#EE1c25] lg:px-10">
       <ul className="flex justify-center gap-6">
         {items.map((item, idx) => (
           <li key={idx} className="flex flex-col items-center">
@@ -14,7 +14,7 @@ const IconMenu = ({ items }) => {
                 alt={item.label}
                 className="w-8 h-8 mb-1 invert-100 transition-transform duration-200 group-hover:scale-110"
               />
-              <span className="text-sm text-gray-100 group-hover:text-red-600">
+              <span className="text-sm text-gray-100 lg:text-base">
                 {item.label}
               </span>
             </Link>
