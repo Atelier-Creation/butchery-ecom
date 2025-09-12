@@ -1,0 +1,79 @@
+.my-order-new-con{
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-top: 5%;
+}
+.my-order-new-con img{
+    height: 120px;
+    width: 120px;
+    object-fit: cover;
+}
+.my-order-new-content-button{
+    background-color: black;
+    border: none;
+    border-radius: 2px;
+    color: white;
+    padding: 10px 60px;
+    margin-left: 5%;
+}
+.my-order-new-content-div p{
+    color: gray !important;
+    margin: 0;
+    font-size: 13px;
+}
+.my-order-new-content-div h5{
+    margin: 0;
+}
+.my-order-new-content-div{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 40%;
+}
+
+@media (max-width: 768px) {
+
+    /* Stack order container vertically */
+    .my-order-new-con {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 15px;
+      margin-top: 5%;
+      border-bottom: 1px solid gray;
+      padding-bottom: 20px;
+    }
+  
+    /* Reduce image size for mobile */
+    .my-order-new-con img {
+      height: 80px;
+      width: 80px;
+    }
+  
+    /* Content div takes full width */
+    .my-order-new-content-div {
+      width: 70%;
+      gap: 5px;
+    }
+  
+    /* Button adjusts width and margin */
+    .my-order-new-content-button {
+      padding: 8px;
+      margin-left: 0;
+      width: 40%;
+      text-align: center;
+      font-size: 14px;
+      margin: auto;
+    }
+  
+    /* Optional: reduce text size slightly */
+    .my-order-new-content-div p {
+      font-size: 12px;
+    }
+  
+    .my-order-new-content-div h5 {
+      font-size: 14px;
+    }
+  }
+  

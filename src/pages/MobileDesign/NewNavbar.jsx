@@ -1,5 +1,6 @@
 import React from 'react'
 import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import { FaFacebookF, FaInstagram, FaMailBulk, FaMobile, FaPhone, FaSearch, FaYoutube } from "react-icons/fa";
 import {
   FiMenu,
@@ -13,24 +14,34 @@ import {
   FiYoutube,
 } from "react-icons/fi";
 import { Link } from "react-router-dom";
+import CartDrawer from "../../components/CartDrawer/CartDrawer"; // ✅ adjust path
+import { useCart } from "../../components/CartDrawer/CartContext";
 function NewNavbar() {
+    const navigate = useNavigate()
     const [menuOpen, setMenuOpen] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
+      // ✅ state for cart drawer
+  const [cartOpen, setCartOpen] = useState(false);
+
+  // ✅ get cart items from context
+  const { cartItems, removeFromCart, addToCart } = useCart();
   return (
 <div className="relative w-full">
   {/* Navbar wrapper */}
   <div className="flex gap-5 items-center justify-between w-full bg-gray-100 border-b border-gray-200 relative z-10 ">
     
     {/* Logo with V shape */}
-    <div className="md:ml-15 lg:ml-20 relative -mb-6 inline-block bg-white px-5 py-6 [clip-path:polygon(0_0,100%_0,100%_85%,50%_100%,0_85%)] [box-shadow:0_4px_6px_rgba(0,0,0,0.2),4px_0_6px_rgba(0,0,0,0.2),-4px_0_6px_rgba(0,0,0,0.2)]">
-      <Link to={'/'}>
-        <img
-          src="/logo.svg"
-          alt="Logo"
-          className="h-16 lg:h-20 object-contain"
-        />
-      </Link>
-    </div>
+<div className="[box-shadow:0_4px_8px_rgba(0,0,0,0.9),4px_0_8px_rgba(0,0,0,0.9),-4px_0_8px_rgba(0,0,0,0.9)]">
+  <div className="z-50 md:ml-15 lg:ml-20 relative -mb-8 inline-block bg-white px-3 py-6
+    [clip-path:polygon(0_0,100%_0,100%_85%,50%_100%,0_85%)]">
+    <Link to={'/'}>
+      <img src="/logo.svg" alt="Logo" className="h-16 lg:h-30 object-cover" />
+    </Link>
+  </div>
+</div>
+
+
+
 
     {/* Right side content */}
     <div className="flex flex-col w-full">
@@ -105,9 +116,21 @@ function NewNavbar() {
         </div>
         <div className="flex gap-4 text-xl lg:mr-5">
           <FiSearch />
+          <button onClick={()=>navigate('/profile')}>
           <FiUser />
-          <FiShoppingBag />
+          </button>
+          <button onClick={() => setCartOpen(true)}>
+                <FiShoppingBag />
+              </button>
         </div>
+
+        <CartDrawer
+        show={cartOpen}
+        onClose={() => setCartOpen(false)}
+        cartItems={cartItems}
+        onRemove={removeFromCart}
+        onAddToCart={addToCart}
+      />
         <div
         className={`fixed inset-0 bg-black/40 z-40 transition-opacity duration-300 ${
           menuOpen ? "opacity-100 visible" : "opacity-0 invisible"

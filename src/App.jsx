@@ -4,6 +4,8 @@ import HomePage from "./pages/HomePage";
 import MobileDesign from "./pages/MobileDesign/MobileDesign";
 import Collections from "./pages/Collections/Collections";
 import PDPsec1 from "./pages/ProductDetailsPage/PDPsec1";
+import ProfilePage from "./components/ProfilePage/ProfilePage";
+import { CartProvider } from "./components/CartDrawer/CartContext";
 
 function App() {
   const [isMobile, setIsMobile] = useState(false);
@@ -17,6 +19,7 @@ function App() {
 
   return (
     <Router>
+      <CartProvider>
       <Routes>
         {/* <Route
           path="/*"
@@ -34,7 +37,12 @@ function App() {
           path="/products/*"
           element={<PDPsec1/>}
         />
+        <Route
+          path="/profile"
+          element={<ProfilePage/>}
+        />
       </Routes>
+      </CartProvider>
     </Router>
   );
 }

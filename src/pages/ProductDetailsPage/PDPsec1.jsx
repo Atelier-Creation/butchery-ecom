@@ -1,6 +1,9 @@
 import React,{useState} from 'react'
 import { FaBook, FaChevronDown, FaMinus, FaChevronUp, FaNotesMedical, FaPlus } from 'react-icons/fa';
 import NewNavbar from '../MobileDesign/NewNavbar';
+import PDPsec2 from './PDPsec2';
+import PDPsec3 from './PDPsec3';
+import MobileFooter from '../MobileDesign/MobileFooter';
 
 function PDPsec1() {
     const [selected, setSelected] = useState("0.500 Grms");
@@ -15,16 +18,16 @@ function PDPsec1() {
   return (
     <>
     <NewNavbar/>
-    <div className='flex flex-col lg:flex-row justify-evenly gap-3 p-10 '>
-        <div className='relative w-3/4 px-10 flex flex-col gap-8 min-h-screen'>
-            <img src='https://lenaturelmeat.com/cdn/shop/files/NT4.png?v=1719991493&width=533' className='w-full h-120 aspect-square object-cover rounded-3xl'/>
-            <div className='flex flex-row lg:flex-row lg:gap-5'>
-                <img src='https://lenaturelmeat.com/cdn/shop/files/Lalipop1.webp?v=1756895386&width=360' className='w-32 h-32 aspect-square object-cover rounded-3xl border-2'/>
-                <img src='https://lenaturelmeat.com/cdn/shop/files/top-view-delicious-salmon-table.jpg?v=1753342530' className='w-32 h-32 aspect-square object-cover rounded-3xl border-2'/>
-                <img src='https://lenaturelmeat.com/cdn/shop/files/Goat_Keema_3.jpg?v=1746256020' className='w-32 h-32 aspect-square object-cover rounded-3xl border-2'/>
+    <div className='flex flex-col md:flex-row lg:flex-row justify-evenly gap-3 lg:p-10 md:p-10 p-3'>
+        <div className='relative lg:w-3/4 md:w-3/4 lg:px-10  flex flex-col gap-8 w-full'>
+            <img src='https://lenaturelmeat.com/cdn/shop/files/NT4.png?v=1719991493&width=533' className='w-full lg:h-120 md:h-120 h-70 aspect-square object-cover lg:rounded-3xl rounded'/>
+            <div className='flex flex-row lg:flex-row lg:gap-5 gap-4'>
+                <img src='https://lenaturelmeat.com/cdn/shop/files/Lalipop1.webp?v=1756895386&width=360' className='lg:w-32 lg:h-32 w-20 h-20 aspect-square object-cover lg:rounded-3xl rounded border-2'/>
+                <img src='https://lenaturelmeat.com/cdn/shop/files/top-view-delicious-salmon-table.jpg?v=1753342530' className='lg:w-32 lg:h-32 w-20 h-20 aspect-square object-cover lg:rounded-3xl rounded border-2'/>
+                <img src='https://lenaturelmeat.com/cdn/shop/files/Goat_Keema_3.jpg?v=1746256020' className='lg:w-32 lg:h-32 w-20 h-20 aspect-square object-cover lg:rounded-3xl rounded border-2'/>
             </div>
         </div>
-        <div className='w-1/2'>
+        <div className='lg:w-1/2 md:w-1/2 w-full'>
       <div className='sticky top-10 flex flex-col gap-3'>
         <p className='text-xs'>LE NATUREL MEAT</p>
         <h1 className='text-4xl font-bold'>Goat - Mutton Keema</h1>
@@ -35,12 +38,12 @@ function PDPsec1() {
         </div>
         <div>
             <p className='text-base'>Size</p>
-            <div className='flex lg:flex-row lg:gap-3 lg:my-3'>
+            <div className='flex lg:flex-row lg:gap-3 lg:my-3 my-2 gap-2 flex-wrap'>
             {options.map((option) => (
         <button
           key={option}
           onClick={() => setSelected(option)}
-          className={`px-5 py-2 rounded-md text-base border transition duration-300 
+          className={`lg:px-5 lg:py-2 px-3 py-2 rounded-md text-base border transition duration-300 
             ${
               selected === option
                 ? "bg-[#EE1c25] text-white border-[#EE1c25]"
@@ -54,7 +57,7 @@ function PDPsec1() {
         </div>
         <div>
             <p className='text-base'>Quantity</p>
-            <div className="flex items-center border border-gray-400 py-2 px-2 w-fit rounded-md lg:my-3">
+            <div className="flex items-center border border-gray-400 py-2 px-2 w-fit rounded-md lg:my-3 my-2">
       {/* Decrease button */}
       <button
         onClick={decrease}
@@ -116,6 +119,9 @@ function PDPsec1() {
       </div>
       </div>
     </div>
+    <PDPsec2/>
+    <PDPsec3/>
+    <MobileFooter/>
     </>
   )
 }
