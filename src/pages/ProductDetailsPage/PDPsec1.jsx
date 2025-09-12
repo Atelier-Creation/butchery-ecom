@@ -1,5 +1,6 @@
 import React,{useState} from 'react'
 import { FaBook, FaChevronDown, FaMinus, FaChevronUp, FaNotesMedical, FaPlus } from 'react-icons/fa';
+import NewNavbar from '../MobileDesign/NewNavbar';
 
 function PDPsec1() {
     const [selected, setSelected] = useState("0.500 Grms");
@@ -12,6 +13,8 @@ function PDPsec1() {
 
     const options = ["0.500 Grms", "0.750 Grms", "1 KG"];
   return (
+    <>
+    <NewNavbar/>
     <div className='flex flex-col lg:flex-row justify-evenly gap-3 p-10 '>
         <div className='relative w-3/4 px-10 flex flex-col gap-8 min-h-screen'>
             <img src='https://lenaturelmeat.com/cdn/shop/files/NT4.png?v=1719991493&width=533' className='w-full h-120 aspect-square object-cover rounded-3xl'/>
@@ -113,6 +116,7 @@ function PDPsec1() {
       </div>
       </div>
     </div>
+    </>
   )
 }
 

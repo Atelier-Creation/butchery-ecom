@@ -7,6 +7,7 @@ import IconMenu from "./MobileIconMenu";
 import ImageWithText from "../../components/ImageWithText";
 import FeatureSlider from "./MobileFeatureSlider";
 import MobileFooter from "./MobileFooter";
+import NewNavbar from "./NewNavbar";
 const menuItems = [
   {
     label: "Chicken",
@@ -158,8 +159,8 @@ const featuresData = [
 const MobileDesign = () => {
   return (
     <div className="bg-white min-h-screen">
-      <MobileNavbar />
-      <IconMenu items={menuItems} />
+      <NewNavbar/>
+      {/* <IconMenu items={menuItems} /> */}
       <MobileBanner />
       <MobileCategorySlider />
       <MobileBestseller
