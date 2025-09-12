@@ -19,7 +19,7 @@ const MobileBestseller = ({
         <div className="hidden lg:block mt-6 text-center">
           <button
             onClick={onViewAll}
-            className="bg-red-800 text-white px-6 py-2 rounded-md font-medium"
+            className="bg-[#EE1c25] text-white px-6 py-2 rounded-md font-medium"
           >
             View all
           </button>
@@ -35,7 +35,7 @@ const MobileBestseller = ({
             {/* Sale Tag */}
             <div className="relative">
               {item.tag && (
-                <span className="absolute top-2 left-2 bg-red-800 text-white text-xs px-2 py-0.5 rounded-md">
+                <span className="absolute top-2 left-2 bg-[#EE1c25] text-white text-xs px-2 py-0.5 rounded-md">
                   {item.tag}
                 </span>
               )}
@@ -47,7 +47,7 @@ const MobileBestseller = ({
                 className="w-full rounded-xl h-full aspect-square object-cover"
               />
 
-              <span className="absolute bottom-2 right-2 bg-red-800 text-white text-xs px-2.5 py-2 rounded-md">
+              <span className="absolute bottom-2 right-2 bg-[#EE1c25] text-white text-xs px-2.5 py-2 rounded-md">
                 <Eye size={18} />
               </span>
             </div>
@@ -56,7 +56,7 @@ const MobileBestseller = ({
             <div className="p-2">
               <p className="text-md font-medium line-clamp-2">{item.title}</p>
               <div className="mt-2 flex items-center gap-2">
-                <span className="text-red-600 font-semibold text-md">
+                <span className="text-[#EE1c25] font-semibold text-md">
                   {item.price}
                 </span>
                 {item.oldPrice && (

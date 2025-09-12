@@ -3,7 +3,7 @@ import { Leaf, CheckCircle2, ShieldCheck, HeartPulse } from "lucide-react";
 
 const ImageWithText = () => {
   return (
-    <div className="bg-[#C41E3A] text-white rounded-lg p-0  mx-4 md:mx-5 flex flex-col md:flex-row gap-10 justify-center items-center lg:mx-10 lg:mt-15">
+    <div className="bg-[#EE1c25] text-white rounded-lg p-0  mx-4 md:mx-5 flex flex-col md:flex-row gap-10 justify-center items-center lg:mx-10 lg:mt-15">
       {/* Left Image */}
       <div className="w-full md:w-1/2">
         <img
@@ -72,7 +72,7 @@ const ImageWithText = () => {
         </div>
 
         {/* Button */}
-        <button className="bg-white text-[#C41E3A] px-6 py-2 rounded-md font-semibold hover:bg-gray-100 transition">
+        <button className="bg-white text-[#EE1c25] px-6 py-2 rounded-md font-semibold hover:bg-gray-100 transition">
           Show More
         </button>
       </div>

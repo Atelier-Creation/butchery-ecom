@@ -14,7 +14,7 @@ code, pre{
 }
 
 body{
-  background: #fdd9cc !important
+  background: white !important;
 }
 
 @keyframes spin-slow {

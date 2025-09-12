@@ -47,7 +47,7 @@ const FooterSection = ({ title, children }) => {
 
 const MobileFooter = () => {
   return (
-    <footer className="bg-red-800 px-5 py-8 text-white">
+    <footer className="bg-[#EE1c25] px-5 py-8 text-white">
       <div className="mb-8 ">
         <h2 className="text-xl font-bold mb-2 lg:text-4xl lg:font-semibold">
           The Trusted Choice for Premium Meat
@@ -55,7 +55,7 @@ const MobileFooter = () => {
         <p className="text-sm mb-4 lg:text-lg lg:font-semibold">
           Iraichi Kadai is the top choice for premium quality meat
         </p>
-        <div className="bg-red-700 p-4 rounded-lg text-sm my-4 lg:hidden">
+        <div className="bg-[#EE1c25] p-4 rounded-lg text-sm my-4 lg:hidden">
           <p className="font-semibold mb-2">★ ★ ★ ★ ★</p>
           <p className="italic mb-2">"Paati-Approved Taste"</p>
           <p className="mb-1">

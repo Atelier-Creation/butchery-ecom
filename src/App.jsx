@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import MobileDesign from "./pages/MobileDesign/MobileDesign";
 import Collections from "./pages/Collections/Collections";
+import PDPsec1 from "./pages/ProductDetailsPage/PDPsec1";
 
 function App() {
   const [isMobile, setIsMobile] = useState(false);
@@ -28,6 +29,10 @@ function App() {
         <Route
           path="/collections/*"
           element={<Collections/>}
+        />
+        <Route
+          path="/products/*"
+          element={<PDPsec1/>}
         />
       </Routes>
     </Router>

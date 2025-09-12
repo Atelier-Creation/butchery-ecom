@@ -157,7 +157,7 @@ const featuresData = [
 ];
 const MobileDesign = () => {
   return (
-    <div className="bg-[#ffeee8] min-h-screen">
+    <div className="bg-white min-h-screen">
       <MobileNavbar />
       <IconMenu items={menuItems} />
       <MobileBanner />

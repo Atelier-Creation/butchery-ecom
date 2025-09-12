@@ -20,22 +20,22 @@ function MobileNavbar() {
   return (
     <div className="w-full">
       {/* Top Info Bar */}
-      <div className="bg-red-800 text-white text-center text-xs items-center lg:text-base font-semibold py-2 md:py-1 lg:flex lg:justify-around">
+      <div className="bg-[#EE1c25] text-white text-center text-xs items-center lg:text-base font-semibold py-2 md:py-1 lg:flex lg:justify-between lg:px-10">
         <div className="hidden lg:flex items-center lg:gap-4">
           <FiFacebook size={20} />
           <FiInstagram size={20} />
           <FiYoutube size={20} />
         </div>
-        <p className="text-sm">Customer Service Only in Coimbatore (For Order +91 88074 08962)</p>
+        <p className="text-sm lg:text-base">Customer Service Only in Coimbatore (For Order +91 88074 08962)</p>
 
-        <select className="hidden lg:block lg:border-0 lg:border-b-2 lg:border-red-800 focus:outline-none focus:border-red-600 lg:text-sm lg:px-2 lg:py-1">
-          <option className="bg-red-800 text-white">English</option>
-          <option className="bg-red-800 text-white">Tamil</option>
+        <select className="hidden lg:block lg:border-0 lg:border-b-2 lg:border-[#EE1c25] focus:outline-none focus:border-[#EE1c25] lg:text-sm lg:px-2 lg:py-1">
+          <option className="bg-[#EE1c25] text-white">English</option>
+          <option className="bg-[#EE1c25] text-white">Tamil</option>
         </select>
       </div>
 
       {/* Navbar */}
-      <div className="flex items-center sticky top-0 justify-between bg-[#fdd9cc] px-4 py-3 shadow-md lg:relative z-100">
+      <div className="flex items-center sticky top-0 justify-between bg-white px-4 py-3 shadow-md lg:relative z-100">
         {/* Left Hamburger */}
         <div className="w-20 flex justify-start lg:hidden">
           <button onClick={() => setMenuOpen(true)} className="text-xl">
@@ -50,11 +50,11 @@ function MobileNavbar() {
           className="h-18 lg:h-24 lg:w-40 object-contain object-right"
         /></Link>
         <div className="lg:flex lg:w-110 lg:justify-between lg:align-middle hidden lg:relative z-100">
-          <a href="/">Home</a>
+          <a href="/" className="hover:text-[#EE1c25] text-[#060606]">Home</a>
           <div className="relative z-100">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex gap-2 items-center hover:text-red-700"
+              className="flex gap-2 items-center hover:text-[#EE1c25]"
             >
               <p>Meat-Product</p>
               <FiChevronDown
@@ -91,9 +91,9 @@ function MobileNavbar() {
             )}
           </div>
 
-          <a href="/">Recipe</a>
-          <a href="/">About Us</a>
-          <a href="/">Contact Us</a>
+          <a href="/" className="hover:text-[#EE1c25]">Recipe</a>
+          <a href="/" className="hover:text-[#EE1c25]">About Us</a>
+          <a href="/" className="hover:text-[#EE1c25]">Contact Us</a>
         </div>
 
         {/* Right Icons */}
@@ -133,22 +133,22 @@ function MobileNavbar() {
 
         {/* Menu Items */}
         <nav className="flex flex-col gap-4 p-4 text-lg font-medium">
-          <a href="#" className="hover:text-red-700">
+          <a href="#" className="hover:text-[#EE1c25]">
             Home
           </a>
           <div className="flex justify-between items-center">
-            <a href="#" className="hover:text-red-700">
+            <a href="#" className="hover:text-[#EE1c25]">
               Meat-Product
             </a>
             <span className="text-gray-600">→</span>
           </div>
-          <a href="#" className="hover:text-red-700">
+          <a href="#" className="hover:text-[#EE1c25]">
             Recipe
           </a>
-          <a href="#" className="hover:text-red-700">
+          <a href="#" className="hover:text-[#EE1c25]">
             About Us
           </a>
-          <a href="#" className="hover:text-red-700">
+          <a href="#" className="hover:text-[#EE1c25]">
             Contact Us
           </a>
         </nav>
