@@ -26,7 +26,9 @@ function MobileNavbar() {
           <FiInstagram size={20} />
           <FiYoutube size={20} />
         </div>
-        <p className="text-sm lg:text-base">Customer Service Only in Coimbatore (For Order +91 88074 08962)</p>
+        <p className="text-sm lg:text-base">
+          Customer Service Only in Coimbatore (For Order +91 88074 08962)
+        </p>
 
         <select className="hidden lg:block lg:border-0 lg:border-b-2 lg:border-[#EE1c25] focus:outline-none focus:border-[#EE1c25] lg:text-sm lg:px-2 lg:py-1">
           <option className="bg-[#EE1c25] text-white">English</option>
@@ -35,7 +37,7 @@ function MobileNavbar() {
       </div>
 
       {/* Navbar */}
-      <div className="flex items-center sticky top-0 justify-between bg-white px-4 py-3 shadow-md lg:relative z-100">
+      <div className="flex items-center sticky top-0 justify-between bg-white px-4 py-3 shadow-md lg:relative z-50">
         {/* Left Hamburger */}
         <div className="w-20 flex justify-start lg:hidden">
           <button onClick={() => setMenuOpen(true)} className="text-xl">
@@ -44,13 +46,17 @@ function MobileNavbar() {
         </div>
 
         {/* Logo */}
-        <Link to={'/'}><img
-          src="/logo.svg"
-          alt="Logo"
-          className="h-18 lg:h-24 lg:w-40 object-contain object-right"
-        /></Link>
+        <Link to={"/"}>
+          <img
+            src="/logo.svg"
+            alt="Logo"
+            className="h-18 lg:h-24 lg:w-40 object-contain object-right"
+          />
+        </Link>
         <div className="lg:flex lg:w-110 lg:justify-between lg:align-middle hidden lg:relative z-100">
-          <a href="/" className="hover:text-[#EE1c25] text-[#060606]">Home</a>
+          <a href="/" className="hover:text-[#EE1c25] text-[#060606]">
+            Home
+          </a>
           <div className="relative z-100">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -70,19 +76,19 @@ function MobileNavbar() {
                 style={{ backgroundColor: "#f8f6f5" }}
               >
                 <a
-                  href="/chicken"
+                  href="/collections/chicken"
                   className="block px-4 py-2 hover:bg-red-600 hover:text-white"
                 >
                   Chicken
                 </a>
                 <a
-                  href="/mutton"
+                  href="/collections/mutton"
                   className="block px-4 py-2 hover:bg-red-600 hover:text-white"
                 >
                   Mutton
                 </a>
                 <a
-                  href="/fish"
+                  href="/collections/fish"
                   className="block px-4 py-2 hover:bg-red-600 hover:text-white"
                 >
                   Fish
@@ -91,16 +97,22 @@ function MobileNavbar() {
             )}
           </div>
 
-          <a href="/" className="hover:text-[#EE1c25]">Recipe</a>
-          <a href="/" className="hover:text-[#EE1c25]">About Us</a>
-          <a href="/" className="hover:text-[#EE1c25]">Contact Us</a>
+          <a href="/" className="hover:text-[#EE1c25]">
+            Recipe
+          </a>
+          <a href="/" className="hover:text-[#EE1c25]">
+            About Us
+          </a>
+          <a href="/" className="hover:text-[#EE1c25]">
+            Contact Us
+          </a>
         </div>
 
         {/* Right Icons */}
-        <div className="flex items-center gap-4 text-lg lg:text-2xl lg:mr-10">
-          <FiSearch />
-          <FiUser />
-          <FiShoppingBag />
+        <div className="flex items-center gap-4 mr-3 text-lg lg:text-2xl lg:mr-10">
+          <FiSearch size={22} />
+          <FiUser size={22} />
+          <FiShoppingBag size={22} />
         </div>
       </div>
 

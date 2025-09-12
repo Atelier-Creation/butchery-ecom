@@ -5,6 +5,7 @@ import { Autoplay  } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { H3 } from "../../components/TextComponents";
 
 const FeatureSlider = ({features}) => {
   return (
@@ -29,12 +30,10 @@ const FeatureSlider = ({features}) => {
             <div className="flex flex-col items-center text-center rounded-xl py-3 transition">
               <img
                 src={item.img}
-                alt={item.title}
+                alt={item.title.en}
                 className="w-28 h-28 object-contain mb-4"
               />
-              <h3 className="text-lg font-semibold text-gray-800">
-                {item.title}
-              </h3>
+              <H3 className="text-lg font-semibold text-gray-800"en={item.title.en} ta={item.title.ta}/>
             </div>
           </SwiperSlide>
         ))}
