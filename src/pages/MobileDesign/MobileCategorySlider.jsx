@@ -1,40 +1,31 @@
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination,Autoplay } from "swiper/modules";
+import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
+import { P } from "../../components/TextComponents";
 
 const MobileCategorySlider = () => {
   const collections = [
     {
-      title: "Country Chicken",
+      title: { en: "Country Chicken", ta: "நாட்டு கோழி" },
       img: "https://lenaturelmeat.com/cdn/shop/files/NT4.png?v=1719991493",
       link: "/collections/country-chicken",
     },
     {
-      title: "Mutton",
+      title: { en: "Mutton", ta: "மட்டன்" },
       img: "https://lenaturelmeat.com/cdn/shop/files/Goat_Keema_3.jpg?v=1746256020",
       link: "/collections/mutton",
     },
     {
-      title: "Fish",
-      img: "https://lenaturelmeat.com/cdn/shop/files/top-view-delicious-salmon-table.jpg?v=1753342530",
-      link: "/collections/fish",
-    },
-    {
-      title: "Broiler Chicken",
+      title: { en: "Chicken", ta: "கோழி" },
       img: "https://lenaturelmeat.com/cdn/shop/files/Broiler1.jpg?v=1686210766",
       link: "/collections/broiler-chicken-meat",
     },
     {
-      title: "Rabbit Meat",
-      img: "	https://lenaturelmeat.com/cdn/shop/files/RabbitImages3.jpg?v=1686987344&width=1920",
-      link: "/collections/broiler-chicken-meat",
-    },
-    {
-      title: "Duck Meat",
-      img: "		https://lenaturelmeat.com/cdn/shop/files/DUCKIMAGE.jpg?v=1686986814&width=1920",
-      link: "/collections/broiler-chicken-meat",
+      title: { en: "Duck", ta: "வாத்து" },
+      img: "https://lenaturelmeat.com/cdn/shop/files/DUCKIMAGE.jpg?v=1686986814&width=1920",
+      link: "/collections/duck-meat",
     },
   ];
 
@@ -44,7 +35,7 @@ const MobileCategorySlider = () => {
         Enjoy Fresh Meat With The Best Quality
       </p>
       <Swiper
-        modules={[Pagination,Autoplay]}
+        modules={[Pagination, Autoplay]}
         spaceBetween={12}
         slidesPerView={2}
         autoplay={{ delay: 3000, disableOnInteraction: false }}
@@ -59,18 +50,20 @@ const MobileCategorySlider = () => {
       >
         {collections.map((item, idx) => (
           <SwiperSlide key={idx}>
-            <a
-              href={item.link}
-              className="block overflow-hidden text-center"
-            >
-  <div className="w-full h-full aspect-square overflow-hidden rounded-xl">
-    <img
-      src={item.img}
-      alt={item.title}
-      className="w-full h-full object-cover"
-    />
-  </div>
-              <p className="py-2 text-md font-medium">{item.title}</p>
+            <a href={item.link} className="block overflow-hidden text-center">
+              <div className="w-full h-full aspect-square overflow-hidden rounded-xl">
+                <img
+                  src={item.img}
+                  alt={item.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              <P
+                en={item.title.en}
+                ta={item.title.ta}
+                className="py-2 text-md font-medium"
+              />
             </a>
           </SwiperSlide>
         ))}

@@ -73,19 +73,19 @@ function NewNavbar() {
                 style={{ backgroundColor: "#f8f6f5" }}
               >
                 <a
-                  href="/chicken"
+                  href="/collections/chicken"
                   className="block px-4 py-2 hover:bg-red-600 hover:text-white"
                 >
                   Chicken
                 </a>
                 <a
-                  href="/mutton"
+                  href="/collections/mutton"
                   className="block px-4 py-2 hover:bg-red-600 hover:text-white"
                 >
                   Mutton
                 </a>
                 <a
-                  href="/fish"
+                  href="/collections/fish"
                   className="block px-4 py-2 hover:bg-red-600 hover:text-white"
                 >
                   Fish

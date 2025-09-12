@@ -1,30 +1,37 @@
 import React from "react";
 import { Eye } from "lucide-react";
+import { Button, P } from "../../components/TextComponents";
 
-const MobileBestseller = ({ 
-  title = "Best Sellers", 
-  subtitle = "Most popular product near you!", 
-  products = [], 
-  onViewAll 
+const MobileBestseller = ({
+  title = "Best Sellers",
+  subtitle = "Most popular product near you!",
+  products = [],
+  onViewAll,
 }) => {
   return (
     <div className="block px-4 py-6 lg:px-10 lg:mt-10">
       <div className="lg:flex lg:justify-between">
-      <div>
-      {subtitle && <p className="text-xs text-gray-600 mb-1 lg:text-base">{subtitle}</p>}
-      <h2 className="text-xl font-bold mb-4 md:mb-8 lg:mb-8 lg:text-4xl lg:font-bold ">{title}</h2>
-      </div>
-            {/* View All Button */}
-            {onViewAll && (
-        <div className="hidden lg:block mt-6 text-center">
-          <button
-            onClick={onViewAll}
-            className="bg-[#EE1c25] text-white px-6 py-2 rounded-md font-medium"
-          >
-            View all
-          </button>
+        <div>
+          {subtitle && (
+            <p className="text-xs text-gray-600 mb-1 lg:text-base">
+              {subtitle}
+            </p>
+          )}
+          <h2 className="text-xl font-bold mb-4 md:mb-8 lg:mb-8 lg:text-4xl lg:font-bold ">
+            {title}
+          </h2>
         </div>
-      )}
+        {/* View All Button */}
+        {onViewAll && (
+          <div className="hidden lg:block mt-6 text-center">
+           <Button
+            onClick={onViewAll}
+            ta={"எங்கள் பொருட்களைப் பார்க்க"}
+            en ={"View all"}
+            className="bg-red-800 text-white px-6 py-2 rounded-md font-medium"
+          />
+          </div>
+        )}
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {products.map((item) => (
@@ -43,7 +50,7 @@ const MobileBestseller = ({
               {/* Product Image */}
               <img
                 src={item.img}
-                alt={item.title}
+                alt={item.title.en} // optional: could switch dynamically with lang
                 className="w-full rounded-xl h-full aspect-square object-cover"
               />
 
@@ -54,7 +61,11 @@ const MobileBestseller = ({
 
             {/* Content */}
             <div className="p-2">
-              <p className="text-md font-medium line-clamp-2">{item.title}</p>
+              <P
+                en={item.title.en}
+                ta={item.title.ta}
+                className="text-md font-medium line-clamp-2"
+              />
               <div className="mt-2 flex items-center gap-2">
                 <span className="text-[#EE1c25] font-semibold text-md">
                   {item.price}
@@ -73,12 +84,13 @@ const MobileBestseller = ({
       {/* View All Button */}
       {onViewAll && (
         <div className="mt-6 text-center lg:hidden">
-          <button
+          <Button
             onClick={onViewAll}
+            ta={"எங்கள் ப ொருட்கள் பார்க்க"}
+            en ={"View all"}
             className="bg-red-800 text-white px-6 py-2 rounded-md font-medium"
-          >
-            View all
-          </button>
+          />
+            
         </div>
       )}
     </div>

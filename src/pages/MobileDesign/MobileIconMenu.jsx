@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { P } from "../../components/TextComponents";
 
 
 
@@ -14,9 +15,7 @@ const IconMenu = ({ items }) => {
                 alt={item.label}
                 className="w-8 h-8 mb-1 invert-100 transition-transform duration-200 group-hover:scale-110"
               />
-              <span className="text-sm text-gray-100 lg:text-base">
-                {item.label}
-              </span>
+              <P en={item.label.en} ta={item.label.ta} className="text-sm text-gray-100 lg:text-base"/>
             </Link>
           </li>
         ))}
