@@ -9,7 +9,8 @@ import { CartProvider } from "./components/CartDrawer/CartContext";
 import Login from "./pages/LoginPage/Login";
 import ResetPassword from "./pages/LoginPage/ResetPassword";
 import CreateAccount from "./pages/LoginPage/CreateAccount";
-
+import CartDrawer from "./components/CartDrawer/CartDrawer";
+import { ModalProvider } from "./context/GlobalModal";
 function App() {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -22,6 +23,7 @@ function App() {
 
   return (
     <Router>
+      <ModalProvider>
       <CartProvider>
       <Routes>
         {/* <Route
@@ -58,6 +60,7 @@ function App() {
         />
       </Routes>
       </CartProvider>
+      </ModalProvider>
     </Router>
   );
 }

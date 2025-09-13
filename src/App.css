@@ -16,6 +16,13 @@ code, pre{
 body{
   background: white !important;
 }
+.keep-relative-scroll{
+  position: relative !important;
+}
+.keep-sticky{
+  position: sticky !important;
+  top: 10px !important;
+}
 
 @keyframes spin-slow {
   from {

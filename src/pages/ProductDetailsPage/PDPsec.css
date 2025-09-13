@@ -1,0 +1,7 @@
+.keep-relative-scroll{
+    position: sticky !important;
+    top: 1.25rem !important;
+  }
+  .keep-sticky{
+    position: relative !important;
+  }

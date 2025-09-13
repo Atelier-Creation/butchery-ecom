@@ -4,15 +4,9 @@ import "./CartDrawer.css";
 import { NotebookPen, TruckIcon, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "./CartContext";
-const CartDrawer = ({
-  show,
-  onClose,
-  cartItems = [],
-  onRemove,
-  onAddToCart,
-}) => {
+const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
   const navigate = useNavigate();
-  const { updateCartItemQuantity } = useCart();
+  const { cartItems, updateCartItemQuantity, drawerOpen, toggleDrawer } = useCart();
   const [activeTab, setActiveTab] = useState(null);
   // const [note, setNote] = useState("");
   // const [country, setCountry] = useState("India");
@@ -33,28 +27,28 @@ const CartDrawer = ({
   useEffect(() => {
     console.log("CartDrawer: cartItems updated", cartItems);
   }, [cartItems]);
-  useEffect(() => {
-    const fetchRecommended = async () => {
-      try {
-        if (cartItems.length > 0 && cartItems[0].categoryId) {
-          const categoryId = cartItems[0].categoryId;
-          const response = await fetchProductsByCategory(categoryId);
-          const products = Array.isArray(response.data) ? response.data : [];
-          const cartItemIds = cartItems.map((item) => item._id);
-          const filtered = products.filter((p) => !cartItemIds.includes(p._id));
-          setRecommendedItems(filtered);
-        } else {
-          // Fetch all products if cart is empty
-          const response = await getAllProducts({ random: true, limit: 20 });
-          setRecommendedItems(response.data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch recommended items", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchRecommended = async () => {
+  //     try {
+  //       if (cartItems.length > 0 && cartItems[0].categoryId) {
+  //         const categoryId = cartItems[0].categoryId;
+  //         const response = await fetchProductsByCategory(categoryId);
+  //         const products = Array.isArray(response.data) ? response.data : [];
+  //         const cartItemIds = cartItems.map((item) => item._id);
+  //         const filtered = products.filter((p) => !cartItemIds.includes(p._id));
+  //         setRecommendedItems(filtered);
+  //       } else {
+  //         // Fetch all products if cart is empty
+  //         const response = await getAllProducts({ random: true, limit: 20 });
+  //         setRecommendedItems(response.data);
+  //       }
+  //     } catch (error) {
+  //       console.error("Failed to fetch recommended items", error);
+  //     }
+  //   };
 
-    if (show) fetchRecommended();
-  }, [show, cartItems]);
+  //   if (show) fetchRecommended();
+  // }, [show, cartItems]);
 
   // Inside your component, before return()
   const handleIncrement = (id) => {
@@ -68,18 +62,18 @@ const CartDrawer = ({
   return (
     <>
       <div
-        className={`cart-backdrop ${show ? "show" : ""}`}
-        onClick={onClose}
+        className={`cart-backdrop ${drawerOpen ? "show" : ""}`}
+        onClick={() => toggleDrawer(false)}
       ></div>
-      <div className={`cart-drawer ${show ? "open" : ""}`}>
-        <div className="cart-drawer-header d-flex justify-content-between align-items-center px-3 py-1 py-md-2 border-bottom">
-          <h5 className="mb-0 fs-6 fw-normal">
+      <div className={`cart-drawer ${drawerOpen ? "open" : ""}`}>
+        <div className="py-5 border-b border-gray-200 flex justify-between items-center cart-drawer-header d-flex justify-content-between align-items-center px-3 py-md-2 border-bottom">
+          <h5 className="mb-0 fs-6 fw-normal text-lg font-semibold">
             {cartItems.length ? "Item Added to Your Cart" : "Shopping Cart"}
           </h5>
           <button
             className="btn p-0 m-0 border-0"
             title="Close cart"
-            onClick={onClose}
+            onClick={() => toggleDrawer(false)}
           >
             <X />
           </button>
@@ -87,7 +81,7 @@ const CartDrawer = ({
 
         <div className="cart-drawer-body px-3 py-2">
           {cartItems.length === 0 ? (
-            <div className="text-center my-5 d-flex flex-column align-items-center">
+            <div className="flex flex-col items-center justify-center gap-2 text-center my-5 d-flex flex-column align-items-center">
               <img
                 src="/cart_empty.svg"
                 alt="Empty Cart"
@@ -95,7 +89,7 @@ const CartDrawer = ({
                 style={{ width: "90px" }}
               />
               <p>Your cart is empty</p>
-              <button className="btn btn-dark mt-3" onClick={onClose}>
+              <button className="btn btn-dark mt-3 bg-black text-white py-2 px-5 rounded-md" onClick={onClose}>
                 Continue Shopping
               </button>
             </div>
@@ -104,7 +98,7 @@ const CartDrawer = ({
               {cartItems.map((item) => (
                 <div
                   key={item._id || item.id || item.productId?._id}
-                  className="d-flex my-3"
+                  className="d-flex my-3 flex gap-3"
                 >
                   <img
                     src={
@@ -122,8 +116,8 @@ const CartDrawer = ({
                       objectFit: "cover",
                     }}
                   />
-                  <div className="flex-grow-1">
-                    <h6 className="mb-1">
+                  <div className="flex-grow-1 flex lg:flex-col gap-1">
+                    <h6 className="text-base font-semibold">
                       {item.title?.trim().split(" ").slice(0, 3).join(" ") ||
                         item.name?.trim().split(" ").slice(0, 3).join(" ") ||
                         item.productId?.name
@@ -140,10 +134,9 @@ const CartDrawer = ({
                         : item.productId?.variant?.[0]?.title}
                     </p>
 
-                    <div className="d-flex justify-content-between align-items-center">
+                    <div className="flex items-center justify-between d-flex justify-content-between align-items-center">
                       <span
-                        className="fw-semibold"
-                        style={{ color: "#d6791f" }}
+                        className="fw-semibold text-[#EE1c25]"
                       >
                         ₹
                         {(() => {
@@ -165,7 +158,7 @@ const CartDrawer = ({
                       </span>
 
                       <button
-                        className="btn btn-link btn-sm text-danger p-0"
+                        className="text-red-700  border-b btn btn-link btn-sm text-danger p-0"
                         onClick={() => {
                           onRemove(item);
                         }}
@@ -198,7 +191,7 @@ const CartDrawer = ({
                   </div>
                 </div>
               ))}
-              {(!activeTab || cartItems.length === 0) && (
+              {/* {(!activeTab || cartItems.length === 0) && (
                 <RecommendedSlider
                   recommendedItems={recommendedItems}
                   onAddToCart={(item) => {
@@ -206,7 +199,7 @@ const CartDrawer = ({
                     onAddToCart(item); // ✅ Pass full item object
                   }}
                 />
-              )}
+              )} */}
             </>
           )}
         </div>
@@ -226,7 +219,7 @@ const CartDrawer = ({
           </div>
         ))}
       </div> */}
-        {cartItems.length === 0 && (
+        {/* {cartItems.length === 0 && (
           <RecommendedSlider
             recommendedItems={recommendedItems}
             onAddToCart={(item) => {
@@ -234,7 +227,7 @@ const CartDrawer = ({
               onAddToCart(item); // ✅ Pass full item object
             }}
           />
-        )}
+        )} */}
 
         {cartItems.length > 0 && (
           <>
@@ -346,20 +339,20 @@ const CartDrawer = ({
               )} */}
 
               {/* Subtotal */}
-              <div className="d-flex justify-content-between fw-bold mt-3">
-                <strong className="fs-4">Subtotal</strong>
-                <span>₹{total.toLocaleString()}</span>
+              <div className="border-t border-gray-200 pt-10 flex justify-between items-center d-flex justify-content-between fw-bold mt-3">
+                <strong className=" text-2xl font-bold">Subtotal</strong>
+                <span className="text-2xl">₹{total.toLocaleString()}</span>
               </div>
             </div>
 
             {/* Footer Buttons */}
             <div
               className={`cart-drawer-footer p-3 ${
-                !show ? "mobile-footer-hidden" : ""
+                !drawerOpen ? "mobile-footer-hidden" : ""
               }`}
             >
               <button
-                className="btn btn-outline-dark rounded-0 py-2 w-100 m-0"
+                className=" border py-3 rounded-2xl border-[#EE1c25] w-full"
                 onClick={() => {
                   onClose();
                   navigate("/view-cart", { state: { cartItems } });
@@ -368,7 +361,7 @@ const CartDrawer = ({
                 View Cart
               </button>
               <button
-                className="btn btn-dark w-100 h-100 m-0 py-2"
+                className="w-full border py-3 rounded-2xl border-[#EE1c25] bg-[#EE1c25] text-white"
                 onClick={() => {
                   onClose();
                   navigate("/payment", { state: { cartItems } });

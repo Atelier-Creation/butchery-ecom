@@ -4,36 +4,63 @@ import NewNavbar from '../MobileDesign/NewNavbar';
 import PDPsec2 from './PDPsec2';
 import PDPsec3 from './PDPsec3';
 import MobileFooter from '../MobileDesign/MobileFooter';
-
+import { useCart } from "../../components/CartDrawer/CartContext";
+import './PDPsec.css'
+import { useModal,PincodeModal } from '../../context/GlobalModal';
 function PDPsec1() {
+  const { openModal } = useModal();
     const [selected, setSelected] = useState("0.500 Grms");
     const [quantity, setQuantity] = useState(1);
     const [open, setOpen] = useState(false);
+    const { addToCart, toggleDrawer } = useCart();
     const increase = () => setQuantity(quantity + 1);
     const decrease = () => {
         if (quantity > 1) setQuantity(quantity - 1);
       };
 
     const options = ["0.500 Grms", "0.750 Grms", "1 KG"];
+
+    const product = {
+      id: "goat-mutton-keema-001",
+      title: "Goat - Mutton Keema",
+      image: "https://lenaturelmeat.com/cdn/shop/files/NT4.png?v=1719991493&width=533",
+      price: 275,
+      oldPrice: 1350,
+      size: selected,
+      quantity: quantity,
+    };
+    
+    const handleAddToCart = () => {
+      addToCart(product);   // ✅ adds to localStorage + backend if logged in
+      toggleDrawer(true);   // ✅ open cart drawer
+    };
+
+    const handleBuyNow = () => {
+      openModal(
+        <PincodeModal/>
+      );
+    };
+
+
   return (
     <>
     <NewNavbar/>
     <div className='flex flex-col md:flex-row lg:flex-row justify-evenly gap-3 lg:p-10 md:p-10 p-3'>
-        <div className='relative lg:w-3/4 md:w-3/4 lg:px-10  flex flex-col gap-8 w-full'>
-            <img src='https://lenaturelmeat.com/cdn/shop/files/NT4.png?v=1719991493&width=533' className='w-full lg:h-120 md:h-120 h-70 aspect-square object-cover lg:rounded-3xl rounded'/>
+        <div className='sticky top-5 z-10 keep-relative-scroll lg:w-3/4 md:w-3/4 lg:px-10  flex flex-col gap-8 w-full'>
+            <img src={product.image} className='w-full lg:h-120 md:h-120 h-70 aspect-square object-cover lg:rounded-3xl rounded'/>
             <div className='flex flex-row lg:flex-row lg:gap-5 gap-4'>
                 <img src='https://lenaturelmeat.com/cdn/shop/files/Lalipop1.webp?v=1756895386&width=360' className='lg:w-32 lg:h-32 w-20 h-20 aspect-square object-cover lg:rounded-3xl rounded border-2'/>
                 <img src='https://lenaturelmeat.com/cdn/shop/files/top-view-delicious-salmon-table.jpg?v=1753342530' className='lg:w-32 lg:h-32 w-20 h-20 aspect-square object-cover lg:rounded-3xl rounded border-2'/>
                 <img src='https://lenaturelmeat.com/cdn/shop/files/Goat_Keema_3.jpg?v=1746256020' className='lg:w-32 lg:h-32 w-20 h-20 aspect-square object-cover lg:rounded-3xl rounded border-2'/>
             </div>
         </div>
-        <div className='lg:w-1/2 md:w-1/2 w-full'>
-      <div className='sticky top-10 flex flex-col gap-3'>
+        <div className='relative lg:w-1/2 md:w-1/2 w-full keep-sticky'>
+      <div className='flex flex-col gap-3'>
         <p className='text-xs'>LE NATUREL MEAT</p>
-        <h1 className='text-4xl font-bold'>Goat - Mutton Keema</h1>
+        <h1 className='text-4xl font-bold'>{product.title}</h1>
         <div className='flex flex-row gap-2 items-center'>
-            <p className='text-lg font-semibold'>Rs. 275.00</p>
-            <p className='text-gray-500 line-through'>Rs. 1,350.00</p>
+            <p className='text-lg font-semibold'>Rs. {product.price}</p>
+            <p className='text-gray-500 line-through'>Rs. {product.oldPrice}</p>
             <button className='bg-[#EE1c25] text-white text-base px-5 py-0.5 rounded-md'>sale</button>
         </div>
         <div>
@@ -85,10 +112,10 @@ function PDPsec1() {
         </div>
 
         <div className='flex flex-col gap-3 lg:pr-10'>
-            <button className='border py-3 rounded-2xl border-[#EE1c25]'>
+            <button className='border py-3 rounded-2xl border-[#EE1c25]'  onClick={handleAddToCart} >
                 Add to cart
             </button>
-            <button className='border py-3 rounded-2xl border-[#EE1c25] bg-[#EE1c25] text-white'>
+            <button  onClick={handleBuyNow} className='border py-3 rounded-2xl border-[#EE1c25] bg-[#EE1c25] text-white'>
                 Buy it now
             </button>
         </div>

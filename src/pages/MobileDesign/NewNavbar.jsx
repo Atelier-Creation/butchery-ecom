@@ -24,16 +24,33 @@ function NewNavbar() {
   const [cartOpen, setCartOpen] = useState(false);
 
   // ✅ get cart items from context
-  const { cartItems, removeFromCart, addToCart } = useCart();
+  const { cartItems, removeFromCart, addToCart, toggleDrawer } = useCart();
   return (
 <div className="relative w-full">
   {/* Navbar wrapper */}
   <div className="flex gap-5 items-start justify-between w-full bg-gray-100 border-b border-gray-200 relative z-10 ">
     
     {/* Logo with V shape */}
-<div className="[box-shadow:0_4px_8px_rgba(0,0,0,0.9),4px_0_8px_rgba(0,0,0,0.9),-4px_0_8px_rgba(0,0,0,0.9)]">
+{/* <div className="[box-shadow:0_4px_8px_rgba(0,0,0,0.9),4px_0_8px_rgba(0,0,0,0.9),-4px_0_8px_rgba(0,0,0,0.9)]">
   <div className="z-50 md:ml-15 lg:ml-20 relative -mb-8 inline-block bg-white px-3 py-6
     [clip-path:polygon(0_0,100%_0,100%_85%,50%_100%,0_85%)]">
+    <Link to={'/'}>
+      <img src="/logo.svg" alt="Logo" className="h-16 lg:h-30 object-cover" />
+    </Link>
+  </div>
+</div> */}
+<div className="relative z-50 md:ml-15 lg:ml-20 -mb-8 inline-block">
+  {/* Black glow behind polygon */}
+  <div className="absolute inset-0 -z-10">
+    <div className="absolute inset-0 
+      bg-black opacity-40
+      blur-[40px] scale-[1]">
+    </div>
+  </div>
+
+  {/* White polygon in front */}
+  <div className="[clip-path:polygon(0_0,100%_0,100%_85%,50%_100%,0_85%)] 
+      bg-white px-3 py-6 relative z-10">
     <Link to={'/'}>
       <img src="/logo.svg" alt="Logo" className="h-16 lg:h-30 object-cover" />
     </Link>
@@ -43,9 +60,14 @@ function NewNavbar() {
 
 
 
+
+
+
+
+
     {/* Right side content */}
     <div className="flex flex-col w-full pt-2">
-        <div className='flex justify-between w-full'>
+        <div className='flex justify-between w-full bg-[#EE1c25] text-white'>
       <div className="flex items-center gap-6 text-sm py-2 px-4">
         <span className="flex items-center gap-2 text-base">
           <FaMailBulk /> example@gmail.com
@@ -119,18 +141,14 @@ function NewNavbar() {
           <button onClick={()=>navigate('/create-account')}>
           <FiUser />
           </button>
-          <button onClick={() => setCartOpen(true)}>
-                <FiShoppingBag />
-              </button>
+          <button onClick={() => toggleDrawer(true)}>
+  <FiShoppingBag />
+</button>
+
         </div>
 
-        <CartDrawer
-        show={cartOpen}
-        onClose={() => setCartOpen(false)}
-        cartItems={cartItems}
-        onRemove={removeFromCart}
-        onAddToCart={addToCart}
-      />
+        <CartDrawer />
+
         <div
         className={`fixed inset-0 bg-black/40 z-40 transition-opacity duration-300 ${
           menuOpen ? "opacity-100 visible" : "opacity-0 invisible"
