@@ -124,13 +124,23 @@ const MobileFooter = () => {
       </div>
       <div className="hidden lg:flex justify-around lg:mt-20 lg:pb-20 lg:border-b border-white">
         <div className="w-80">
-          <Link to={"/"}>
-            <img
-              src="/logo.svg"
-              alt="Logo"
-              className="h-18 lg:h-24 lg:w-40 object-contain object-right"
-            />
-          </Link>
+        <div className="relative z-50 md:ml-15 lg:ml-20 inline-block mb-5">
+  {/* Black glow behind polygon */}
+  <div className="absolute inset-0 -z-10">
+    <div className="absolute inset-0 
+      bg-black opacity-40
+      blur-[40px] scale-[1]">
+    </div>
+  </div>
+
+  {/* White polygon in front */}
+  <div className="[clip-path:polygon(0_0,100%_0,100%_85%,50%_100%,0_85%)] 
+      bg-white px-3 py-6 relative z-10">
+    <Link to={'/'}>
+      <img src="/logo.svg" alt="Logo" className="h-16 lg:h-20 object-cover" />
+    </Link>
+  </div>
+</div>
           <p className="text-sm text-start mb-4">
             Having had very bitter experiences with the local meat shops and
             seeing that my free range Country Chicken were sold alongside the

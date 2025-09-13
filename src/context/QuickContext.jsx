@@ -26,7 +26,7 @@ export const ModalQuickProvider = ({ children }) => {
     <QuickContext.Provider value={{ openModal, closeModal }}>
       {children}
       {isOpen && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+  <div className="fixed inset-0 z-50 flex items-center lg:justify-end justify-center bg-black/50 backdrop-blur-sm">
     <div className="bg-white p-6 rounded-xl w-11/12 max-w-md shadow-lg relative 
                     max-h-[80vh] overflow-y-auto">
       {modalContent}
