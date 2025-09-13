@@ -116,7 +116,7 @@ function NewNavbar() {
         </div>
         <div className="flex gap-4 text-xl lg:mr-5">
           <FiSearch />
-          <button onClick={()=>navigate('/login')}>
+          <button onClick={()=>navigate('/create-account')}>
           <FiUser />
           </button>
           <button onClick={() => setCartOpen(true)}>
