@@ -4,12 +4,15 @@ import SidebarFilters from "./SidebarFilters";
 import MobileFilterDrawer from "./MobileFilterDrawer";
 import SortDropdown from "./SortDropdown";
 import { useNavigate } from "react-router-dom";
+import { QuickModal, useQuickModal } from "../../context/QuickContext";
+import { P } from "../../components/TextComponents";
 const Collectiongrid = () => {
   const navigate = useNavigate()
+  const {openModal} = useQuickModal()
   const products = [
     {
       id: 1,
-      title: "Country Chicken (Naattu Kozhi) Curry Cut",
+      title: {en:"Country Chicken (Naattu Kozhi) Curry Cut",ta : "நாட்டு கோழி கறி துண்டுகள்"},
       price: "₹385.00",
       oldPrice: "₹420.00",
       img: "https://lenaturelmeat.com/cdn/shop/files/NT4.png?v=1719991493",
@@ -17,7 +20,7 @@ const Collectiongrid = () => {
     },
     {
       id: 2,
-      title: "Broiler Chicken Curry Cut",
+      title: {en:"Broiler Chicken Curry Cut",ta:"ப்ராய்லர் கோழி கறி துண்டுகள்"},
       price: "₹250.00",
       oldPrice: "₹300.00",
       img: "https://lenaturelmeat.com/cdn/shop/files/Broiler1.jpg?v=1686210766",
@@ -25,7 +28,7 @@ const Collectiongrid = () => {
     },
     {
       id: 3,
-      title: "Country Chicken (Naattu Kozhi) Boneless",
+      title: {en :"Country Chicken (Naattu Kozhi) Boneless",ta : "நாட்டு கோழி எலும்பில்லா"},
       price: "₹520.00",
       oldPrice: "₹600.00",
       img: "https://lenaturelmeat.com/cdn/shop/files/top-view-delicious-salmon-table.jpg?v=1753342530",
@@ -33,7 +36,7 @@ const Collectiongrid = () => {
     },
     {
       id: 4,
-      title: "Country Chicken Mince/Keema",
+      title: {en :"Country Chicken Mince/Keema" ,ta : "நாட்டு கோழி கீமா"},
       price: "₹250.00",
       oldPrice: "₹280.00",
       img: "https://lenaturelmeat.com/cdn/shop/files/Goat_Keema_3.jpg?v=1746256020",
@@ -41,6 +44,12 @@ const Collectiongrid = () => {
     },
   ];
 
+
+  const handleBuyNow = () => {
+    openModal(
+      <QuickModal/>
+    );
+  };
   return (
     <div className="flex flex-col md:flex-row gap-6 px-4 md:px-8 py-16 bg-white">
       {/* Sidebar Filters */}
@@ -72,7 +81,7 @@ const Collectiongrid = () => {
           {products.map((item) => (
             <div
               key={item.id}
-              onClick={()=>navigate('/products')}
+              onClick={() => navigate('/products', { state: { product: item } })}
               className="rounded-lg shadow hover:shadow-md transition overflow-hidden relative group cursor-pointer bg-white"
             >
               {/* Product Image Wrapper */}
@@ -99,14 +108,17 @@ const Collectiongrid = () => {
                 />
 
                 {/* Quick Shop Button */}
-                <button className="absolute inset-x-4 bottom-4 bg-red-800 text-white text-sm py-2 cursor-pointer rounded-md opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-1 z-20">
+                <button   onClick={(e) => {
+    e.stopPropagation(); // ✅ Prevent parent onClick (navigation)
+    handleBuyNow();
+  }} className="absolute inset-x-4 bottom-4 bg-red-800 text-white text-sm py-2 cursor-pointer rounded-md opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-1 z-20">
                   Quick Shop <Eye size={14} />
                 </button>
               </div>
 
               {/* Content */}
               <div className="p-3">
-                <p className="text-sm font-medium line-clamp-2">{item.title}</p>
+                <P en={item.title.en} ta={item.title.ta} className="text-sm font-medium line-clamp-2"/>
                 <div className="mt-2 flex items-center gap-2">
                   <span className="text-red-800 font-semibold">
                     {item.price}

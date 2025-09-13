@@ -1,8 +1,10 @@
-import React from "react";
+import React,{useState,useEffect} from 'react'
 import MobileNavbar from "../MobileDesign/MobileNavbar";
 import IconMenu from "../MobileDesign/MobileIconMenu";
 import MobileFooter from "../MobileDesign/MobileFooter";
 import Collectiongrid from "./Collectiongrid";
+import NewNavbar from '../MobileDesign/NewNavbar'
+
 const menuItems = [
   {
     label: "Chicken",
@@ -26,10 +28,19 @@ const menuItems = [
   },
 ];
 const Collections = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    handleResize(); // run once on mount
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   return (
     <>
-      <MobileNavbar />
-      <IconMenu items={menuItems} />
+      {isMobile ? <MobileNavbar /> : <NewNavbar/>}
+      {isMobile ?<IconMenu items={menuItems} />: ""}
+      {/* <IconMenu items={menuItems} /> */}
       <Collectiongrid/>
       <MobileFooter/>
     </>

@@ -5,25 +5,40 @@ import { FiPause,FiChevronLeft,FiChevronRight,FiPlay } from "react-icons/fi";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-
+import { H2,P,Button } from "../../components/TextComponents";
 const MobileBanner = () => {
   const images = [
     {
       image: "/Country-chicken-Legs.png",
-      head: "Enjoy Fresh Meat With The Best Quality",
-      para: "Tender country chicken legs, freshly cut and packed to ensure premium taste and nutrition in every bite."
+      head: { en: "Fresh Country Chicken, Mutton & Chicken – Delivered to Your Doorstep!",
+       ta: "பசுமை யான நாட்டு க ோழி, மட்டன் & க ோழி – உங்கள் வட்ீ டு வாசலில்!" },
+      para: {
+        en: "Flavorful, tender meat freshly sourced every day from Iraichi Kadai.",
+        ta:"சுவை நிறை ந்த இறை ச்சி, தினமும் பசுமை யாக Iraichi Kadai’ல இருந்து."
+      }
     },
     {
       image: "/country-chicken-plater.jpg",
-      head: "Delicious Country Chicken Platter",
-      para: "A wholesome platter of farm-fresh country chicken, perfect for family meals and festive gatherings."
+      head: { en: "For Your Family Meals – Fresh Meat Delivered Within 1 Hour!",
+       ta: `உங்கள் குடும்ப சாப்பாட்டுக்கு – பசுமை யான இறை ச்சி, 1 மணி நே ரத்தில்
+       டெ லிவரி!
+       ` },
+      para: {
+        en: "Country chicken, mutton, and chicken – freshly cut daily and delivered safely.",
+        ta: `நாட்டு க ோழி, மட்டன், க ோழி – தினமும் பசுமை யாக வெ ட்டி, பாதுகாப்பாக
+        வழங்குகிற ோம்.`
+      }
     },
     {
       image: "/indian-chicken-gravy.webp",
-      head: "Authentic Indian Chicken Gravy",
-      para: "Richly spiced and slow-cooked to perfection, this classic chicken curry brings the true taste of India to your table."
+      head: { en: "Authentic Indian Chicken Gravy", ta: "அசல் இந்திய கோழி குழம்பு" },
+      para: {
+        en: "Richly spiced and slow-cooked to perfection, this classic chicken curry brings the true taste of India to your table.",
+        ta: "மசாலா நிறைந்த, மெதுவாக சமைக்கப்பட்ட இந்த குழம்பு இந்தியாவின் உண்மையான சுவையை உங்களின் மேசைக்கு கொண்டு வருகிறது."
+      }
     }
   ];
+  
   
 
   const swiperRef = useRef(null);
@@ -48,7 +63,7 @@ const MobileBanner = () => {
         spaceBetween={10}
         slidesPerView={1}
         loop={true}
-        autoplay={{ delay: 3000000 }}
+        autoplay={{ delay: 6000 }}
         navigation={false}
       >
         {images.map((src, idx) => (
@@ -60,23 +75,18 @@ const MobileBanner = () => {
             />
 <div className="absolute inset-0 bg-black/60"></div>
 <div className="absolute w-full top-10 left-0 text-center lg:top-25 lg:left-5 flex flex-col lg:gap-3 gap-2 items-center lg:items-start justify-center lg:text-start text-white px-4 lg:w-1/2">
-  <h2 className="lg:text-7xl text-3xl font-bold drop-shadow-lg">
-    {src.head}
-  </h2>
-  <p className="lg:mt-2 text-sm md:text-base drop-shadow-md lg:w-3/4">
-    {src.para}
-  </p>
+<H2 en={src.head.en} ta={src.head.ta} className="lg:text-5xl text-2xl font-bold drop-shadow-lg"/>
+<P en={src.para.en} ta={src.para.ta} className="lg:mt-2 text-sm md:text-base drop-shadow-md lg:w-3/4"/>
+
 
   <div className="flex flex-row lg:flex-row gap-2 lg:mt-3">
   {/* Get Started button */}
-  <button className="lg:py-2 lg:px-5 py-2 px-5 border rounded border-[#EE1c25] bg-[#EE1c25] text-white transition duration-300 hover:bg-transparent hover:text-[#EE1c25]">
-    Get Started
-  </button>
+  <Button             ta={"“இப்ப ோதே ஆர்டர் செ ய்யுங்க”"}
+            en ={"Order Now"} className="lg:py-2 lg:px-5 py-2 px-5 border rounded border-[#EE1c25] bg-[#EE1c25] text-white transition duration-300 hover:bg-transparent hover:text-[#EE1c25]"/>
 
   {/* View Products button */}
-  <button className="lg:py-2 lg:px-5 py-2 px-5 border bg-transparent rounded border-white text-white transition duration-300 hover:bg-[#EE1c25] hover:text-white hover:border-[#EE1c25]">
-    View Products
-  </button>
+  <Button             ta={"எங்கள் ப ொருட்கள் பார்க்க"}
+            en ={"View all"} className="lg:py-2 lg:px-5 py-2 px-5 border bg-transparent rounded border-white text-white transition duration-300 hover:bg-[#EE1c25] hover:text-white hover:border-[#EE1c25]"/>
 </div>
 
 </div>

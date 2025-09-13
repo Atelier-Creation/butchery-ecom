@@ -112,7 +112,9 @@ function MobileNavbar() {
         <div className="flex items-center gap-4 mr-3 text-lg lg:text-2xl lg:mr-10">
           <FiSearch size={22} />
           <FiUser size={22} />
-          <FiShoppingBag size={22} />
+          <button onClick={() => toggleDrawer(true)}>
+  <FiShoppingBag size={22}/>
+</button>
         </div>
       </div>
 

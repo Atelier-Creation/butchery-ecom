@@ -26,9 +26,9 @@ function NewNavbar() {
   // ✅ get cart items from context
   const { cartItems, removeFromCart, addToCart, toggleDrawer } = useCart();
   return (
-<div className="relative w-full">
+<div className="lg:block hidden relative w-full">
   {/* Navbar wrapper */}
-  <div className="flex gap-5 items-start justify-between w-full bg-gray-100 border-b border-gray-200 relative z-10 ">
+  <div className="flex gap-5 items-start justify-between w-full bg-[#EE1c25] text-white  relative z-10 ">
     
     {/* Logo with V shape */}
 {/* <div className="[box-shadow:0_4px_8px_rgba(0,0,0,0.9),4px_0_8px_rgba(0,0,0,0.9),-4px_0_8px_rgba(0,0,0,0.9)]">
@@ -86,11 +86,11 @@ function NewNavbar() {
       <div className="flex items-center justify-between px-4 py-3">
         
       <div className="lg:flex lg:w-110 lg:justify-between lg:align-middle hidden lg:relative z-100">
-          <a href="/" className="hover:text-[#EE1c25] text-[#060606]">Home</a>
+          <a href="/" className="hover:font-bold">Home</a>
           <div className="relative z-100">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex gap-2 items-center hover:text-[#EE1c25]"
+              className="flex gap-2 items-center hover:font-bold"
             >
               <p>Meat-Product</p>
               <FiChevronDown
@@ -127,9 +127,9 @@ function NewNavbar() {
             )}
           </div>
 
-          <a href="/" className="hover:text-[#EE1c25]">Recipe</a>
-          <a href="/" className="hover:text-[#EE1c25]">About Us</a>
-          <a href="/" className="hover:text-[#EE1c25]">Contact Us</a>
+          <a href="/" className="hover:font-bold">Recipe</a>
+          <a href="/" className="hover:font-bold">About Us</a>
+          <a href="/" className="hover:font-bold">Contact Us</a>
         </div>
         <div className="w-20 flex justify-start lg:hidden">
           <button onClick={() => setMenuOpen(true)} className="text-xl">

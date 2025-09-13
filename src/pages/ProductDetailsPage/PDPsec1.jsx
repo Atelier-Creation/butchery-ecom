@@ -1,18 +1,55 @@
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 import { FaBook, FaChevronDown, FaMinus, FaChevronUp, FaNotesMedical, FaPlus } from 'react-icons/fa';
-import NewNavbar from '../MobileDesign/NewNavbar';
 import PDPsec2 from './PDPsec2';
 import PDPsec3 from './PDPsec3';
 import MobileFooter from '../MobileDesign/MobileFooter';
 import { useCart } from "../../components/CartDrawer/CartContext";
 import './PDPsec.css'
 import { useModal,PincodeModal } from '../../context/GlobalModal';
+import NewNavbar from '../MobileDesign/NewNavbar'
+import MobileNavbar from '../MobileDesign/MobileNavbar'
+import IconMenu from '../MobileDesign/MobileIconMenu';
+import { useLocation } from "react-router-dom";
+import { H1 } from '../../components/TextComponents';
+const menuItems = [
+  {
+    label: "Chicken",
+    link: "/collections/chicken",
+    icon: "//lenaturelmeat.com/cdn/shop/files/turkey-chicken-svgrepo-com_32x32.svg?v=1752237020",
+  },
+  {
+    label: "Mutton",
+    link: "/collections/mutton",
+    icon: "//lenaturelmeat.com/cdn/shop/files/meat-cut-svgrepo-com_1_32x32.svg?v=1752237274",
+  },
+  {
+    label: "Egg",
+    link: "/collections/eggs",
+    icon: "//lenaturelmeat.com/cdn/shop/files/eggs-in-basket-svgrepo-com_32x32.svg?v=1752237467",
+  },
+  {
+    label: "Fish",
+    link: "/collections/fish",
+    icon: "//lenaturelmeat.com/cdn/shop/files/fish-svgrepo-com_32x32.svg?v=1753957578",
+  },
+];
 function PDPsec1() {
   const { openModal } = useModal();
+  const location = useLocation();
+  const { product: routedProduct } = location.state || {};
     const [selected, setSelected] = useState("0.500 Grms");
     const [quantity, setQuantity] = useState(1);
     const [open, setOpen] = useState(false);
     const { addToCart, toggleDrawer } = useCart();
+    const [isMobile, setIsMobile] = useState(false);
+  
+    useEffect(() => {
+      const handleResize = () => setIsMobile(window.innerWidth <= 768);
+      handleResize(); // run once on mount
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
     const increase = () => setQuantity(quantity + 1);
     const decrease = () => {
         if (quantity > 1) setQuantity(quantity - 1);
@@ -21,11 +58,11 @@ function PDPsec1() {
     const options = ["0.500 Grms", "0.750 Grms", "1 KG"];
 
     const product = {
-      id: "goat-mutton-keema-001",
-      title: "Goat - Mutton Keema",
-      image: "https://lenaturelmeat.com/cdn/shop/files/NT4.png?v=1719991493&width=533",
-      price: 275,
-      oldPrice: 1350,
+      id: routedProduct?.id || "goat-mutton-keema-001",
+      title: routedProduct?.title || "Goat - Mutton Keema",
+      image: routedProduct?.img || "https://lenaturelmeat.com/cdn/shop/files/NT4.png?v=1719991493&width=533",
+      price: routedProduct?.price || 275,
+      oldPrice: routedProduct?.oldPrice || 1350,
       size: selected,
       quantity: quantity,
     };
@@ -44,9 +81,10 @@ function PDPsec1() {
 
   return (
     <>
-    <NewNavbar/>
+      {isMobile ? <MobileNavbar /> : <NewNavbar/>}
+      {isMobile ?<IconMenu items={menuItems}/>: ""}
     <div className='flex flex-col md:flex-row lg:flex-row justify-evenly gap-3 lg:p-10 md:p-10 p-3'>
-        <div className='sticky top-5 z-10 keep-relative-scroll lg:w-3/4 md:w-3/4 lg:px-10  flex flex-col gap-8 w-full'>
+        <div className='lg:w-3/4 md:w-3/4 lg:px-10  flex flex-col gap-8 w-full'>
             <img src={product.image} className='w-full lg:h-120 md:h-120 h-70 aspect-square object-cover lg:rounded-3xl rounded'/>
             <div className='flex flex-row lg:flex-row lg:gap-5 gap-4'>
                 <img src='https://lenaturelmeat.com/cdn/shop/files/Lalipop1.webp?v=1756895386&width=360' className='lg:w-32 lg:h-32 w-20 h-20 aspect-square object-cover lg:rounded-3xl rounded border-2'/>
@@ -54,10 +92,10 @@ function PDPsec1() {
                 <img src='https://lenaturelmeat.com/cdn/shop/files/Goat_Keema_3.jpg?v=1746256020' className='lg:w-32 lg:h-32 w-20 h-20 aspect-square object-cover lg:rounded-3xl rounded border-2'/>
             </div>
         </div>
-        <div className='relative lg:w-1/2 md:w-1/2 w-full keep-sticky'>
+        <div className='relative lg:w-1/2 md:w-1/2 w-full'>
       <div className='flex flex-col gap-3'>
         <p className='text-xs'>LE NATUREL MEAT</p>
-        <h1 className='text-4xl font-bold'>{product.title}</h1>
+        <H1 en={product.title.en} ta={product.title.ta} className='text-4xl font-bold'/>
         <div className='flex flex-row gap-2 items-center'>
             <p className='text-lg font-semibold'>Rs. {product.price}</p>
             <p className='text-gray-500 line-through'>Rs. {product.oldPrice}</p>

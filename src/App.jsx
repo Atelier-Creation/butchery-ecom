@@ -11,6 +11,7 @@ import ResetPassword from "./pages/LoginPage/ResetPassword";
 import CreateAccount from "./pages/LoginPage/CreateAccount";
 import CartDrawer from "./components/CartDrawer/CartDrawer";
 import { ModalProvider } from "./context/GlobalModal";
+import { ModalQuickProvider } from "./context/QuickContext";
 function App() {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -23,8 +24,11 @@ function App() {
 
   return (
     <Router>
-      <ModalProvider>
-      <CartProvider>
+            <CartProvider>
+            <ModalProvider>
+      <ModalQuickProvider>
+
+
       <Routes>
         {/* <Route
           path="/*"
@@ -59,8 +63,11 @@ function App() {
           element={<ProfilePage/>}
         />
       </Routes>
-      </CartProvider>
+
+
+      </ModalQuickProvider>
       </ModalProvider>
+      </CartProvider>
     </Router>
   );
 }

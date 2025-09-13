@@ -65,7 +65,7 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
         className={`cart-backdrop ${drawerOpen ? "show" : ""}`}
         onClick={() => toggleDrawer(false)}
       ></div>
-      <div className={`cart-drawer ${drawerOpen ? "open" : ""}`}>
+      <div className={`cart-drawer ${drawerOpen ? "open" : ""} text-black`}>
         <div className="py-5 border-b border-gray-200 flex justify-between items-center cart-drawer-header d-flex justify-content-between align-items-center px-3 py-md-2 border-bottom">
           <h5 className="mb-0 fs-6 fw-normal text-lg font-semibold">
             {cartItems.length ? "Item Added to Your Cart" : "Shopping Cart"}
@@ -116,7 +116,7 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
                       objectFit: "cover",
                     }}
                   />
-                  <div className="flex-grow-1 flex lg:flex-col gap-1">
+                  <div className="flex-grow-1 flex lg:flex-col flex-col gap-1">
                     <h6 className="text-base font-semibold">
                       {item.title?.trim().split(" ").slice(0, 3).join(" ") ||
                         item.name?.trim().split(" ").slice(0, 3).join(" ") ||

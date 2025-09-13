@@ -1,6 +1,6 @@
 import React,{useState} from 'react'
 import { FaChevronDown,FaChevronUp } from 'react-icons/fa'
-
+import { useLocation } from "react-router-dom";
 const data = [
     {head : "What makes LeNaturel Mutton Keema flavorful and tender",
     para : `LeNaturel Mutton Keema is freshly minced to deliver rich, authentic flavor and a soft, tender texture for every dish.`,
@@ -24,7 +24,8 @@ const data = [
 
 function PDPsec2() {
     const [openIndex, setOpenIndex] = useState(0)
-  
+    const location = useLocation();
+  const { product } = location.state || {};
     const toggleItem = (index) => {
       setOpenIndex(openIndex === index ? null : index)
     }
@@ -57,7 +58,7 @@ function PDPsec2() {
         {/* Right Image Section */}
         <div className='w-full lg:h-[80vh] h-[50vh]'>
           <img
-            src='https://lenaturelmeat.com/cdn/shop/files/NT4.png?v=1719991493&width=533'
+            src={product.img}
             className='h-full w-full object-cover'
             alt="LeNaturel Mutton Keema"
           />
