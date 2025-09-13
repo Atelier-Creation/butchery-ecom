@@ -3,7 +3,7 @@ import "./ProfilePageInfo.css";
 import { useNavigate } from "react-router-dom";
 import { S3Client } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
-
+import profileImage from '../../../assets/images/user-icon-trendy-flat-style-600nw-1697898655-removebg-preview.png'
 // ------------------- DigitalOcean Spaces Config -------------------
 const s3 = new S3Client({
   endpoint: "https://blr1.digitaloceanspaces.com",
@@ -48,6 +48,7 @@ async function uploadToSpaces(file) {
 
 function ProfilePageInfo() {
   const navigate = useNavigate();
+  const [localUser, setLocalUser] = useState(null);
   const [user, setUser] = useState(null);
   const [addresses, setAddresses] = useState([]);
   const [editMode, setEditMode] = useState(false);
@@ -64,6 +65,14 @@ function ProfilePageInfo() {
   const [previewUrl, setPreviewUrl] = useState(
     user?.profileImage
   );
+
+  useEffect(() => {
+    const stored = localStorage.getItem("userData");
+    if (stored) {
+      setLocalUser(JSON.parse(stored));
+      console.log("user data : " ,stored)
+    }
+  }, []);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("authUser");
@@ -203,8 +212,10 @@ function ProfilePageInfo() {
     };
     reader.readAsDataURL(file);
   };
-
-  if (!user) return <p>Loading...</p>;
+  if (!localUser && !user) {
+    return <p>Loading...</p>;
+  }
+  
   return (
     <div className="profile-page-info-con">
       {/* ✅ Show messages */}
@@ -280,15 +291,15 @@ function ProfilePageInfo() {
             </>
           ) : (
             <>
-              <h2>{user?.name}</h2>
+              <h2>{user?.name || localUser?.firstName + " " + localUser?.lastName}</h2>
               <div className="user-phone-email-info">
                 <div className="user-phone-icon-div">
                   <i class="bi bi-telephone"></i>
-                  <p>{user?.phone || "9876543210"}</p>
+                  <p>{localUser.number || "9876543210"}</p>
                 </div>
                 <div className="user-phone-icon-div">
                   <i class="bi bi-envelope"></i>
-                  <p>{user?.email}</p>
+                  <p>{user?.email || localUser?.email}</p>
                 </div>
               </div>
             </>

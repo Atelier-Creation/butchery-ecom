@@ -6,6 +6,9 @@ import Collections from "./pages/Collections/Collections";
 import PDPsec1 from "./pages/ProductDetailsPage/PDPsec1";
 import ProfilePage from "./components/ProfilePage/ProfilePage";
 import { CartProvider } from "./components/CartDrawer/CartContext";
+import Login from "./pages/LoginPage/Login";
+import ResetPassword from "./pages/LoginPage/ResetPassword";
+import CreateAccount from "./pages/LoginPage/CreateAccount";
 
 function App() {
   const [isMobile, setIsMobile] = useState(false);
@@ -36,6 +39,18 @@ function App() {
         <Route
           path="/products/*"
           element={<PDPsec1/>}
+        />
+        <Route
+          path="/login"
+          element={<Login/>}
+        />
+        <Route
+          path="/forgot-password"
+          element={<ResetPassword/>}
+        />
+        <Route
+          path="/create-account"
+          element={<CreateAccount/>}
         />
         <Route
           path="/profile"
