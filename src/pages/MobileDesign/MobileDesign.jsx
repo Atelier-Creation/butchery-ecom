@@ -237,12 +237,12 @@ const MobileDesign = () => {
         onViewAll={() => console.log("View all clicked")}
       />
       <ImageWithText/>
-      <MobileBestseller
+      {/* <MobileBestseller
         title="We Produce The Best Selected Mutoom For You"
         subtitle="Most popular product near you!"
         products={muttonProducts}
         onViewAll={() => console.log("View all clicked")}
-      />
+      /> */}
       <FeatureSlider features = {featuresData}/>
       <MobileFooter/>
     </div>
