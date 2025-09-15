@@ -66,7 +66,7 @@ const MobileBanner = () => {
         navigation={false}
       >
         {images.map((src, idx) => (
-          <SwiperSlide key={idx}> 
+          <SwiperSlide key={idx}>
             <img
               src={src.image}
               alt={`Slide ${idx}`}
