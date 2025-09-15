@@ -1,6 +1,8 @@
 import React from "react";
 import { Eye } from "lucide-react";
 import { Button, P } from "../../components/TextComponents";
+import { useNavigate } from "react-router-dom";
+import { QuickModal, useQuickModal } from "../../context/QuickContext";
 
 const MobileBestseller = ({
   title = "Best Sellers",
@@ -8,6 +10,11 @@ const MobileBestseller = ({
   products = [],
   onViewAll,
 }) => {
+  const { openModal } = useQuickModal();
+  const Navigate = useNavigate();
+  const handleBuyNow = () => {
+    openModal(<QuickModal />);
+  };
   return (
     <div className="block px-4 py-6 lg:px-10 lg:mt-10">
       <div className="lg:flex lg:justify-between">
@@ -24,12 +31,12 @@ const MobileBestseller = ({
         {/* View All Button */}
         {onViewAll && (
           <div className="hidden lg:block mt-6 text-center">
-           <Button
-            onClick={onViewAll}
-            ta={"எங்கள் பொருட்களைப் பார்க்க"}
-            en ={"View all"}
-            className="bg-red-800 text-white px-6 py-2 rounded-md font-medium"
-          />
+            <Button
+              onClick={onViewAll}
+              ta={"View all"}
+              en={"View all"}
+              className="bg-red-800 text-white px-6 py-2 rounded-md font-medium"
+            />
           </div>
         )}
       </div>
@@ -37,24 +44,39 @@ const MobileBestseller = ({
         {products.map((item) => (
           <div
             key={item.id}
-            className="rounded-xl shadow-md overflow-hidden relative"
+            className="group rounded-xl shadow-md overflow-hidden relative  
+                 transition-all duration-300 ease-out 
+                 hover:shadow-xl hover:-translate-y-1"
           >
             {/* Sale Tag */}
             <div className="relative">
               {item.tag && (
-                <span className="absolute top-2 left-2 bg-[#EE1c25] text-white text-xs px-2 py-0.5 rounded-md">
+                <span className="absolute top-2 left-2 bg-[#EE1c25] text-white text-xs px-2 py-0.5 rounded-md z-10">
                   {item.tag}
                 </span>
               )}
 
-              {/* Product Image */}
-              <img
-                src={item.img}
-                alt={item.title.en} // optional: could switch dynamically with lang
-                className="w-full rounded-xl h-full aspect-square object-cover"
-              />
+              {/* Product Image with zoom */}
+              <div className="overflow-hidden rounded-xl">
+                <img
+                  src={item.img}
+                  alt={item.title.en}
+                  className="w-full aspect-square object-cover 
+                       transform transition-transform duration-500 
+                       group-hover:scale-105"
+                />
+              </div>
 
-              <span className="absolute bottom-2 right-2 bg-[#EE1c25] text-white text-xs px-2.5 py-2 rounded-md">
+              {/* Eye Icon (fade in) */}
+              <span
+                onClick={(e) => {
+                  e.stopPropagation(); // ✅ Prevent parent onClick (navigation)
+                  handleBuyNow();
+                }}
+                className="absolute bottom-2 right-2 cursor-pointer bg-[#EE1c25] text-white text-xs px-2.5 py-2 rounded-md
+                     opacity-0 translate-y-2 transition-all duration-300
+                     group-hover:opacity-100 group-hover:translate-y-0"
+              >
                 <Eye size={18} />
               </span>
             </div>
@@ -64,7 +86,7 @@ const MobileBestseller = ({
               <P
                 en={item.title.en}
                 ta={item.title.ta}
-                className="text-md font-medium line-clamp-2"
+                className="text-md font-medium line-clamp-2 transition-colors duration-300 group-hover:text-[#EE1c25]"
               />
               <div className="mt-2 flex items-center gap-2">
                 <span className="text-[#EE1c25] font-semibold text-md">
@@ -87,10 +109,9 @@ const MobileBestseller = ({
           <Button
             onClick={onViewAll}
             ta={"எங்கள் ப ொருட்கள் பார்க்க"}
-            en ={"View all"}
+            en={"View all"}
             className="bg-red-800 text-white px-6 py-2 rounded-md font-medium"
           />
-            
         </div>
       )}
     </div>

@@ -3,7 +3,7 @@ import { Leaf, CheckCircle2, ShieldCheck, HeartPulse } from "lucide-react";
 
 const ImageWithText = () => {
   return (
-    <div className="bg-[#EE1c25] text-white rounded-lg p-0  mx-4 md:mx-5 flex flex-col md:flex-row gap-10 justify-center items-center lg:mx-10 lg:mt-15">
+    <div className="bg-[#EE1c25] overflow-hidden text-white rounded-lg p-0  mx-4 md:mx-5 flex flex-col md:flex-row gap-10 justify-center items-center lg:mx-10 lg:mt-15">
       {/* Left Image */}
       <div className="w-full md:w-1/2">
         <img
@@ -65,8 +65,8 @@ const ImageWithText = () => {
               <h3 className="font-semibold text-lg">No Antibiotics</h3>
             </div>
             <p className="text-sm text-gray-100">
-              We follow natural methods to ensure animal well-being. Pure,
-              safe, and healthy quality you can trust.
+              We follow natural methods to ensure animal well-being. Pure, safe,
+              and healthy quality you can trust.
             </p>
           </div>
         </div>

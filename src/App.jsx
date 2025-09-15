@@ -24,49 +24,24 @@ function App() {
 
   return (
     <Router>
-            <CartProvider>
-            <ModalProvider>
-      <ModalQuickProvider>
-
-
-      <Routes>
-        {/* <Route
+      <CartProvider>
+        <ModalProvider>
+          <ModalQuickProvider>
+            <Routes>
+              {/* <Route
           path="/*"
           element={isMobile ? <MobileDesign /> : <HomePage />}
         /> */}
-        <Route
-          path="/"
-          element={<MobileDesign/>}
-        />
-        <Route
-          path="/collections/*"
-          element={<Collections/>}
-        />
-        <Route
-          path="/products/*"
-          element={<PDPsec1/>}
-        />
-        <Route
-          path="/login"
-          element={<Login/>}
-        />
-        <Route
-          path="/forgot-password"
-          element={<ResetPassword/>}
-        />
-        <Route
-          path="/create-account"
-          element={<CreateAccount/>}
-        />
-        <Route
-          path="/profile"
-          element={<ProfilePage/>}
-        />
-      </Routes>
-
-
-      </ModalQuickProvider>
-      </ModalProvider>
+              <Route path="/" element={<MobileDesign />} />
+              <Route path="/collections/*" element={<Collections />} />
+              <Route path="/products/*" element={<PDPsec1 />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/forgot-password" element={<ResetPassword />} />
+              <Route path="/create-account" element={<CreateAccount />} />
+              <Route path="/profile" element={<ProfilePage />} />
+            </Routes>
+          </ModalQuickProvider>
+        </ModalProvider>
       </CartProvider>
     </Router>
   );

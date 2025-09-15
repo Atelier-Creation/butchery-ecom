@@ -50,21 +50,27 @@ const MobileCategorySlider = () => {
       >
         {collections.map((item, idx) => (
           <SwiperSlide key={idx}>
-            <a href={item.link} className="block overflow-hidden text-center">
-              <div className="w-full h-full aspect-square overflow-hidden rounded-xl">
-                <img
-                  src={item.img}
-                  alt={item.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+            <a
+  href={item.link}
+  className="group block overflow-hidden text-center rounded-xl transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg"
+>
+  {/* Image */}
+  <div className="w-full h-full aspect-square overflow-hidden rounded-xl">
+    <img
+      src={item.img}
+      alt={item.title.en}
+      className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-105"
+    />
+  </div>
 
-              <P
-                en={item.title.en}
-                ta={item.title.ta}
-                className="py-2 text-md font-medium"
-              />
-            </a>
+  {/* Title */}
+  <P
+    en={item.title.en}
+    ta={item.title.ta}
+    className="py-2 text-md font-medium transition-colors duration-300 group-hover:text-[#EE1c25]"
+  />
+</a>
+
           </SwiperSlide>
         ))}
       </Swiper>
