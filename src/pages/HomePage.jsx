@@ -1,4 +1,4 @@
-import Navbar from '../components/Navbar'
+import Navbar from '../components/Navbar1'
 import BannerSlider from '../components/BannerSlider'
 import FeaturesSection from '../components/FeaturesSection'
 import ShopByCategory from '../components/ShopByCategory'

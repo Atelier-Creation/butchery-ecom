@@ -4,6 +4,7 @@ import IconMenu from "../MobileDesign/MobileIconMenu";
 import MobileFooter from "../MobileDesign/MobileFooter";
 import Collectiongrid from "./Collectiongrid";
 import NewNavbar from "../MobileDesign/NewNavbar";
+import Navbar from "../MobileDesign/Navbar";
 
 const menuItems = [
   {
@@ -38,7 +39,7 @@ const Collections = () => {
   }, []);
   return (
     <>
-      {isMobile ? <MobileNavbar /> : <NewNavbar />}
+      {isMobile ? <MobileNavbar /> : <Navbar/>}
       {isMobile ? <IconMenu items={menuItems} /> : ""}
       {/* <IconMenu items={menuItems} /> */}
       <Collectiongrid />

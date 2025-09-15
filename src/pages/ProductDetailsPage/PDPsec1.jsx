@@ -18,6 +18,7 @@ import MobileNavbar from "../MobileDesign/MobileNavbar";
 import IconMenu from "../MobileDesign/MobileIconMenu";
 import { useLocation } from "react-router-dom";
 import { H1 } from "../../components/TextComponents";
+import Navbar from "../MobileDesign/Navbar";
 const menuItems = [
   {
     label: "Chicken",
@@ -89,7 +90,7 @@ function PDPsec1() {
 
   return (
     <>
-      {isMobile ? <MobileNavbar /> : <NewNavbar />}
+      {isMobile ? <MobileNavbar /> : <Navbar/>}
       {isMobile ? <IconMenu items={menuItems} /> : ""}
       <div className="flex flex-col md:flex-row lg:flex-row justify-evenly gap-3 lg:p-10 md:p-10 p-3">
         <div className="lg:w-3/4 md:w-3/4 lg:px-10  flex flex-col gap-8 w-full">
