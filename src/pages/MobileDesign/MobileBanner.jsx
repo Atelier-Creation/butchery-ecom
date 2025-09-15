@@ -70,7 +70,7 @@ const MobileBanner = () => {
             <img
               src={src.image}
               alt={`Slide ${idx}`}
-              className="relative w-full h-90 lg:h-screen object-cover sm:h-80 md:h-96"
+              className="relative w-full h-80 lg:h-screen object-cover sm:h-90 md:h-96"
             />
             <div className="absolute inset-0 bg-black/60"></div>
             <div className="absolute w-full top-10 left-0 text-center lg:top-25 lg:left-5 flex flex-col lg:gap-3 gap-2 items-center lg:items-start justify-center lg:text-start text-white px-4 lg:w-1/2">
