@@ -40,7 +40,7 @@ function NewNavbar() {
   return (
     <div className="lg:block hidden relative w-full">
       {/* Navbar wrapper */}
-      <div className="flex gap-5 items-start justify-between w-full bg-[#EE1c25] text-white  relative z-10 ">
+      <div className="flex gap-5 items-center justify-between w-full bg-[#EE1c25] text-white  relative z-10 ">
         {/* Logo with V shape */}
         {/* <div className="[box-shadow:0_4px_8px_rgba(0,0,0,0.9),4px_0_8px_rgba(0,0,0,0.9),-4px_0_8px_rgba(0,0,0,0.9)]">
   <div className="z-50 md:ml-15 lg:ml-20 relative -mb-8 inline-block bg-white px-3 py-6
@@ -170,7 +170,10 @@ function NewNavbar() {
               <button onClick={() => navigate("/create-account")}>
                 <FiUser />
               </button>
-              <button onClick={() => toggleDrawer(true)}>
+              <button
+                onClick={() => toggleDrawer(true)}
+                className="cursor-pointer"
+              >
                 <FiShoppingBag />
               </button>
             </div>

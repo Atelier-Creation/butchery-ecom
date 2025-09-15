@@ -39,7 +39,7 @@ export const ModalQuickProvider = ({ children }) => {
           >
             {modalContent}
             <div className="flex justify-end mt-4 absolute top-1 right-1">
-              <button onClick={closeModal}>
+              <button onClick={closeModal} className="cursor-pointer">
                 <FaTimes size={18} className="text-gray-600" />
               </button>
             </div>

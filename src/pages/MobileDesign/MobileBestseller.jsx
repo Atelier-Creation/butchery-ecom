@@ -108,9 +108,9 @@ const MobileBestseller = ({
         <div className="mt-6 text-center lg:hidden">
           <Button
             onClick={onViewAll}
-            ta={"எங்கள் ப ொருட்கள் பார்க்க"}
+            ta={"View all"}
             en={"View all"}
-            className="bg-red-800 text-white px-6 py-2 rounded-md font-medium"
+            className="bg-red-800 text-white px-6 py-2 w-100 rounded-md font-medium"
           />
         </div>
       )}

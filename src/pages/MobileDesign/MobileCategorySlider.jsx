@@ -31,7 +31,7 @@ const MobileCategorySlider = () => {
 
   return (
     <div className="w-full overflow-hidden my-2 px-2 block lg:px-10 lg:mt-10">
-      <p className="py-4 mb-2 lg:mb-8 text-2xl text-center font-medium lg:text-3xl lg:font-bold">
+      <p className="py-4 mb-2 lg:mb-8 text-xl text-center font-bold lg:text-3xl lg:font-bold">
         Enjoy Fresh Meat With The Best Quality
       </p>
       <Swiper
@@ -51,26 +51,34 @@ const MobileCategorySlider = () => {
         {collections.map((item, idx) => (
           <SwiperSlide key={idx}>
             <a
-  href={item.link}
-  className="group block overflow-hidden text-center rounded-xl transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg"
->
-  {/* Image */}
-  <div className="w-full h-full aspect-square overflow-hidden rounded-xl">
-    <img
-      src={item.img}
-      alt={item.title.en}
-      className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-105"
-    />
-  </div>
+              href={item.link}
+              className="group block overflow-hidden text-center rounded-xl transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg"
+            >
+              {/* Image wrapper with shine effect */}
+              <div className="relative w-full h-full aspect-square overflow-hidden rounded-xl">
+                <img
+                  src={item.img}
+                  alt={item.title.en}
+                  className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-105"
+                />
 
-  {/* Title */}
-  <P
-    en={item.title.en}
-    ta={item.title.ta}
-    className="py-2 text-md font-medium transition-colors duration-300 group-hover:text-[#EE1c25]"
-  />
-</a>
+                {/* Shine effect */}
+                <span
+                  className="absolute inset-0 block
+                 bg-gradient-to-r from-transparent via-white/40 to-transparent
+                 translate-x-[-100%] 
+                 group-hover:translate-x-[100%] 
+                 transition-transform duration-700 ease-in-out"
+                />
+              </div>
 
+              {/* Title */}
+              <P
+                en={item.title.en}
+                ta={item.title.ta}
+                className="py-2 text-md font-medium transition-colors duration-300 group-hover:text-[#EE1c25]"
+              />
+            </a>
           </SwiperSlide>
         ))}
       </Swiper>
