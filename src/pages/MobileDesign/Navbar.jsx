@@ -56,9 +56,7 @@ const Navbar = () => {
           />
         </div>
         <div className="py-2 ps-15">
-          <img
-            src="" // replace with your logo path
-            alt="Logo"
+          <div
             className="h-12 w-auto"
           />
         </div>
