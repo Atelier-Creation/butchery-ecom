@@ -170,7 +170,7 @@ const Collectiongrid = () => {
             <div
               key={item.id}
               onClick={() =>
-                navigate("/products", { state: { product: item } })
+                navigate(`/products/${item.title}`, { state: { product: item } })
               }
               className="rounded-lg shadow hover:shadow-md transition overflow-hidden relative group cursor-pointer bg-white"
             >

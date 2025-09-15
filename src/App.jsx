@@ -13,6 +13,7 @@ import CartDrawer from "./components/CartDrawer/CartDrawer";
 import { ModalProvider } from "./context/GlobalModal";
 import { ModalQuickProvider } from "./context/QuickContext";
 import './App.css'
+import ScrollToTop from "./context/ScrollToTop";
 function App() {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -28,6 +29,7 @@ function App() {
       <CartProvider>
         <ModalProvider>
           <ModalQuickProvider>
+            <ScrollToTop/>
             <Routes>
               {/* <Route
           path="/*"

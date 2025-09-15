@@ -3,6 +3,7 @@ import RecommendedSlider from "./cart-drawer-recommend";
 import "./CartDrawer.css";
 import { NotebookPen, TruckIcon, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { H6 } from "../TextComponents";
 import { useCart } from "./CartContext";
 const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
   const navigate = useNavigate();
@@ -15,14 +16,26 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
   // const [shippingRate, setShippingRate] = useState(null);
   const [recommendedItems, setRecommendedItems] = useState([]);
   const total = cartItems.reduce((sum, item) => {
-    const sellingPrice =
-      item.productId?.variant?.[0]?.sizes?.[0]?.sellingPrice || // safe check
+    let sellingPrice =
+      item.productId?.variant?.[0]?.sizes?.[0]?.sellingPrice ||
       item.variant?.[0]?.sizes?.[0]?.sellingPrice ||
       item.price ||
       0;
-
+  
+    // ✅ Convert to number safely
+    if (typeof sellingPrice === "string") {
+      sellingPrice = parseFloat(sellingPrice.replace(/[^0-9.]/g, "")) || 0;
+    } else if (typeof sellingPrice === "object") {
+      // in case API sends { en: "₹890.00", ta: "…" }
+      sellingPrice = parseFloat(
+        sellingPrice.en?.replace(/[^0-9.]/g, "")
+      ) || 0;
+    }
+  
     return sum + sellingPrice * (item.quantity || 1);
   }, 0);
+  
+  
 
   useEffect(() => {
     console.log("CartDrawer: cartItems updated", cartItems);
@@ -117,15 +130,16 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
                     }}
                   />
                   <div className="flex-grow-1 flex lg:flex-col flex-col gap-1">
-                    <h6 className="text-base font-semibold">
-                      {item.title?.trim().split(" ").slice(0, 3).join(" ") ||
-                        item.name?.trim().split(" ").slice(0, 3).join(" ") ||
-                        item.productId?.name
-                          ?.trim()
-                          .split(" ")
-                          .slice(0, 3)
-                          .join(" ")}
-                    </h6>
+                    <H6 en={item.title.en} ta={item.title.ta} className="text-base font-semibold"/>
+                    {/* {typeof item.title === "string"
+  ? item.title.trim().split(" ").slice(0, 3).join(" ")
+  : typeof item.name === "string"
+  ? item.name.trim().split(" ").slice(0, 3).join(" ")
+  : typeof item.productId?.name === "string"
+  ? item.productId.name.trim().split(" ").slice(0, 3).join(" ")
+  : "Unnamed Product"}
+
+                    </h6> */}
                     <p className="text-muted mb-1">
                       {item.colorsText
                         ? item.colorsText
@@ -138,7 +152,7 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
                       <span
                         className="fw-semibold text-[#EE1c25]"
                       >
-                        ₹
+                        
                         {(() => {
                           const sellingPrice =
                             item.productId?.variant?.[0]?.sizes?.[0]
