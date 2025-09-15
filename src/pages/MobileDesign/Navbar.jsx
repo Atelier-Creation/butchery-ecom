@@ -44,7 +44,7 @@ const Navbar = () => {
       {/* Main Navbar */}
       <div className="bg-red-600 text-white px-6 flex justify-between items-center">
         {/* Logo */}
-        <div className="absolute -top-2.0 left-10 z-100">
+        <div className="absolute -top-2.0 left-10 z-100" onClick={()=>navigate('/')}>
           <img
             src="/iraichi-logo1.svg" // replace with your logo path
             alt="Logo"
