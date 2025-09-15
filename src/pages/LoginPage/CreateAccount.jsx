@@ -4,6 +4,7 @@ import MobileNavbar from '../MobileDesign/MobileNavbar'
 import IconMenu from '../MobileDesign/MobileIconMenu'
 import MobileFooter from '../MobileDesign/MobileFooter'
 import { useNavigate } from 'react-router-dom'
+import Navbar from '../MobileDesign/Navbar'
 
 const menuItems = [
   {
@@ -56,7 +57,7 @@ function CreateAccount() {
       
   return (
     <div>
-      {isMobile ? <MobileNavbar /> : <NewNavbar/>}
+      {isMobile ? <MobileNavbar /> : <Navbar/>}
       {isMobile ?<IconMenu items={menuItems} />: ""}
           <div className='flex flex-col lg:flex-col items-center justify-center gap-3 my-10 lg:w-120 md:w-110 w-full lg:mx-auto md:mx-auto px-5 '>
       <h1 className='text-3xl font-bold mb-4'>Create account</h1>
