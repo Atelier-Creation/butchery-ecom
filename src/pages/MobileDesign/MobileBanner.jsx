@@ -14,7 +14,7 @@ const MobileBanner = () => {
       para: "Flavorful, tender meat freshly sourced every day from Iraichi Kadai.",
     },
     {
-      image: "/Country-chicken-Legs.png",
+      image: "/raw-ribs-wooden-board-preparing-cooking.jpg",
       head: "பசுமையான நாட்டுக்கோழி, மட்டன் & கோழி – உங்கள் வீட்டு வாசலில்!",
       para: "சுவை நிறைந்த இறைச்சி, தினமும் பசுமையாக Iraichi Kadai-லிருந்து.",
     },
@@ -24,7 +24,7 @@ const MobileBanner = () => {
       para: "Country chicken, mutton, and chicken – freshly cut daily and delivered safely.",
     },
     {
-      image: "/country-chicken-plater.jpg",
+      image: "/top-view-raw-meat-prepared-be-cooked.jpg",
       head: "உங்கள் குடும்ப சாப்பாட்டிற்கு – பசுமையான இறைச்சி, 1 மணி நேரத்தில் டெலிவரி!",
       para: "நாட்டுக்கோழி, மட்டன், கோழி – தினமும் பசுமையாக வெட்டி, பாதுகாப்பாக வழங்குகிறோம்.",
     },
@@ -34,7 +34,7 @@ const MobileBanner = () => {
       para: "Richly spiced and slow-cooked to perfection, this classic chicken curry brings the true taste of India to your table.",
     },
     {
-      image: "/indian-chicken-gravy.webp",
+      image: "/raw-chicken-wooden-board-with-bunch-fresh-vegetables-spices.jpg",
       head: "அசல் இந்திய கோழி குழம்பு",
       para: "மசாலா நிறைந்த, மெதுவாக சமைக்கப்பட்ட இந்த குழம்பு, இந்தியாவின் உண்மையான சுவையை உங்களின் மேசைக்கு கொண்டு வருகிறது.",
     },
