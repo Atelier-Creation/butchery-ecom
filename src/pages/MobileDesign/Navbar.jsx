@@ -98,6 +98,7 @@ const Navbar = () => {
             <div   onClick={(e) => {
     e.stopPropagation(); // prevent bubbling
     toggleDrawer(true);
+    console.log("clicked icon")
   }} className="p-2 bg-[#BC141B91] border border-[#FFFFFF30] rounded-full">
               <MdOutlineShoppingBag
                 className="cursor-pointer "
