@@ -11,7 +11,7 @@ const MobileBestseller = ({
   onViewAll,
 }) => {
   const { openModal } = useQuickModal();
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
   const handleBuyNow = () => {
     openModal(<QuickModal />);
   };
@@ -47,6 +47,9 @@ const MobileBestseller = ({
             className="group rounded-xl shadow-md overflow-hidden relative  
                  transition-all duration-300 ease-out 
                  hover:shadow-xl hover:-translate-y-1"
+                 onClick={() =>
+                  navigate(`/products/${item.title}`, { state: { product: item } })
+                }
           >
             {/* Sale Tag */}
             <div className="relative">

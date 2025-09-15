@@ -1,6 +1,6 @@
 import React from "react";
 import { Eye } from "lucide-react";
-
+import { useNavigate } from "react-router-dom";
 const products = [
     {
       id: 1,
@@ -41,6 +41,7 @@ const PDPsec3 = ({
 //   products = [], 
   onViewAll 
 }) => {
+  const navigate = useNavigate();
   return (
     <div className="block px-4 py-6 lg:px-10 lg:mt-10">
       <div className="lg:flex lg:justify-between">
@@ -64,7 +65,10 @@ const PDPsec3 = ({
         {products.map((item) => (
           <div
             key={item.id}
-            className="rounded-xl shadow-md overflow-hidden relative"
+            className="rounded-xl shadow-md overflow-hidden relative cursor-pointer"
+            onClick={() =>
+              navigate(`/products/${item.title}`, { state: { product: item } })
+            }
           >
             {/* Sale Tag */}
             <div className="relative">
