@@ -6,12 +6,19 @@ const Text = ({ as: Tag = "span", en, ta, className = "", ...props }) => {
   const { lang } = useLang() || { lang: "en" };
   const langClass = lang === "ta" ? "font-tamil" : "english-font";
 
+  // Pick the right text with fallback
+  const content =
+    lang === "en"
+      ? en || ta || "" // prefer en, fallback to ta
+      : ta || en || ""; // prefer ta, fallback to en
+
   return (
     <Tag className={`${className} ${langClass}`} {...props}>
-      {lang === "en" ? en : ta}
+      {content}
     </Tag>
   );
 };
+
 // ✅ Specific components
 export const H1 = (props) => <Text as="h1" {...props} />;
 export const H2 = (props) => <Text as="h2" {...props} />;

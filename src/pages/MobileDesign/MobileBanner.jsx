@@ -8,41 +8,37 @@ import "swiper/css/pagination";
 import { H2, P, Button } from "../../components/TextComponents";
 const MobileBanner = () => {
   const images = [
-  {
-    image: "/Country-chicken-Legs.png",
-    head: {
-      en: "Fresh Country Chicken, Mutton & Chicken – Delivered to Your Doorstep!",
-      ta: "பசுமையான நாட்டுக்கோழி, மட்டன் & கோழி – உங்கள் வீட்டு வாசலில்!",
+    {
+      image: "/Country-chicken-Legs.png",
+      head: "Fresh Country Chicken, Mutton & Chicken – Delivered to Your Doorstep!",
+      para: "Flavorful, tender meat freshly sourced every day from Iraichi Kadai.",
     },
-    para: {
-      en: "Flavorful, tender meat freshly sourced every day from Iraichi Kadai.",
-      ta: "சுவை நிறைந்த இறைச்சி, தினமும் பசுமையாக Iraichi Kadai-லிருந்து.",
+    {
+      image: "/Country-chicken-Legs.png",
+      head: "பசுமையான நாட்டுக்கோழி, மட்டன் & கோழி – உங்கள் வீட்டு வாசலில்!",
+      para: "சுவை நிறைந்த இறைச்சி, தினமும் பசுமையாக Iraichi Kadai-லிருந்து.",
     },
-  },
-  {
-    image: "/country-chicken-plater.jpg",
-    head: {
-      en: "For Your Family Meals – Fresh Meat Delivered Within 1 Hour!",
-      ta: "உங்கள் குடும்ப சாப்பாட்டிற்கு – பசுமையான இறைச்சி, 1 மணி நேரத்தில் டெலிவரி!",
+    {
+      image: "/country-chicken-plater.jpg",
+      head: "For Your Family Meals – Fresh Meat Delivered Within 1 Hour!",
+      para: "Country chicken, mutton, and chicken – freshly cut daily and delivered safely.",
     },
-    para: {
-      en: "Country chicken, mutton, and chicken – freshly cut daily and delivered safely.",
-      ta: "நாட்டுக்கோழி, மட்டன், கோழி – தினமும் பசுமையாக வெட்டி, பாதுகாப்பாக வழங்குகிறோம்.",
+    {
+      image: "/country-chicken-plater.jpg",
+      head: "உங்கள் குடும்ப சாப்பாட்டிற்கு – பசுமையான இறைச்சி, 1 மணி நேரத்தில் டெலிவரி!",
+      para: "நாட்டுக்கோழி, மட்டன், கோழி – தினமும் பசுமையாக வெட்டி, பாதுகாப்பாக வழங்குகிறோம்.",
     },
-  },
-  {
-    image: "/indian-chicken-gravy.webp",
-    head: {
-      en: "Authentic Indian Chicken Gravy",
-      ta: "அசல் இந்திய கோழி குழம்பு",
+    {
+      image: "/indian-chicken-gravy.webp",
+      head: "Authentic Indian Chicken Gravy",
+      para: "Richly spiced and slow-cooked to perfection, this classic chicken curry brings the true taste of India to your table.",
     },
-    para: {
-      en: "Richly spiced and slow-cooked to perfection, this classic chicken curry brings the true taste of India to your table.",
-      ta: "மசாலா நிறைந்த, மெதுவாக சமைக்கப்பட்ட இந்த குழம்பு, இந்தியாவின் உண்மையான சுவையை உங்களின் மேசைக்கு கொண்டு வருகிறது.",
+    {
+      image: "/indian-chicken-gravy.webp",
+      head: "அசல் இந்திய கோழி குழம்பு",
+      para: "மசாலா நிறைந்த, மெதுவாக சமைக்கப்பட்ட இந்த குழம்பு, இந்தியாவின் உண்மையான சுவையை உங்களின் மேசைக்கு கொண்டு வருகிறது.",
     },
-  },
-];
-
+  ];
 
   const swiperRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(true);
@@ -70,7 +66,7 @@ const MobileBanner = () => {
         navigation={false}
       >
         {images.map((src, idx) => (
-          <SwiperSlide key={idx}>
+          <SwiperSlide key={idx}> 
             <img
               src={src.image}
               alt={`Slide ${idx}`}
@@ -78,16 +74,12 @@ const MobileBanner = () => {
             />
             <div className="absolute inset-0 bg-black/60"></div>
             <div className="absolute w-full top-10 left-0 text-center lg:top-25 lg:left-5 flex flex-col lg:gap-3 gap-2 items-center lg:items-start justify-center lg:text-start text-white px-4 lg:w-1/2">
-              <H2
-                en={src.head.en}
-                ta={src.head.ta}
-                className="lg:text-5xl leading-tight text-3xl font-bold drop-shadow-lg"
-              />
-              <P
-                en={src.para.en}
-                ta={src.para.ta}
-                className="lg:mt-2 text-sm md:text-base drop-shadow-md lg:w-3/4"
-              />
+              <h2 className="lg:text-5xl leading-tight text-2xl font-bold drop-shadow-lg">
+                {src.head}
+              </h2>
+              <p className="lg:mt-2 text-sm md:text-base drop-shadow-md lg:w-3/4">
+                {src.para}
+              </p>
 
               <div className="flex flex-row lg:flex-row gap-2 lg:mt-3">
                 {/* Get Started button */}
