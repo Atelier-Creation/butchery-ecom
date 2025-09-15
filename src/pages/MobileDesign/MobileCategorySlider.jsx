@@ -30,7 +30,7 @@ const MobileCategorySlider = () => {
   ];
 
   return (
-    <div className="w-full overflow-hidden my-2 px-2 block lg:px-10 lg:mt-10">
+    <div className="w-full overflow-hidden my-2 px-5 block lg:px-15 lg:mt-10">
       <p className="py-4 mb-2 lg:mb-8 text-xl text-center font-bold lg:text-3xl lg:font-bold">
         Enjoy Fresh Meat With The Best Quality
       </p>
@@ -43,7 +43,7 @@ const MobileCategorySlider = () => {
         breakpoints={{
           1024: {
             slidesPerView: 4,
-            spaceBetween: 20,
+            spaceBetween: 0,
           },
         }}
         className="pb-8"
@@ -52,10 +52,10 @@ const MobileCategorySlider = () => {
           <SwiperSlide key={idx}>
             <a
               href={item.link}
-              className="group block overflow-hidden text-center rounded-xl transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg"
+              className="group block overflow-hidden text-center rounded-xl "
             >
               {/* Image wrapper with shine effect */}
-              <div className="relative w-full h-full aspect-square overflow-hidden rounded-xl">
+              <div className="relative w-[240px] h-[240px] mx-auto aspect-[1/1] overflow-hidden rounded-xl transition-all duration-300 ease-out group-hover:-translate-y-1 group-hover:shadow-lg">
                 <img
                   src={item.img}
                   alt={item.title.en}

@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { MdOutlineShoppingBag } from "react-icons/md";
 import { FaPhoneAlt } from "react-icons/fa";
-import { IoMail } from "react-icons/io5";
+import { IoLocationSharp, IoMail } from "react-icons/io5";
 
 const Navbar = () => {
   return (
@@ -17,21 +17,21 @@ const Navbar = () => {
       {/* Top Bar */}
       <div className="bg-gray-100 text-sm py-2.5 px-4 flex justify-between items-center">
         <div className="flex items-center gap-4 ms-60">
-          <div className="flex items-center gap-1 text-gray-600">
-            <FaPhoneAlt  size={14} />
-            <span>1800-313-3903</span>
+          <div className="flex items-center gap-1">
+            <FaPhoneAlt  size={16} />
+            <span className="text-gray-600">1800-313-3903</span>
           </div>
-          <div className="flex items-center gap-1 text-gray-600">
-            <IoMail  size={14} />
-            <span>customercare@iraichikadai.com</span>
+          <div className="flex items-center gap-1">
+            <IoMail  size={16} />
+            <span className="text-gray-600">customercare@iraichikadai.com</span>
           </div>
         </div>
         <div>
           <a
             href="#"
-            className="hover:underline me-6 inline-flex items-center gap-1 text-red-600"
+            className="hover:underline me-6 inline-flex items-center gap-1text-gray-800"
           >
-            <ChevronDown size={16} /> Coimbatore
+           <IoLocationSharp size={20} color="#E41D25" />  Coimbatore <ChevronDown size={14} />
           </a>
         </div>
       </div>

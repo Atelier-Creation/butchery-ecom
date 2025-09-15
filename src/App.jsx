@@ -12,6 +12,7 @@ import CreateAccount from "./pages/LoginPage/CreateAccount";
 import CartDrawer from "./components/CartDrawer/CartDrawer";
 import { ModalProvider } from "./context/GlobalModal";
 import { ModalQuickProvider } from "./context/QuickContext";
+import './App.css'
 function App() {
   const [isMobile, setIsMobile] = useState(false);
 

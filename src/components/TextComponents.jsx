@@ -4,7 +4,7 @@ import { useLang } from "../context/LanguageContext";
 // 🔠 Generic text component
 const Text = ({ as: Tag = "span", en, ta, className = "", ...props }) => {
   const { lang } = useLang() || { lang: "en" };
-  const langClass = lang === "ta" ? "font-tamil" : "";
+  const langClass = lang === "ta" ? "font-tamil" : "english-font";
 
   return (
     <Tag className={`${className} ${langClass}`} {...props}>
