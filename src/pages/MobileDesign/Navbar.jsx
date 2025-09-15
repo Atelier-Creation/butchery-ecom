@@ -7,11 +7,15 @@ import {
   User,
   ChevronDown,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { MdOutlineShoppingBag } from "react-icons/md";
 import { FaPhoneAlt } from "react-icons/fa";
 import { IoLocationSharp, IoMail } from "react-icons/io5";
-
+import LocationDropdown from "../../components/LocationDropdown";
+import { useCart } from "../../components/CartDrawer/CartContext";
 const Navbar = () => {
+  const navigate = useNavigate()
+  const { cartItems, removeFromCart, addToCart, toggleDrawer } = useCart();
   return (
     <header className="w-full">
       {/* Top Bar */}
@@ -26,14 +30,15 @@ const Navbar = () => {
             <span className="text-gray-600">customercare@iraichikadai.com</span>
           </div>
         </div>
-        <div>
-          <a
-            href="#"
+        {/* <div>
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             className="hover:underline me-6 inline-flex items-center gap-1text-gray-800"
           >
            <IoLocationSharp size={20} color="#E41D25" />  Coimbatore <ChevronDown size={14} />
-          </a>
-        </div>
+          </button>
+        </div> */}
+        <LocationDropdown/>
       </div>
 
       {/* Main Navbar */}
@@ -90,13 +95,19 @@ const Navbar = () => {
                 size={18}
               />
             </div>
-            <div className="p-2 bg-[#BC141B91] border border-[#FFFFFF30] rounded-full">
+            <div   onClick={(e) => {
+    e.stopPropagation(); // prevent bubbling
+    toggleDrawer(true);
+  }} className="p-2 bg-[#BC141B91] border border-[#FFFFFF30] rounded-full">
               <MdOutlineShoppingBag
                 className="cursor-pointer "
                 size={18}
               />
             </div>
-            <div className="p-2 bg-[#BC141B91] border border-[#FFFFFF30] rounded-full">
+            <div   onClick={(e) => {
+    e.stopPropagation(); // stop event bubbling
+    navigate("/login");
+  }} className="p-2 bg-[#BC141B91] border border-[#FFFFFF30] rounded-full">
               <User className="cursor-pointer " size={18} />
             </div>
           </div>
