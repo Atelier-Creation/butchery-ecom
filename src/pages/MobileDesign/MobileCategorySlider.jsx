@@ -5,8 +5,10 @@ import "swiper/css";
 import "swiper/css/pagination";
 import Aos from "aos";
 import "aos/dist/aos.css";
+import {useNavigate } from "react-router-dom";
 
 const MobileCategorySlider = () => {
+    const navigate = useNavigate();
   const collections = [
     {
       title: { en: "Chicken", ta: "நாட்டு கோழி" },
@@ -47,7 +49,7 @@ const MobileCategorySlider = () => {
   }, []);
 
   return (
-    <div className="w-full px-5 lg:px-12 mb-6">
+    <div className="w-full px-5 lg:px-12 mb-6 lg:mt-6">
       <p className="py-4 mb-6 text-xl text-center font-bold lg:text-3xl">
         Enjoy Fresh Meals With The Best Quality
       </p>
@@ -91,7 +93,8 @@ const MobileCategorySlider = () => {
                     {item.desc}
                   </p>
                   <a
-                    href={item.link}
+                    to={""}
+                    onclick={()=>navigate(item.link)}
                     className="mt-auto text-center w-1/2 inline-block bg-[#492818] text-white/90 px-2 py-2 rounded-full text-sm transition-colors duration-500 ease-in-out hover:bg-[#4e210b]"
                   >
                     ORDER NOW

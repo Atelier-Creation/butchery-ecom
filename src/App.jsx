@@ -14,6 +14,7 @@ import { ModalProvider } from "./context/GlobalModal";
 import { ModalQuickProvider } from "./context/QuickContext";
 import "./App.css";
 import ScrollToTop from "./context/ScrollToTop";
+import WhatsAppFloatButton from "./components/WhatsAppFloatButton";
 function App() {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -46,6 +47,7 @@ function App() {
           </ModalQuickProvider>
         </ModalProvider>
       </CartProvider>
+      <WhatsAppFloatButton />
     </Router>
   );
 }
