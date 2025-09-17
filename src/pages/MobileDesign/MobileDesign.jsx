@@ -9,6 +9,8 @@ import FeatureSlider from "./MobileFeatureSlider";
 import MobileFooter from "./MobileFooter";
 import NewNavbar from "./NewNavbar";
 import Navbar from "../../pages/MobileDesign/Navbar";
+import AOS from "aos";
+import "aos/dist/aos.css";
 const menuItems = [
   {
     label: "Chicken",
@@ -126,7 +128,6 @@ const Broilerproducts = [
   },
 ];
 
-
 const muttonProducts = [
   {
     id: 1,
@@ -210,41 +211,81 @@ const featuresData = [
 ];
 
 const MobileDesign = () => {
-    const [isMobile, setIsMobile] = useState(false);
-  
-    useEffect(() => {
-      const handleResize = () => setIsMobile(window.innerWidth <= 768);
-      handleResize(); // run once on mount
-      window.addEventListener("resize", handleResize);
-      return () => window.removeEventListener("resize", handleResize);
-    }, []);
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    AOS.init({
+      duration: 1000, // animation duration
+      easing: "ease-in-out", // animation easing
+      once: true, // whether animation should happen only once
+    });
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    handleResize(); // run once on mount
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   return (
     <div className="bg-white min-h-screen">
-      {isMobile ? <MobileNavbar /> : <Navbar/>}
-      {isMobile ?<IconMenu items={menuItems} />: ""}
-      <MobileBanner />
-      <MobileCategorySlider />
-      <MobileBestseller
-        title="We Produce The Best Selected Meats For You"
-        subtitle="Most popular product near you!"
-        products={products}
-        onViewAll={() => console.log("View all clicked")}
-      />
-      <MobileBestseller
-        title="We Produce The Best Selected Broiler Chicken For You"
-        subtitle="Most popular product near you!"
-        products={Broilerproducts}
-        onViewAll={() => console.log("View all clicked")}
-      />
-      <ImageWithText/>
-      {/* <MobileBestseller
-        title="We Produce The Best Selected Mutoom For You"
-        subtitle="Most popular product near you!"
-        products={muttonProducts}
-        onViewAll={() => console.log("View all clicked")}
-      /> */}
-      <FeatureSlider features = {featuresData}/>
-      <MobileFooter/>
+      {isMobile ? <MobileNavbar /> : <Navbar />}
+
+      {isMobile ? (
+        <div>
+          <IconMenu items={menuItems} />
+        </div>
+      ) : null}
+
+      <div data-aos="fade-up" data-aos-delay="100">
+        <MobileBanner />
+      </div>
+
+      {!isMobile ? (
+        <div data-aos="fade-up" data-aos-delay="100">
+          <IconMenu items={menuItems} />
+        </div>
+      ): null}
+
+      <div data-aos="zoom-in" data-aos-delay="100">
+        <MobileCategorySlider />
+      </div>
+
+      <div data-aos="fade-right" data-aos-delay="100">
+        <MobileBestseller
+          title="We Produce The Best Selected Meats For You"
+          subtitle="Most popular product near you!"
+          products={products}
+          onViewAll={() => console.log("View all clicked")}
+        />
+      </div>
+
+      <div data-aos="fade-up" data-aos-delay="100">
+        <ImageWithText />
+      </div>
+
+      <div data-aos="zoom-in" data-aos-delay="100">
+        <MobileBestseller
+          title="We Produce The Best Selected Broiler Chicken For You"
+          subtitle="Most popular product near you!"
+          products={Broilerproducts}
+          onViewAll={() => console.log("View all clicked")}
+        />
+      </div>
+
+      {/* <div>
+    <MobileBestseller
+      title="We Produce The Best Selected Mutoom For You"
+      subtitle="Most popular product near you!"
+      products={muttonProducts}
+      onViewAll={() => console.log("View all clicked")}
+    />
+  </div> */}
+
+      <div data-aos="zoom-in" data-aos-delay="100">
+        <FeatureSlider features={featuresData} />
+      </div>
+
+      <MobileFooter />
     </div>
   );
 };

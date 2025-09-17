@@ -49,7 +49,7 @@ const FooterSection = ({ title, children }) => {
 const MobileFooter = () => {
   return (
     <footer className="bg-[#EE1c25] px-5 py-8 text-white">
-      <div className="mb-8 ">
+      {/* <div className="mb-8 ">
         <h2 className="text-xl font-bold mb-2 lg:text-4xl lg:font-semibold">
           The Trusted Choice for Premium Meat
         </h2>
@@ -78,7 +78,7 @@ const MobileFooter = () => {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
 
       <div className="my-8 lg:hidden flex flex-col items-center justify-center gap-2">
         <Link to={"/"}>
@@ -122,25 +122,32 @@ const MobileFooter = () => {
           </ul>
         </FooterSection>
       </div>
-      <div className="hidden lg:flex justify-around lg:mt-20 lg:pb-20 lg:border-b border-white">
+      <div className="hidden lg:flex justify-around lg:mt-10 lg:pb-10 lg:border-b border-white">
         <div className="w-80">
-        <div className="relative z-50 md:ml-15 lg:ml-20 inline-block mb-5">
-  {/* Black glow behind polygon */}
-  <div className="absolute inset-0 -z-10">
-    <div className="absolute inset-0 
+          <div className="relative z-50 md:ml-15 lg:ml-20 inline-block mb-5">
+            {/* Black glow behind polygon */}
+            <div className="absolute inset-0 -z-10">
+              <div
+                className="absolute inset-0 
       bg-black opacity-40
-      blur-[40px] scale-[1]">
-    </div>
-  </div>
+      blur-[40px] scale-[1]"
+              ></div>
+            </div>
 
-  {/* White polygon in front */}
-  <div className="[clip-path:polygon(0_0,100%_0,100%_85%,50%_100%,0_85%)] 
-      bg-white px-3 py-6 relative z-10">
-    <Link to={'/'}>
-      <img src="/logo.svg" alt="Logo" className="h-16 lg:h-20 object-cover" />
-    </Link>
-  </div>
-</div>
+            {/* White polygon in front */}
+            <div
+              className="[clip-path:polygon(0_0,100%_0,100%_85%,50%_100%,0_85%)] 
+      bg-white px-3 py-6 relative z-10"
+            >
+              <Link to={"/"}>
+                <img
+                  src="/logo.svg"
+                  alt="Logo"
+                  className="h-16 lg:h-20 object-cover"
+                />
+              </Link>
+            </div>
+          </div>
           <p className="text-sm text-start mb-4">
             Having had very bitter experiences with the local meat shops and
             seeing that my free range Country Chicken were sold alongside the

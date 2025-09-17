@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Eye } from "lucide-react";
 import { Button, P } from "../../components/TextComponents";
 import { useNavigate } from "react-router-dom";
 import { QuickModal, useQuickModal } from "../../context/QuickContext";
+import Aos from "aos";
 
 const MobileBestseller = ({
   title = "Best Sellers",
@@ -15,8 +16,12 @@ const MobileBestseller = ({
   const handleBuyNow = () => {
     openModal(<QuickModal />);
   };
+  useEffect(() => {
+  Aos.init({ duration: 1000, easing: "ease-in-out", once: true });
+}, []);
+
   return (
-    <div className="block px-4 py-6 lg:px-10 lg:mt-10">
+    <div className="block px-5 py-6 lg:px-20 lg:mt-10">
       <div className="lg:flex lg:justify-between">
         <div>
           {subtitle && (
@@ -41,7 +46,7 @@ const MobileBestseller = ({
         )}
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {products.map((item) => (
+        {products.map((item, idx) => (
           <div
             key={item.id}
             className="group rounded-xl shadow-md overflow-hidden relative  
@@ -50,6 +55,8 @@ const MobileBestseller = ({
                  onClick={() =>
                   navigate(`/products/${item.title}`, { state: { product: item } })
                 }
+                data-aos="fade-up"
+            data-aos-delay={idx * 200}
           >
             {/* Sale Tag */}
             <div className="relative">
@@ -104,6 +111,7 @@ const MobileBestseller = ({
             </div>
           </div>
         ))}
+        
       </div>
 
       {/* View All Button */}
@@ -113,7 +121,7 @@ const MobileBestseller = ({
             onClick={onViewAll}
             ta={"View all"}
             en={"View all"}
-            className="bg-red-800 text-white px-6 py-2 w-100 rounded-md font-medium"
+            className="bg-red-800 text-white px-20 py-2 w-full rounded-md font-medium"
           />
         </div>
       )}
