@@ -11,7 +11,7 @@ const MobileCategorySlider = () => {
     {
       title: { en: "Chicken", ta: "நாட்டு கோழி" },
       subtitles: "Country",
-      img: "/Meat/cat-1.png",
+      img: "/Meat/cat-5.png",
       desc: "Tender and juicy country chicken, raised naturally for rich flavor. Freshly sourced daily to ensure the best quality. Perfect for authentic home-style cooking.",
       link: "/collections/country-chicken",
       bg: "#7d8d2a",
@@ -19,7 +19,7 @@ const MobileCategorySlider = () => {
     {
       title: { en: "Mutton", ta: "மட்டன்" },
       subtitles: "Fresh",
-      img: "/Meat/cat-2.png",
+      img: "/Meat/cat-1.png",
       desc: "Premium goat meat with unbeatable tenderness and taste. Handpicked and hygienically processed for your family. Ideal for curries, biryanis.",
       link: "/collections/mutton",
       bg: "#e7a545",
@@ -27,7 +27,7 @@ const MobileCategorySlider = () => {
     {
       title: { en: "Chicken", ta: "கோழி" },
       subtitles: "Broiler",
-      img: "/Meat/cat-3.png",
+      img: "/Meat/cat-2.png",
       desc: "Fresh broiler chicken, packed with protein and nutrition. Perfectly cut to make your cooking easy and enjoyable. A healthy choice for everyday meals.",
       link: "/collections/broiler-chicken-meat",
       bg: "#8b2a2a",
