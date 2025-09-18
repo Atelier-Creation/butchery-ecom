@@ -87,7 +87,7 @@ const MobileCategorySlider = () => {
                 <img
                   src={item.img}
                   alt={item.title.en}
-                  className="w-[60%] left-[35%] absolute -top-[10%] h-fit object-contain z-100 shadow-2xl rounded-[50%] transition-transform duration-500 ease-in-out group-hover:scale-110"
+                  className="w-[66%] left-[34%] absolute -top-[9%] h-fit object-contain z-100 shadow-2xl rounded-[50%] transition-transform duration-500 ease-in-out group-hover:scale-110"
                 />
                 <div className="p-4 absolute bottom-0 text-left flex flex-col gap-1 h-auto">
                   <div>
@@ -99,11 +99,14 @@ const MobileCategorySlider = () => {
                     </span>
                     <h3 className="text-3xl font-semibold mb-2 text-gray-50">
                       {item.title.en}{" "}
-                      <span className="text-xl">{item.title.ta}</span>
+                      <span className="text-xl block">{item.title.ta}</span>
                     </h3>
                   </div>
                   <p className="text-gray-100 text-sm opacity-90 mb-3">
-                    {item.desc.en}
+                    {item.desc.en + " "}
+                    <span className="text-gray-100 text-xs opacity-90">
+                      ({item.desc.ta})
+                    </span>
                   </p>
                   <a
                     onClick={() => navigate(item.link)}
