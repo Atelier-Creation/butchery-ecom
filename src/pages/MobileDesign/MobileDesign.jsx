@@ -50,7 +50,7 @@ const products = [
     id: 2,
     title: {
       en: "Country Chicken (Naattu Kozhi) Boneless",
-      ta: "எலும்பில்லா நாட்டு கோழி",
+      ta: "எலும்பில்லா நாட்டு கோழி இறைச்சி",
     },
     img: "https://lenaturelmeat.com/cdn/shop/files/Goat_Keema_3.jpg?v=1746256020&width=533",
     price: "₹250.00",
@@ -72,7 +72,7 @@ const products = [
     id: 4,
     title: {
       en: "Country Chicken (Naattu Kozhi) Chicken Mince/Keema",
-      ta: "நாட்டு கோழி கீமா",
+      ta: "நாட்டு கோழி கீமா இறைச்சி",
     },
     img: "https://lenaturelmeat.com/cdn/shop/files/Broiler1.jpg?v=1686210766&width=533",
     price: "₹250.00",
@@ -115,8 +115,8 @@ const products = [
   {
     id: 4,
     title: {
-      en: "Country Chicken (Broiler Kozhi) Lollipop Pack of 6",
-      ta: "நாட்டு கோழி (Broiler Kozhi) லாலிபாப் 6 பேக்",
+      en: "Chicken (Broiler Kozhi) Lollipop Pack of 6",
+      ta: "கோழி (Broiler Kozhi) லாலிபாப் 6 பேக்",
     },
     img: "https://lenaturelmeat.com/cdn/shop/files/Lalipop1.webp?v=1756895386&width=360",
     price: "₹520.00",

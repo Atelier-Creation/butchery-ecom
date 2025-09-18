@@ -62,7 +62,7 @@ const MobileBestseller = ({
         breakpoints={{
           320: { slidesPerView: 2 }, // mobile
           768: { slidesPerView: 2 }, // tablet
-          1024: { slidesPerView: 4 }, // large screens
+          1024: { slidesPerView: 5 }, // large screens
         }}
         className="pb-20 bestseller"
       >
