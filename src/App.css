@@ -52,7 +52,9 @@ p .english-font{
     transform: rotate(360deg);
   }
 }
-
+.bestseller .swiper-pagination {
+  margin-top: 30px; /* adjust spacing */
+}
 .animate-spin-slow {
   animation: spin-slow 10s linear infinite; /* Adjust duration as needed */
 }

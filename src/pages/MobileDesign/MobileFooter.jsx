@@ -48,7 +48,7 @@ const FooterSection = ({ title, children }) => {
 
 const MobileFooter = () => {
   return (
-    <footer className="bg-[#EE1c25] px-5 py-8 text-white">
+    <footer className="bg-[#111111] px-5 py-8 text-white">
       {/* <div className="mb-8 ">
         <h2 className="text-xl font-bold mb-2 lg:text-4xl lg:font-semibold">
           The Trusted Choice for Premium Meat

@@ -79,6 +79,50 @@ const products = [
     oldPrice: "₹280.00",
     tag: "Sale",
   },
+  {
+    id: 1,
+    title: {
+      en: "Broiler Chicken (Broiler Kozhi) Curry Cut Meat",
+      ta: "ப்ரோய்லர் கோழி (Broiler Kozhi) கறி கட் மீட்",
+    },
+    img: "https://lenaturelmeat.com/cdn/shop/files/NT4.png?v=1719991493&width=533",
+    price: "₹385.00",
+    oldPrice: "₹420.00",
+    tag: "Sale",
+  },
+  {
+    id: 2,
+    title: {
+      en: "Broiler Chicken (Broiler Kozhi) Boneless",
+      ta: "ப்ரோய்லர் கோழி (Broiler Kozhi) எலும்பில்லா",
+    },
+    img: "https://lenaturelmeat.com/cdn/shop/files/Goat_Keema_3.jpg?v=1746256020",
+    price: "₹250.00",
+    oldPrice: "₹300.00",
+    tag: "Sale",
+  },
+  {
+    id: 3,
+    title: {
+      en: "Broiler Chicken (Broiler Kozhi) Lollipop Pack of 6",
+      ta: "ப்ரோய்லர் கோழி (Broiler Kozhi) லாலிபாப் 6 பேக்",
+    },
+    img: "https://lenaturelmeat.com/cdn/shop/files/top-view-delicious-salmon-table.jpg?v=1753342530",
+    price: "₹520.00",
+    oldPrice: "₹600.00",
+    tag: "",
+  },
+  {
+    id: 4,
+    title: {
+      en: "Country Chicken (Broiler Kozhi) Lollipop Pack of 6",
+      ta: "நாட்டு கோழி (Broiler Kozhi) லாலிபாப் 6 பேக்",
+    },
+    img: "https://lenaturelmeat.com/cdn/shop/files/Lalipop1.webp?v=1756895386&width=360",
+    price: "₹520.00",
+    oldPrice: "₹600.00",
+    tag: "",
+  },
 ];
 
 const Broilerproducts = [
@@ -263,14 +307,14 @@ const MobileDesign = () => {
         <ImageWithText />
       </div>
 
-      <div data-aos="zoom-in" data-aos-delay="100">
+      {/* <div data-aos="zoom-in" data-aos-delay="100">
         <MobileBestseller
           title="We Produce The Best Selected Broiler Chicken For You"
           subtitle="Most popular product near you!"
           products={Broilerproducts}
           onViewAll={() => console.log("View all clicked")}
         />
-      </div>
+      </div> */}
 
       {/* <div>
     <MobileBestseller

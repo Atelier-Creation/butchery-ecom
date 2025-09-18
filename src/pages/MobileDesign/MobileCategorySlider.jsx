@@ -5,16 +5,19 @@ import "swiper/css";
 import "swiper/css/pagination";
 import Aos from "aos";
 import "aos/dist/aos.css";
-import {useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const MobileCategorySlider = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const collections = [
     {
       title: { en: "Chicken", ta: "நாட்டு கோழி" },
       subtitles: "Country",
-      img: "/Meat/cat-5.png",
-      desc: "Tender and juicy country chicken, raised naturally for rich flavor. Freshly sourced daily to ensure the best quality. Perfect for authentic home-style cooking.",
+      img: "/Meat/cat-8.png",
+      desc: {
+        en: "Tender, juicy country chicken, freshly sourced daily.",
+        ta: "மிக நனைந்த, சுவையான நாட்டு கோழி, தினமும் புதியதாக கிடைக்கும்.",
+      },
       link: "/collections/country-chicken",
       bg: "#7d8d2a",
     },
@@ -22,23 +25,32 @@ const MobileCategorySlider = () => {
       title: { en: "Mutton", ta: "மட்டன்" },
       subtitles: "Fresh",
       img: "/Meat/cat-1.png",
-      desc: "Premium goat meat with unbeatable tenderness and taste. Handpicked and hygienically processed for your family. Ideal for curries, biryanis.",
+      desc: {
+        en: "Premium goat meat, tender and flavorful.",
+        ta: "உயர்தர மட்டன், மிருதுவானதும் சுவையானதும்.",
+      },
       link: "/collections/mutton",
       bg: "#e7a545",
     },
     {
       title: { en: "Chicken", ta: "கோழி" },
       subtitles: "Broiler",
-      img: "/Meat/cat-2.png",
-      desc: "Fresh broiler chicken, packed with protein and nutrition. Perfectly cut to make your cooking easy and enjoyable. A healthy choice for everyday meals.",
+      img: "/Meat/cat-9.png",
+      desc: {
+        en: "Fresh broiler chicken, protein-rich and easy to cook.",
+        ta: "புதிய கோழி, புரதம் நிறைந்தது, சமையல் எளிது.",
+      },
       link: "/collections/broiler-chicken-meat",
       bg: "#8b2a2a",
     },
     {
       title: { en: "Duck", ta: "வாத்து" },
       subtitles: "Fresh",
-      img: "/Meat/cat-4.png",
-      desc: "Delicious farm-fresh duck meat with rich texture and taste. Carefully sourced to bring authentic flavors to your kitchen. Great for traditional and gourmet recipes.",
+      img: "/Meat/cat-10.png",
+      desc: {
+        en: "Farm-fresh duck meat with rich taste.",
+        ta: "பண்ணை புதிய வாத்து இறைச்சி, சுவை மிகுந்தது.",
+      },
       link: "/collections/duck-meat",
       bg: "#d98b4e",
     },
@@ -86,16 +98,18 @@ const MobileCategorySlider = () => {
                       {item.subtitles}
                     </span>
                     <h3 className="text-3xl font-semibold mb-2 text-gray-50">
-                      {item.title.en}
+                      {item.title.en}{" "}
+                      <span className="text-xl">{item.title.ta}</span>
                     </h3>
                   </div>
                   <p className="text-gray-100 text-sm opacity-90 mb-3">
-                    {item.desc}
+                    {item.desc.en}
                   </p>
                   <a
-                    to={""}
-                    onclick={()=>navigate(item.link)}
-                    className="mt-auto text-center w-1/2 inline-block bg-[#492818] text-white/90 px-2 py-2 rounded-full text-sm transition-colors duration-500 ease-in-out hover:bg-[#4e210b]"
+                    onClick={() => navigate(item.link)}
+                    className="mt-auto text-center w-1/2 inline-block bg-[#492818] text-white/90 px-4 py-2 rounded-full text-sm 
+             transition-all duration-300 ease-in-out 
+             hover:bg-[#4e210b] hover:scale-105 hover:shadow-lg active:scale-95"
                   >
                     ORDER NOW
                   </a>
@@ -119,7 +133,7 @@ const MobileCategorySlider = () => {
             <img
               src={item.img}
               alt={item.title.en}
-              className="w-[60%] left-[42%] absolute -top-[15%] h-fit object-contain shadow-2xl rounded-[50%] transition-transform duration-500 ease-in-out group-hover:scale-110"
+              className="w-[60%] left-[42%] absolute -top-[15%] h-fit object-cover shadow-2xl rounded-[50%] transition-transform duration-500 ease-in-out group-hover:scale-110"
             />
             <div className="p-4 absolute bottom-0 text-left flex flex-col gap-1 h-auto">
               <div>
@@ -129,18 +143,37 @@ const MobileCategorySlider = () => {
                 >
                   {item.subtitles}
                 </span>
-                <h3 className="text-4xl font-semibold mb-2 text-gray-50">
-                  {item.title.en}
+                <h3 className="text-4xl font-semibold mb-1 text-gray-50">
+                  {item.title.en}{" "}
+                  <span className=" block text-xs">( {item.title.ta} )</span>
                 </h3>
               </div>
               <p className="text-gray-100 text-sm opacity-90 mb-3">
-                {item.desc}
+                {item.desc.en + " "}
+                <span className="text-gray-100 text-xs opacity-90">
+                  ({item.desc.ta})
+                </span>
               </p>
+
               <a
-                href={item.link}
-                className="mt-auto text-center w-1/2 inline-block bg-[#492818] text-white/90 px-2 py-2 rounded-full text-sm transition-colors duration-500 ease-in-out hover:bg-[#4e210b]"
+                onClick={() => navigate(item.link)}
+                className="relative overflow-hidden group/button 
+             mt-auto text-center w-1/2 inline-block shadow-lg
+             bg-[#492818] text-white/90 px-4 py-2 
+             rounded-full text-sm 
+             transition-all duration-300 ease-in-out 
+             hover:bg-[#4e210b] hover:scale-105 
+             hover:shadow-xl active:scale-95"
               >
                 ORDER NOW
+                {/* Shine overlay */}
+                <span
+                  className="absolute top-0 left-[-75%] w-[50%] h-full 
+                   bg-gradient-to-r from-transparent via-white/30 to-transparent 
+                   transform skew-x-[-20deg] 
+                   group-hover/button:left-[125%] 
+                   transition-all duration-700 ease-in-out"
+                ></span>
               </a>
             </div>
           </div>

@@ -20,7 +20,7 @@ const ImageWithText = () => {
 
   return (
     <div
-      className="bg-[#EE1c25] overflow-hidden text-white rounded-lg p-0 mx-5 md:mx-5 flex flex-col md:flex-row gap-10 justify-center items-center lg:mx-10 lg:mt-15"
+      className="bg-[#EE1c25] overflow-hidden text-white rounded-lg p-0 mx-5 md:mx-5 flex flex-col md:flex-row gap-10 justify-center items-center lg:mx-10 lg:mt-8"
       data-aos="zoom-in"
       data-aos-delay="100"
     >
