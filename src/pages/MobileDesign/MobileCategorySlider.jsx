@@ -80,7 +80,7 @@ const MobileCategorySlider = () => {
             <SwiperSlide key={idx}>
               <div
                 style={{ backgroundColor: item.bg }}
-                className="relative group z-50 cursor-pointer shadow-2xl rounded-xl h-[340px] sm:h-[300px] md:h-[340px] overflow-visible transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-1"
+                className="relative group z-50 cursor-pointer shadow-2xl rounded-xl h-[360px] sm:h-[300px] md:h-[340px] overflow-visible transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-1"
                 data-aos="fade-up"
                 data-aos-delay={idx * 200}
               >
