@@ -6,38 +6,41 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { H2, P, Button } from "../../components/TextComponents";
+import image1 from '../../assets/images/top-view-fresh-fish-slices-with-red-tomatoes-dark-blue-background-ocean-meat-seafood-sea-meal-dish-.jpg'
+import image2 from '../../assets/images/top-view-meat-concept-with-copy-space.jpg'
+import image3 from '../../assets/images/top-view-raw-meat-slices-with-greens-red-tomatoes-dark-background-dish-meat-butcher-meal-salad-.jpg'
 const MobileBanner = () => {
   const images = [
     {
-      image: "/Country-chicken-Legs.png",
+      image: image1,
       head: "Fresh Country Chicken, Mutton & Chicken – Delivered to Your Doorstep!",
       para: "Flavorful, tender meat freshly sourced every day from Iraichi Kadai.",
     },
     {
-      image: "/raw-ribs-wooden-board-preparing-cooking.jpg",
+      image:image2,
       head: "பசுமையான நாட்டுக்கோழி, மட்டன் & கோழி – உங்கள் வீட்டு வாசலில்!",
       para: "சுவை நிறைந்த இறைச்சி, தினமும் பசுமையாக Iraichi Kadai-லிருந்து.",
     },
     {
-      image: "/country-chicken-plater.jpg",
+      image: image3,
       head: "For Your Family Meals – Fresh Meat Delivered Within 1 Hour!",
       para: "Country chicken, mutton, and chicken – freshly cut daily and delivered safely.",
     },
-    {
-      image: "/top-view-raw-meat-prepared-be-cooked.jpg",
-      head: "உங்கள் குடும்ப சாப்பாட்டிற்கு – பசுமையான இறைச்சி, 1 மணி நேரத்தில் டெலிவரி!",
-      para: "நாட்டுக்கோழி, மட்டன், கோழி – தினமும் பசுமையாக வெட்டி, பாதுகாப்பாக வழங்குகிறோம்.",
-    },
-    {
-      image: "/indian-chicken-gravy.webp",
-      head: "Authentic Indian Chicken Gravy",
-      para: "Richly spiced and slow-cooked to perfection, this classic chicken curry brings the true taste of India to your table.",
-    },
-    {
-      image: "/raw-chicken-wooden-board-with-bunch-fresh-vegetables-spices.jpg",
-      head: "அசல் இந்திய கோழி குழம்பு",
-      para: "மசாலா நிறைந்த, மெதுவாக சமைக்கப்பட்ட இந்த குழம்பு, இந்தியாவின் உண்மையான சுவையை உங்களின் மேசைக்கு கொண்டு வருகிறது.",
-    },
+    // {
+    //   image: "/top-view-raw-meat-prepared-be-cooked.jpg",
+    //   head: "உங்கள் குடும்ப சாப்பாட்டிற்கு – பசுமையான இறைச்சி, 1 மணி நேரத்தில் டெலிவரி!",
+    //   para: "நாட்டுக்கோழி, மட்டன், கோழி – தினமும் பசுமையாக வெட்டி, பாதுகாப்பாக வழங்குகிறோம்.",
+    // },
+    // {
+    //   image: "/indian-chicken-gravy.webp",
+    //   head: "Authentic Indian Chicken Gravy",
+    //   para: "Richly spiced and slow-cooked to perfection, this classic chicken curry brings the true taste of India to your table.",
+    // },
+    // {
+    //   image: "/raw-chicken-wooden-board-with-bunch-fresh-vegetables-spices.jpg",
+    //   head: "அசல் இந்திய கோழி குழம்பு",
+    //   para: "மசாலா நிறைந்த, மெதுவாக சமைக்கப்பட்ட இந்த குழம்பு, இந்தியாவின் உண்மையான சுவையை உங்களின் மேசைக்கு கொண்டு வருகிறது.",
+    // },
   ];
 
   const swiperRef = useRef(null);

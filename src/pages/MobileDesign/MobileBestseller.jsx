@@ -47,7 +47,7 @@ const MobileBestseller = ({
               onClick={onViewAll}
               ta={"View all"}
               en={"View all"}
-              className="bg-red-800 text-white px-6 py-2 rounded-md font-medium"
+              className="bg-black text-white px-6 py-2 rounded-md font-medium"
             />
           </div>
         )}
@@ -141,7 +141,7 @@ const MobileBestseller = ({
             onClick={onViewAll}
             ta={"View all"}
             en={"View all"}
-            className="bg-red-800 text-white px-20 py-2 w-full rounded-md font-medium"
+            className="bg-black text-white px-20 py-2 w-full rounded-md font-medium"
           />
         </div>
       )}

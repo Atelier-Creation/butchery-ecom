@@ -110,7 +110,7 @@ const MobileCategorySlider = () => {
                   </p>
                   <a
                     onClick={() => navigate(item.link)}
-                    className="mt-auto text-center w-1/2 inline-block bg-[#492818] text-white/90 px-4 py-2 rounded-full text-sm 
+                    className="mt-auto text-center w-1/2 inline-block bg-black text-white px-4 py-2 rounded-full text-sm 
              transition-all duration-300 ease-in-out 
              hover:bg-[#4e210b] hover:scale-105 hover:shadow-lg active:scale-95"
                   >
@@ -162,10 +162,10 @@ const MobileCategorySlider = () => {
                 onClick={() => navigate(item.link)}
                 className="relative overflow-hidden group/button 
              mt-auto text-center w-1/2 inline-block shadow-lg
-             bg-[#492818] text-white/90 px-4 py-2 
+             bg-black text-white px-4 py-2 
              rounded-full text-sm 
              transition-all duration-300 ease-in-out 
-             hover:bg-[#4e210b] hover:scale-105 
+             hover:bg-black hover:scale-105 
              hover:shadow-xl active:scale-95"
               >
                 ORDER NOW

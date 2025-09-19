@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { FiStar } from "react-icons/fi";
 import { Link } from "react-router-dom";
+import bgImage from '../../assets/images/Untitled/42621686_9008027 1-cropped.svg'
+import rectBg from '../../assets/images/Untitled/Rectangle 203.svg'
 const footerGridData = [
   {
     starCount: "4",
@@ -48,7 +50,10 @@ const FooterSection = ({ title, children }) => {
 
 const MobileFooter = () => {
   return (
-    <footer className="bg-[#111111] px-5 py-8 text-white">
+    <footer className="relative py-8 text-white z-10 mt-40">
+      <div className="absolute -top-45 left-0 w-full">
+        <img src={bgImage} className="w-full object-cover"/>
+      </div>
       {/* <div className="mb-8 ">
         <h2 className="text-xl font-bold mb-2 lg:text-4xl lg:font-semibold">
           The Trusted Choice for Premium Meat
@@ -122,8 +127,12 @@ const MobileFooter = () => {
           </ul>
         </FooterSection>
       </div>
-      <div className="hidden lg:flex justify-around lg:mt-10 lg:pb-10 lg:border-b border-white">
-        <div className="w-80">
+      <div className="hidden relative lg:flex justify-around lg:mt-10 lg:pb-10 lg:border-b border-white"
+      >
+              <div className="absolute top-0 left-0 w-full">
+        <img src={rectBg} className="w-full object-cover"/>
+      </div>
+        <div className="w-80 z-10">
           <div className="relative z-50 md:ml-15 lg:ml-20 inline-block mb-5">
             {/* Black glow behind polygon */}
             <div className="absolute inset-0 -z-10">
@@ -155,7 +164,7 @@ const MobileFooter = () => {
             the brand “Le Naturel Meat” came into existence!
           </p>
         </div>
-        <div className="lg:flex flex-col gap-2">
+        <div className="lg:flex flex-col gap-2 z-10">
           <h4 className="text-2xl font-semibold">Quick Links</h4>
           <a href="/" className=" hover:border-b-1 w-fit">
             Search
@@ -173,7 +182,7 @@ const MobileFooter = () => {
             Recipe
           </a>
         </div>
-        <div className="lg:flex flex-col gap-2">
+        <div className="lg:flex flex-col gap-2 z-10">
           <h4 className="text-2xl font-semibold">Policies</h4>
           <a href="/" className=" hover:border-b-1 w-fit">
             Privacy Policy
@@ -188,7 +197,7 @@ const MobileFooter = () => {
             Return and refund policy
           </a>
         </div>
-        <div className="lg:flex flex-col gap-2">
+        <div className="lg:flex flex-col gap-2 z-10">
           <h4 className="text-2xl font-semibold">Settings</h4>
           <a href="/" className=" hover:border-b-1 w-fit">
             Home
@@ -208,7 +217,7 @@ const MobileFooter = () => {
         </div>
       </div>
 
-      <div className="text-center text-xs mt-8 lg:text-base lg:font-semibold">
+      <div className="relative text-center text-xs lg:text-base lg:font-semibold">
         © 2025, Iraichi Kadai &{" "}
         <a
           href="https://www.theateliercreation.com/"
@@ -218,6 +227,9 @@ const MobileFooter = () => {
           Atelier
         </a>{" "}
         All Rights Reserved.
+      </div>
+      <div className="absolute bottom-0 left-0 w-full h-100">
+        <img src={rectBg} className="w-full object-cover"/>
       </div>
     </footer>
   );
