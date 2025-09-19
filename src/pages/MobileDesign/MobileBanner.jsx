@@ -14,7 +14,7 @@ const MobileBanner = () => {
       para: "Flavorful, tender meat freshly sourced every day from Iraichi Kadai.",
     },
     {
-      image: "/Country-chicken-Legs.png",
+      image: "/raw-ribs-wooden-board-preparing-cooking.jpg",
       head: "பசுமையான நாட்டுக்கோழி, மட்டன் & கோழி – உங்கள் வீட்டு வாசலில்!",
       para: "சுவை நிறைந்த இறைச்சி, தினமும் பசுமையாக Iraichi Kadai-லிருந்து.",
     },
@@ -24,7 +24,7 @@ const MobileBanner = () => {
       para: "Country chicken, mutton, and chicken – freshly cut daily and delivered safely.",
     },
     {
-      image: "/country-chicken-plater.jpg",
+      image: "/top-view-raw-meat-prepared-be-cooked.jpg",
       head: "உங்கள் குடும்ப சாப்பாட்டிற்கு – பசுமையான இறைச்சி, 1 மணி நேரத்தில் டெலிவரி!",
       para: "நாட்டுக்கோழி, மட்டன், கோழி – தினமும் பசுமையாக வெட்டி, பாதுகாப்பாக வழங்குகிறோம்.",
     },
@@ -34,7 +34,7 @@ const MobileBanner = () => {
       para: "Richly spiced and slow-cooked to perfection, this classic chicken curry brings the true taste of India to your table.",
     },
     {
-      image: "/indian-chicken-gravy.webp",
+      image: "/raw-chicken-wooden-board-with-bunch-fresh-vegetables-spices.jpg",
       head: "அசல் இந்திய கோழி குழம்பு",
       para: "மசாலா நிறைந்த, மெதுவாக சமைக்கப்பட்ட இந்த குழம்பு, இந்தியாவின் உண்மையான சுவையை உங்களின் மேசைக்கு கொண்டு வருகிறது.",
     },
@@ -66,11 +66,11 @@ const MobileBanner = () => {
         navigation={false}
       >
         {images.map((src, idx) => (
-          <SwiperSlide key={idx}> 
+          <SwiperSlide key={idx}>
             <img
               src={src.image}
               alt={`Slide ${idx}`}
-              className="relative w-full h-90 lg:h-screen object-cover sm:h-80 md:h-96"
+              className="relative w-full h-80 lg:h-[80vh] object-cover sm:h-90 md:h-96"
             />
             <div className="absolute inset-0 bg-black/60"></div>
             <div className="absolute w-full top-10 left-0 text-center lg:top-25 lg:left-5 flex flex-col lg:gap-3 gap-2 items-center lg:items-start justify-center lg:text-start text-white px-4 lg:w-1/2">
@@ -98,7 +98,7 @@ const MobileBanner = () => {
               </div>
             </div>
 
-            <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 flex items-center gap-4 text-black px-3 py-1 rounded-full">
+            <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 flex items-center gap-4 text-black lg:text-gray-200 px-3 py-1 rounded-full">
               <FiChevronLeft
                 size={20}
                 className="cursor-pointer"
@@ -113,7 +113,7 @@ const MobileBanner = () => {
                     onClick={() => swiperRef.current?.slideToLoop(dotIdx)}
                     className={`w-3 h-3 rounded-full cursor-pointer ${
                       activeIndex === dotIdx
-                        ? "bg-black"
+                        ? "bg-black lg:bg-gray-200"
                         : "bg-transparent border"
                     }`}
                   ></span>

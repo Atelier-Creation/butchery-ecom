@@ -46,7 +46,7 @@ const Navbar = () => {
       <div className="bg-red-600 text-white px-6 flex justify-between items-center">
         {/* Logo */}
         <div
-          className="absolute -top-2.0 left-10 z-100"
+          className="absolute -top-2.0 left-10 z-50"
           onClick={() => navigate("/")}
         >
           <img
@@ -56,9 +56,7 @@ const Navbar = () => {
           />
         </div>
         <div className="py-2 ps-15">
-          <img
-            src="" // replace with your logo path
-            alt="Logo"
+          <div
             className="h-12 w-auto"
           />
         </div>

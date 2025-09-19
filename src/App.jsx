@@ -12,8 +12,9 @@ import CreateAccount from "./pages/LoginPage/CreateAccount";
 import CartDrawer from "./components/CartDrawer/CartDrawer";
 import { ModalProvider } from "./context/GlobalModal";
 import { ModalQuickProvider } from "./context/QuickContext";
-import './App.css'
+import "./App.css";
 import ScrollToTop from "./context/ScrollToTop";
+import WhatsAppFloatButton from "./components/WhatsAppFloatButton";
 function App() {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -29,7 +30,7 @@ function App() {
       <CartProvider>
         <ModalProvider>
           <ModalQuickProvider>
-            <ScrollToTop/>
+            <ScrollToTop />
             <Routes>
               {/* <Route
           path="/*"
@@ -46,6 +47,7 @@ function App() {
           </ModalQuickProvider>
         </ModalProvider>
       </CartProvider>
+      <WhatsAppFloatButton />
     </Router>
   );
 }
