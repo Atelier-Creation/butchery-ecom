@@ -103,7 +103,7 @@ const MobileFooter = () => {
           <div className="flex gap-5 -mt-5 mb-3 items-center justify-center">
             <img src="/fssai-logo.png" alt="fssai" className="h-20" />
             <img
-              src="/public/gov-approved-msme.png"
+              src="/gov-approved-msme.png"
               alt="msme"
               className="h-10"
             />
