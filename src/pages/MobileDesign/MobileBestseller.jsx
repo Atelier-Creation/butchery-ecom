@@ -83,7 +83,7 @@ const MobileBestseller = ({
             <div
               className="group rounded-xl cursor-pointer shadow-md overflow-hidden relative  
                  transition-all duration-300 ease-out 
-                 hover:shadow-xl hover:-translate-y-1 hover:shadow-red-200/60"
+                 hover:shadow-xl hover:-translate-y-1"
               onClick={() =>
                 navigate(`/products/${item.title}`, {
                   state: { product: item },

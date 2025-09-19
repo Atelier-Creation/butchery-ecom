@@ -150,8 +150,6 @@ export const QuickModal = ({ onCheck }) => {
             </div>
           </div>
 
-          <MeatCutDropdown />
-
           <div className="flex flex-col gap-3">
             <button
               className="border py-3 rounded-md border-[#EE1c25]"
