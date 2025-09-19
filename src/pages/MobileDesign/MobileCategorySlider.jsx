@@ -92,7 +92,7 @@ const MobileCategorySlider = () => {
                 <div className="p-4 absolute bottom-0 text-left flex flex-col gap-1 h-auto">
                   <div>
                     <span
-                      className="text-2xl inline-block text-gray-200 cute-font"
+                      className="text-2xl inline-block text-gray-200 "
                       style={{ marginBottom: "-3px" }}
                     >
                       {item.subtitles}
@@ -141,7 +141,7 @@ const MobileCategorySlider = () => {
             <div className="p-4 absolute bottom-0 text-left flex flex-col gap-1 h-auto">
               <div>
                 <span
-                  className="text-2xl inline-block text-gray-200 cute-font"
+                  className="text-lg font-medium inline-block text-gray-100"
                   style={{ marginBottom: "-3px" }}
                 >
                   {item.subtitles}

@@ -2,35 +2,9 @@ import React, { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { FiStar } from "react-icons/fi";
 import { Link } from "react-router-dom";
-import bgImage from '../../assets/images/Untitled/42621686_9008027 1-cropped.svg'
-import rectBg from '../../assets/images/Untitled/Rectangle 203.svg'
-const footerGridData = [
-  {
-    starCount: "4",
-    head: "– Divya M, Tiruppur",
-    comment: ` Mutton quality super! Hygienic cut, நல்லா pack பண்ணி fresh ஆக வந்தது. Iraichi Kadai’la
-வாங்குறது safe & reliable என்று நம்பிக்கை யா இருக்கு`,
-    place: "Coimbatore",
-  },
-  {
-    starCount: "5",
-    head: "Paati-Approved Taste",
-    comment: `            I've tried many brands, but LeNaturel mutton/chicken tastes just like
-  the fresh chicken my paati used to cook in the village. No smell,
-  tender – perfect for Sunday curries.`,
-    name: "Revathi",
-    place: "Coimbatore",
-  },
-  {
-    starCount: "4",
-    head: "Paati-Approved Taste",
-    comment: `            I've tried many brands, but LeNaturel mutton/chicken tastes just like
-  the fresh chicken my paati used to cook in the village. No smell,
-  tender – perfect for Sunday curries.`,
-    name: "Revathi",
-    place: "Coimbatore",
-  },
-];
+import bgImage from "../../assets/images/Untitled/42621686_9008027 1-cropped.svg";
+import rectBg from "../../assets/images/Untitled/Rectangle 203.svg";
+
 const FooterSection = ({ title, children }) => {
   const [open, setOpen] = useState(false);
 
@@ -50,40 +24,10 @@ const FooterSection = ({ title, children }) => {
 
 const MobileFooter = () => {
   return (
-    <footer className="relative py-8 text-white z-10 mt-40">
+    <footer className="relative pt-8 text-white z-10 mt-40">
       <div className="absolute -top-45 left-0 w-full">
-        <img src={bgImage} className="w-full object-cover"/>
+        <img src={bgImage} className="w-full object-cover" />
       </div>
-      {/* <div className="mb-8 ">
-        <h2 className="text-xl font-bold mb-2 lg:text-4xl lg:font-semibold">
-          The Trusted Choice for Premium Meat
-        </h2>
-        <p className="text-sm mb-4 lg:text-lg lg:font-semibold">
-          Iraichi Kadai is the top choice for premium quality meat
-        </p>
-        <div className="bg-[#EE1c25] p-4 rounded-lg text-sm my-4 lg:hidden">
-          <p className="font-semibold mb-2">★ ★ ★ ★ ★</p>
-          <p className="italic mb-2">"Paati-Approved Taste"</p>
-          <p className="mb-1">
-            I've tried many brands, but Iraichi Kadai mutton/chicken tastes just
-            like the fresh chicken my paati used to cook in the village. No
-            smell, tender – perfect for Sunday curries.
-          </p>
-          <p className="font-semibold">Revathi M, Coimbatore</p>
-        </div>
-
-        <div className="hidden lg:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:mt-15">
-          {footerGridData.map((data, index) => (
-            <div className="border border-white rounded-lg flex flex-col gap-3 p-4">
-              <FiStar />
-              <p className="text-lg font-semibold">"{data.head}"</p>
-              <p className="text-lg ">{data.comment}</p>
-              <p className="text-lg ">{data.name}</p>
-              <p className="text-lg ">{data.place}</p>
-            </div>
-          ))}
-        </div>
-      </div> */}
 
       <div className="my-8 lg:hidden flex flex-col items-center justify-center gap-2">
         <Link to={"/"}>
@@ -127,11 +71,10 @@ const MobileFooter = () => {
           </ul>
         </FooterSection>
       </div>
-      <div className="hidden relative lg:flex justify-around lg:mt-10 lg:pb-10 lg:border-b border-white"
-      >
-              <div className="absolute top-0 left-0 w-full">
-        <img src={rectBg} className="w-full object-cover"/>
-      </div>
+      <div className="hidden relative lg:flex justify-around lg:mt-10 lg:pb-10 lg:border-b border-white">
+        <div className="absolute top-0 left-0 w-full">
+          <img src={rectBg} className="w-full object-cover" />
+        </div>
         <div className="w-80 z-10">
           <div className="relative z-50 md:ml-15 lg:ml-20 inline-block mb-5">
             {/* Black glow behind polygon */}
@@ -156,6 +99,14 @@ const MobileFooter = () => {
                 />
               </Link>
             </div>
+          </div>
+          <div className="flex gap-5 -mt-5 mb-3 items-center justify-center">
+            <img src="/fssai-logo.png" alt="fssai" className="h-20" />
+            <img
+              src="/public/gov-approved-msme.png"
+              alt="msme"
+              className="h-10"
+            />
           </div>
           <p className="text-sm text-start mb-4">
             Having had very bitter experiences with the local meat shops and
@@ -217,7 +168,7 @@ const MobileFooter = () => {
         </div>
       </div>
 
-      <div className="relative text-center text-xs lg:text-base lg:font-semibold">
+      <div className="relative z-10 text-center bg-[#222] py-1 text-gray-300 text-xs lg:text-base ">
         © 2025, Iraichi Kadai &{" "}
         <a
           href="https://www.theateliercreation.com/"
@@ -229,7 +180,7 @@ const MobileFooter = () => {
         All Rights Reserved.
       </div>
       <div className="absolute bottom-0 left-0 w-full h-100">
-        <img src={rectBg} className="w-full object-cover"/>
+        <img src={rectBg} className="w-full object-cover" />
       </div>
     </footer>
   );

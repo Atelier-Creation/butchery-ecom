@@ -155,7 +155,8 @@
   .footer-bottom {
     text-align: center;
     font-size: 1.1rem;
-    border-top: 1px solid #333;
+    font-weight: 300;
+    border-top: 1px solid #ffffff;
     padding-top: 20px;
   }
   

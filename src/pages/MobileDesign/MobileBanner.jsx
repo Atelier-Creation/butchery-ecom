@@ -6,25 +6,32 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { H2, P, Button } from "../../components/TextComponents";
-import image1 from '../../assets/images/top-view-fresh-fish-slices-with-red-tomatoes-dark-blue-background-ocean-meat-seafood-sea-meal-dish-.jpg'
-import image2 from '../../assets/images/top-view-meat-concept-with-copy-space.jpg'
-import image3 from '../../assets/images/top-view-raw-meat-slices-with-greens-red-tomatoes-dark-background-dish-meat-butcher-meal-salad-.jpg'
+import image1 from "../../assets/images/top-view-fresh-fish-slices-with-red-tomatoes-dark-blue-background-ocean-meat-seafood-sea-meal-dish-.jpg";
+import image2 from "../../assets/images/top-view-meat-concept-with-copy-space.jpg";
+import image3 from "../../assets/images/top-view-raw-meat-slices-with-greens-red-tomatoes-dark-background-dish-meat-butcher-meal-salad-.jpg";
 const MobileBanner = () => {
   const images = [
     {
       image: image1,
-      head: "Fresh Country Chicken, Mutton & Chicken – Delivered to Your Doorstep!",
-      para: "Flavorful, tender meat freshly sourced every day from Iraichi Kadai.",
+      head: "Fresh, Tender & Juicy Meat Every Day Hygienically Cut, Packed & Delivered",
+      para: "Experience meat the way it should be – clean, healthy, and full of flavor.",
     },
+    
     {
-      image:image2,
-      head: "பசுமையான நாட்டுக்கோழி, மட்டன் & கோழி – உங்கள் வீட்டு வாசலில்!",
-      para: "சுவை நிறைந்த இறைச்சி, தினமும் பசுமையாக Iraichi Kadai-லிருந்து.",
+      image: image2,
+      head: "பசுமையான இறைச்சி, நாட்டு சுவை, உங்கள் குடும்பத்திற்காக.",
+      para: "நாட்டு க ோழி, மட்டன், வாத்து – அனை த்தும் சுத்தமாக, நம்பிக்கையுடன",
     },
+
     {
       image: image3,
-      head: "For Your Family Meals – Fresh Meat Delivered Within 1 Hour!",
-      para: "Country chicken, mutton, and chicken – freshly cut daily and delivered safely.",
+      head: "Authentic Cuts, Premium Quality Always From Farm Fresh to Your Family’s Table!",
+      para: "Bringing back the taste of tradition with meat you can truly trust.",
+    },
+    {
+      image: image1,
+      head: "சுத்தமாக வெட்டிய இறைச்சி,1 மணி நேரத்தில் உங்கள் வீட்டு வாசலில்.",
+      para: "சுவை,பசுமை, விரைவு – அனைத்தும் ஒரே இடத்தில், இறைச்சி கடையில்.",
     },
     // {
     //   image: "/top-view-raw-meat-prepared-be-cooked.jpg",
@@ -76,7 +83,7 @@ const MobileBanner = () => {
               className="relative w-full h-80 lg:h-[80vh] object-cover sm:h-90 md:h-96"
             />
             <div className="absolute inset-0 bg-black/60"></div>
-            <div className="absolute w-full top-10 left-0 text-center lg:top-25 lg:left-5 flex flex-col lg:gap-3 gap-2 items-center lg:items-start justify-center lg:text-start text-white px-4 lg:w-1/2">
+            <div className="absolute w-full top-10 left-0 text-center lg:top-25 lg:left-5 flex flex-col lg:gap-3 gap-2 items-center lg:items-start justify-center lg:text-start text-white px-4 lg:w-[60%]">
               <h2 className="lg:text-5xl leading-tight text-2xl font-bold drop-shadow-lg">
                 {src.head}
               </h2>

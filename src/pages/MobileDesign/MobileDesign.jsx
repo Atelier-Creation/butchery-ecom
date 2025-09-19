@@ -11,6 +11,8 @@ import NewNavbar from "./NewNavbar";
 import Navbar from "../../pages/MobileDesign/Navbar";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import Testimonials from "./Testimonials";
+import AboutUs from "../../components/AboutUs";
 const menuItems = [
   {
     label: "Chicken",
@@ -304,7 +306,8 @@ const MobileDesign = () => {
       </div>
 
       <div data-aos="fade-up" data-aos-delay="100">
-        <ImageWithText />
+        {/* <ImageWithText /> */}
+        <AboutUs/>
       </div>
 
       {/* <div data-aos="zoom-in" data-aos-delay="100">
@@ -327,6 +330,10 @@ const MobileDesign = () => {
 
       <div data-aos="zoom-in" data-aos-delay="100">
         <FeatureSlider features={featuresData} />
+      </div>
+
+       <div data-aos="fade-up" data-aos-delay="100">
+        <Testimonials />
       </div>
 
       <MobileFooter />

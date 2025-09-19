@@ -20,7 +20,7 @@ const ImageWithText = () => {
 
   return (
     <div
-      className="bg-[#EE1c25] overflow-hidden text-white rounded-lg p-0 mx-5 md:mx-5 flex flex-col md:flex-row gap-10 justify-center items-center lg:mx-10 lg:mt-8"
+      className="bg-[#EE1c25] overflow-hidden text-white rounded-lg p-0 mx-5 md:mx-5 flex flex-col md:flex-row gap-10 justify-center items-center lg:mx-30 lg:mt-8"
       data-aos="zoom-in"
       data-aos-delay="100"
     >
@@ -34,7 +34,7 @@ const ImageWithText = () => {
           src="https://lenaturelmeat.com/cdn/shop/files/raw-chicken-meat-legs-with-spices-herbs.jpg?v=1753961198&width=1500"
           alt="Country Chicken"
           style={{ scale }}
-          className="rounded-lg shadow-lg w-full h-80 md:h-[80vh] object-cover lg:rounded-none"
+          className="rounded-lg shadow-lg w-full h-82 md:h-[82vh] object-cover lg:rounded-none"
         />
       </div>
 

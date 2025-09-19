@@ -35,7 +35,9 @@ const MobileBestseller = ({
       <div className="lg:flex lg:justify-between">
         <div>
           {subtitle && (
-            <p className="text-xs text-gray-600 mb-1 lg:text-base">{subtitle}</p>
+            <p className="text-xs text-gray-600 mb-1 lg:text-base">
+              {subtitle}
+            </p>
           )}
           <h2 className="text-xl font-bold mb-4 md:mb-8 lg:mb-8 lg:text-4xl lg:font-bold">
             {title}
@@ -43,12 +45,22 @@ const MobileBestseller = ({
         </div>
         {onViewAll && (
           <div className="hidden lg:block mt-6 text-center">
-            <Button
+            <button
               onClick={onViewAll}
-              ta={"View all"}
-              en={"View all"}
-              className="bg-black text-white px-6 py-2 rounded-md font-medium"
-            />
+              className="relative cursor-pointer overflow-hidden bg-black text-white px-6 py-2 rounded-md font-medium group transition-all duration-700 hover:-translate-y-2 hover:shadow-xl"
+            >
+              {/* Text */}
+              <span className="relative z-10">View all</span>
+
+              {/* Shine overlay */}
+              <span
+                className="absolute top-0 left-[-75%] w-[50%] h-full 
+        bg-gradient-to-r from-transparent via-white/40 to-transparent 
+        transform skew-x-[-20deg] 
+        transition-all duration-700 ease-in-out 
+        group-hover:left-[125%]"
+              />
+            </button>
           </div>
         )}
       </div>
@@ -69,11 +81,13 @@ const MobileBestseller = ({
         {products.map((item, idx) => (
           <SwiperSlide key={item.id}>
             <div
-              className="group rounded-xl shadow-md overflow-hidden relative  
+              className="group rounded-xl cursor-pointer shadow-md overflow-hidden relative  
                  transition-all duration-300 ease-out 
-                 hover:shadow-xl hover:-translate-y-1"
+                 hover:shadow-xl hover:-translate-y-1 hover:shadow-red-200/60"
               onClick={() =>
-                navigate(`/products/${item.title}`, { state: { product: item } })
+                navigate(`/products/${item.title}`, {
+                  state: { product: item },
+                })
               }
               data-aos="fade-up"
               data-aos-delay={idx * 200}
