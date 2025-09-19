@@ -20,7 +20,7 @@ export default function AboutUs() {
             </p>
             <h2 className="text-3xl md:text-3xl font-extrabold leading-tight mb-4">
               WE GO ALL OUT TO RAISE MEAT
-              <br /> THAT'S PURE AND SIMPLE
+              THAT'S PURE AND SIMPLE
             </h2>
             <p className="text-gray-500 mb-6 max-w-xl">
               We source high-quality meat with strict standards and humane
@@ -30,7 +30,7 @@ export default function AboutUs() {
 
             {/* Red stats box */}
             <div className="mt-6 inline-block bg-red-700 text-white rounded shadow-lg">
-              <div className="flex text-center divide-x divide-red-700">
+              <div className="flex text-center divide-x divide-red-700 max-w-[100vw] items-center sm:justify-center sm:p-2">
                 <div className="px-6 py-6">
                   <div className="text-2xl font-bold mb-2">1,280+</div>
                   <div className="text-sm opacity-90">Customers</div>
