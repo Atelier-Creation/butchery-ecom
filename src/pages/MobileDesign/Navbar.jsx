@@ -12,9 +12,10 @@ import { MdOutlineShoppingBag } from "react-icons/md";
 import { FaPhoneAlt } from "react-icons/fa";
 import { IoLocationSharp, IoMail } from "react-icons/io5";
 import LocationDropdown from "../../components/LocationDropdown";
+import CartDrawer from "../../components/CartDrawer/CartDrawer"; 
 import { useCart } from "../../components/CartDrawer/CartContext";
 const Navbar = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { cartItems, removeFromCart, addToCart, toggleDrawer } = useCart();
   return (
     <header className="w-full">
@@ -22,11 +23,11 @@ const Navbar = () => {
       <div className="bg-gray-100 text-sm py-2.5 px-4 flex justify-between items-center">
         <div className="flex items-center gap-4 ms-60">
           <div className="flex items-center gap-1">
-            <FaPhoneAlt  size={16} />
+            <FaPhoneAlt size={16} />
             <span className="text-gray-600">1800-313-3903</span>
           </div>
           <div className="flex items-center gap-1">
-            <IoMail  size={16} />
+            <IoMail size={16} />
             <span className="text-gray-600">customercare@iraichikadai.com</span>
           </div>
         </div>
@@ -38,13 +39,16 @@ const Navbar = () => {
            <IoLocationSharp size={20} color="#E41D25" />  Coimbatore <ChevronDown size={14} />
           </button>
         </div> */}
-        <LocationDropdown/>
+        <LocationDropdown />
       </div>
 
       {/* Main Navbar */}
       <div className="bg-red-600 text-white px-6 flex justify-between items-center">
         {/* Logo */}
-        <div className="absolute -top-2.0 left-10 z-100">
+        <div
+          className="absolute -top-2.0 left-10 z-100"
+          onClick={() => navigate("/")}
+        >
           <img
             src="/iraichi-logo1.svg" // replace with your logo path
             alt="Logo"
@@ -90,27 +94,25 @@ const Navbar = () => {
           {/* Icons */}
           <div className="flex items-center gap-1">
             <div className="p-2 bg-[#BC141B91] border border-[#FFFFFF30] rounded-full">
-              <Search
-                className="cursor-pointer "
-                size={18}
-              />
+              <Search className="cursor-pointer " size={18} />
             </div>
-            <div   onClick={(e) => {
-    e.stopPropagation(); // prevent bubbling
-    toggleDrawer(true);
-    console.log("clicked icon")
-  }} className="p-2 bg-[#BC141B91] border border-[#FFFFFF30] rounded-full">
-              <MdOutlineShoppingBag
-                className="cursor-pointer "
-                size={18}
-              />
+            <div
+              onClick={() =>  // prevent bubbling
+                toggleDrawer(true)}
+              className="p-2 bg-[#BC141B91] border border-[#FFFFFF30] rounded-full"
+            >
+              <MdOutlineShoppingBag className="cursor-pointer " size={18} />
             </div>
-            <div   onClick={(e) => {
-    e.stopPropagation(); // stop event bubbling
-    navigate("/login");
-  }} className="p-2 bg-[#BC141B91] border border-[#FFFFFF30] rounded-full">
+            <div
+              onClick={(e) => {
+                e.stopPropagation(); // stop event bubbling
+                navigate("/login");
+              }}
+              className="p-2 bg-[#BC141B91] border border-[#FFFFFF30] rounded-full"
+            >
               <User className="cursor-pointer " size={18} />
             </div>
+             <CartDrawer />
           </div>
         </div>
       </div>
