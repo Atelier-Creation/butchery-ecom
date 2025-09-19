@@ -12,7 +12,7 @@ import image3 from "../../assets/images/top-view-raw-meat-slices-with-greens-red
 const MobileBanner = () => {
   const images = [
     {
-      image: image1,
+      image: "https://plus.unsplash.com/premium_photo-1668616814974-496fb1ed7a7e?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       head: "Fresh, Tender & Juicy Meat Every Day Hygienically Cut, Packed & Delivered",
       para: "Experience meat the way it should be – clean, healthy, and full of flavor.",
     },
@@ -29,7 +29,7 @@ const MobileBanner = () => {
       para: "Bringing back the taste of tradition with meat you can truly trust.",
     },
     {
-      image: image1,
+      image: "https://images.unsplash.com/photo-1682991136736-a2b44623eeba?q=80&w=1031&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       head: "சுத்தமாக வெட்டிய இறைச்சி,1 மணி நேரத்தில் உங்கள் வீட்டு வாசலில்.",
       para: "சுவை,பசுமை, விரைவு – அனைத்தும் ஒரே இடத்தில், இறைச்சி கடையில்.",
     },
