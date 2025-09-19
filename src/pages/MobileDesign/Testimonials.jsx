@@ -2,6 +2,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
+import { useEffect } from "react";
+import Aos from "aos";
 
 const testimonials = [
   {
@@ -55,6 +57,13 @@ const testimonials = [
 ];
 
 const Testimonials = () => {
+    useEffect(() => {
+  Aos.init({
+    duration: 800, // animation duration in ms
+    once: true,    // run only once when scrolled into view
+  });
+}, []);
+
   return (
     <div className="w-full py-12 bg-white">
       <div className="max-w-6xl mx-auto px-4 text-center">
@@ -87,6 +96,8 @@ const Testimonials = () => {
                   height: "100%",
                   minHeight: "350px",
                 }}
+                data-aos="fade-up"
+                data-aos-delay={idx * 100}
               >
                 <div className="p-6 flex flex-col h-full">
                   <p className="text-red-800 font-bold absolute left-5 text-left w-40 top-16">“{t.text}”</p>

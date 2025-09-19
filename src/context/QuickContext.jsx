@@ -10,6 +10,8 @@ import {
 } from "react-icons/fa";
 import { useCart } from "../components/CartDrawer/CartContext";
 import { useModal, PincodeModal } from "./GlobalModal";
+import MeatCutDropdown from "../pages/MobileDesign/MeatCutDropdown";
+import BuyNowButton from "../components/BuyNowButton";
 // Create context
 const QuickContext = createContext();
 
@@ -124,6 +126,7 @@ export const QuickModal = ({ onCheck }) => {
               ))}
             </div>
           </div>
+          <MeatCutDropdown />
           <div>
             <p className="text-base">Quantity</p>
             <div className="flex items-center border border-gray-400 py-2 px-2 w-fit rounded-md lg:my-3 my-2">
@@ -147,6 +150,8 @@ export const QuickModal = ({ onCheck }) => {
             </div>
           </div>
 
+          <MeatCutDropdown />
+
           <div className="flex flex-col gap-3">
             <button
               className="border py-3 rounded-md border-[#EE1c25]"
@@ -154,6 +159,7 @@ export const QuickModal = ({ onCheck }) => {
             >
               Add to cart
             </button>
+            {/* < BuyNowButton/> */}
             <button
               onClick={handleBuyNow}
               className="border py-3 rounded-md border-[#EE1c25] bg-[#EE1c25] text-white"

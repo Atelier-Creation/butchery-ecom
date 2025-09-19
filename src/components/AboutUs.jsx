@@ -15,8 +15,8 @@ export default function AboutUs() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           {/* Left content */}
           <div className="text-left">
-            <p className="text-4xl text-red-600 font-semibold mb-1 cute-font">
-              our meat market
+            <p className="text-lg text-red-600 font-semibold mb-1">
+              Our Meat Market
             </p>
             <h2 className="text-3xl md:text-3xl font-extrabold leading-tight mb-4">
               WE GO ALL OUT TO RAISE MEAT
