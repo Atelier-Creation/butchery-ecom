@@ -288,7 +288,7 @@ const MobileDesign = () => {
 
       {!isMobile ? (
         <div data-aos="fade-up" data-aos-delay="100">
-          <IconMenu items={menuItems} />
+          {/* <IconMenu items={menuItems} /> */}
         </div>
       ): null}
 
