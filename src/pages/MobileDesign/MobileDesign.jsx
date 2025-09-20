@@ -13,6 +13,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import Testimonials from "./Testimonials";
 import AboutUs from "../../components/AboutUs";
+import { getProducts } from "../../api/productApi";
 const menuItems = [
   {
     label: "Chicken",
@@ -127,104 +128,6 @@ const products = [
   },
 ];
 
-const Broilerproducts = [
-  {
-    id: 1,
-    title: {
-      en: "Broiler Chicken (Broiler Kozhi) Curry Cut Meat",
-      ta: "ப்ரோய்லர் கோழி (Broiler Kozhi) கறி கட் மீட்",
-    },
-    img: "https://lenaturelmeat.com/cdn/shop/files/NT4.png?v=1719991493&width=533",
-    price: "₹385.00",
-    oldPrice: "₹420.00",
-    tag: "Sale",
-  },
-  {
-    id: 2,
-    title: {
-      en: "Broiler Chicken (Broiler Kozhi) Boneless",
-      ta: "ப்ரோய்லர் கோழி (Broiler Kozhi) எலும்பில்லா",
-    },
-    img: "https://lenaturelmeat.com/cdn/shop/files/Goat_Keema_3.jpg?v=1746256020",
-    price: "₹250.00",
-    oldPrice: "₹300.00",
-    tag: "Sale",
-  },
-  {
-    id: 3,
-    title: {
-      en: "Broiler Chicken (Broiler Kozhi) Lollipop Pack of 6",
-      ta: "ப்ரோய்லர் கோழி (Broiler Kozhi) லாலிபாப் 6 பேக்",
-    },
-    img: "https://lenaturelmeat.com/cdn/shop/files/top-view-delicious-salmon-table.jpg?v=1753342530",
-    price: "₹520.00",
-    oldPrice: "₹600.00",
-    tag: "",
-  },
-  {
-    id: 4,
-    title: {
-      en: "Country Chicken (Broiler Kozhi) Lollipop Pack of 6",
-      ta: "நாட்டு கோழி (Broiler Kozhi) லாலிபாப் 6 பேக்",
-    },
-    img: "https://lenaturelmeat.com/cdn/shop/files/Lalipop1.webp?v=1756895386&width=360",
-    price: "₹520.00",
-    oldPrice: "₹600.00",
-    tag: "",
-  },
-];
-
-const muttonProducts = [
-  {
-    id: 1,
-    title: {
-      en: "Mutton Curry Cut (Goat)",
-      ta: "மட்டன் கறி கட் (ஆடு)",
-    },
-    img: "https://lenaturelmeat.com/cdn/shop/files/MUTTON4.jpg?v=1686218107&width=533",
-    price: "₹690.00",
-    oldPrice: "₹750.00",
-    tag: "Sale",
-    link: "/products/mutton-curry-cut-goat",
-  },
-  {
-    id: 2,
-    title: {
-      en: "Mutton Boneless (Goat)",
-      ta: "எலும்பில்லா மட்டன் (ஆடு)",
-    },
-    img: "https://lenaturelmeat.com/cdn/shop/files/MUTTON4.jpg?v=1686218107&width=533",
-    price: "₹890.00",
-    oldPrice: "₹950.00",
-    tag: "Sale",
-    link: "/products/mutton-boneless-goat",
-  },
-  {
-    id: 3,
-    title: {
-      en: "Mutton Keema (Goat)",
-      ta: "மட்டன் கீமா (ஆடு)",
-    },
-    img: "https://lenaturelmeat.com/cdn/shop/files/MUTTON4.jpg?v=1686218107&width=360",
-    price: "₹580.00",
-    oldPrice: "₹620.00",
-    tag: "Offer",
-    link: "/products/mutton-keema-goat",
-  },
-  {
-    id: 4,
-    title: {
-      en: "Mutton Liver (Goat)",
-      ta: "மட்டன் கல்லீரல் (ஆடு)",
-    },
-    img: "https://lenaturelmeat.com/cdn/shop/files/MUTTON4.jpg?v=1686218107&width=533",
-    price: "₹450.00",
-    oldPrice: "₹500.00",
-    tag: "Sale",
-    link: "/products/mutton-liver-goat",
-  },
-];
-
 const featuresData = [
   {
     title: {
@@ -265,6 +168,28 @@ const MobileDesign = () => {
       once: true, // whether animation should happen only once
     });
   }, []);
+// Transform API products to MobileBestseller format
+const formatProductsForBestseller = (apiProducts) => {
+  return apiProducts.map((prod) => {
+    // Pick the first weight option as default
+    const defaultWeightOption = prod.weightOptions?.[0] || { price: 0, weight: 0 };
+
+    return {
+      id: prod._id,
+      title: {
+        en: prod.name,
+        ta: prod.name, // You can replace with Tamil translation if available
+      },
+      img: prod.images?.[0] || "", // first image
+      price: `₹${defaultWeightOption.price.toFixed(2)}`,
+      oldPrice: `₹${defaultWeightOption.price.toFixed(2)*2}`, // If you have a discount or old price
+      tag: "Sale", // You can set tags like "Sale" if needed
+      unit: prod.unit,
+      weightOptions: prod.weightOptions,
+      cutType: prod.cutType,
+    };
+  });
+};
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -272,6 +197,27 @@ const MobileDesign = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  // console.log(productss)
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await getProducts();
+       const formattedProducts = formatProductsForBestseller(data);
+      setProducts(formattedProducts);
+      } catch (err) {
+        console.error("Error fetching products:", err);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+
+
   return (
     <div className="bg-white min-h-screen">
       {isMobile ? <MobileNavbar /> : <Navbar />}
@@ -290,7 +236,7 @@ const MobileDesign = () => {
         <div data-aos="fade-up" data-aos-delay="100">
           {/* <IconMenu items={menuItems} /> */}
         </div>
-      ): null}
+      ) : null}
 
       <div data-aos="zoom-in" data-aos-delay="100">
         <MobileCategorySlider />
@@ -307,7 +253,7 @@ const MobileDesign = () => {
 
       <div data-aos="fade-up" data-aos-delay="100">
         {/* <ImageWithText /> */}
-        <AboutUs/>
+        <AboutUs />
       </div>
 
       {/* <div data-aos="zoom-in" data-aos-delay="100">
@@ -332,7 +278,7 @@ const MobileDesign = () => {
         <FeatureSlider features={featuresData} />
       </div>
 
-       <div data-aos="fade-up" data-aos-delay="100">
+      <div data-aos="fade-up" data-aos-delay="100">
         <Testimonials />
       </div>
 

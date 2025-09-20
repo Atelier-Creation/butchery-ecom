@@ -17,6 +17,7 @@ import ScrollToTop from "./context/ScrollToTop";
 import WhatsAppFloatButton from "./components/WhatsAppFloatButton";
 import PaymentPage from "./pages/MobileDesign/PaymentPage";
 import OrderConfirmed from "./pages/MobileDesign/OrderConfirmed";
+import ShoppingCart from "./pages/MobileDesign/ShoppingCart";
 function App() {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -48,6 +49,7 @@ function App() {
               ></Route>
               <Route path="/payment-failed" element={<OrderConfirmed />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/view-cart" element={<ShoppingCart />}></Route>
               <Route path="/forgot-password" element={<ResetPassword />} />
               <Route path="/create-account" element={<CreateAccount />} />
               <Route path="/profile" element={<ProfilePage />} />
