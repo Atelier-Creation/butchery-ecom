@@ -43,7 +43,6 @@ export const ModalProvider = ({ children }) => {
   );
 };
 
-
 // Custom hook to use modal
 export const useModal = () => useContext(ModalContext);
 
@@ -64,7 +63,9 @@ export const PincodeModal = () => {
 
     setLoading(true);
     try {
-      const res = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+      const res = await fetch(
+        `https://api.postalpincode.in/pincode/${pincode}`
+      );
       const data = await res.json();
 
       if (data[0].Status === "Success" && data[0].PostOffice.length > 0) {
@@ -83,16 +84,21 @@ export const PincodeModal = () => {
 
   const handleCheckOut = () => {
     // Only proceed if delivery is available (green text)
+    handleCheck();
     if (availability && availability.includes("✅")) {
-      // closeModal();           // Close the modal
-      navigate("/checkout");  // Redirect to checkout
+      closeModal(); // Close the modal
+      navigate("/checkout"); // Redirect to checkout
     } else {
-      alert("Please check delivery availability first ✅");
+      handleCheck();
+      setTimeout(() => {
+        closeModal();
+        navigate("/checkout");
+      }, 2000);
     }
   };
 
   return (
-     <div className="flex flex-col items-center justify-center text-center w-full p-4">
+    <div className="flex flex-col items-center justify-center text-center w-full p-4">
       <h2 className="text-xl font-semibold mb-6">Check Pincode Availability</h2>
 
       <div className="bg-red-600 flex flex-col items-center justify-center text-center py-10 text-white w-1/2 mx-auto rounded-md mb-6">
