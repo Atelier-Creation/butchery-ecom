@@ -83,7 +83,7 @@ const MobileFooter = () => {
           <img src={rectBg} alt="rect-bg" className="w-full object-cover" />
         </div>
         <div className="w-80 z-10">
-          <div className="flex flex-col items-center justify-center gap-3 mb-4">
+          <div className="flex items-center justify-center gap-5 mb-4">
             <Link to={"/"}>
               <img
                 src="/ik-white.svg"
@@ -91,8 +91,8 @@ const MobileFooter = () => {
                 className="h-20 lg:h-38 object-contain"
               />
             </Link>
-            <div className="flex gap-4">
-              <img src="/fssai-logo.png" alt="fssai" className="h-14" />
+            <div className="flex flex-col gap-4">
+              <img src="/fssai-logo.png" alt="fssai" className="h-20" />
               <img src="/gov-approved-msme.png" alt="msme" className="h-10" />
             </div>
           </div>
