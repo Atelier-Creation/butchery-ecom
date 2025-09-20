@@ -185,7 +185,7 @@ const MobileDesign = () => {
         },
         img: prod.images?.[0] || "", // first image
         price: `₹${defaultWeightOption.price.toFixed(2)}`,
-        oldPrice: `₹${defaultWeightOption.price.toFixed(2) * 2}`, // If you have a discount or old price
+        oldPrice: `₹${defaultWeightOption.price.toFixed(2) * 1.85}`, // If you have a discount or old price
         tag: "Sale", // You can set tags like "Sale" if needed
         unit: prod.unit,
         weightOptions: prod.weightOptions,

@@ -7,7 +7,7 @@ import Aos from "aos";
 
 // ✅ Swiper imports
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -67,9 +67,13 @@ const MobileBestseller = ({
 
       {/* ✅ Swiper instead of grid */}
       <Swiper
-        modules={[Navigation, Pagination]}
+        modules={[Navigation, Pagination, Autoplay]}
         spaceBetween={16}
         // navigation
+        autoplay={{
+          delay: 1500,
+          disableOnInteraction: false,
+        }}
         pagination={{ clickable: true }}
         breakpoints={{
           320: { slidesPerView: 2 }, // mobile
