@@ -58,19 +58,19 @@ export default function AboutUs() {
           </div>
 
           {/* Right images (stacked collage) */}
-          <div className="relative w-full flex justify-center lg:justify-end">
+          <div className="relative w-full flex justify-center lg:justify-center">
             <div className="w-[320px] md:w-[380px] lg:w-[420px] relative">
               {/* Big image */}
-              <div className="rounded shadow-2xl overflow-hidden">
+              <div className="overflow-hidden">
                 <img
                   src={images.large}
                   alt="steak large"
-                  className="w-full h-[300px] md:h-[360px] lg:h-[420px] object-cover block"
+                  className="w-full h-[300px] md:h-[360px] lg:h-[380px] lg:w-[380px] object-cover block"
                 />
               </div>
 
               {/* Top-right small frame */}
-              <div className="absolute -top-6 -right-6 w-28 md:w-32 lg:w-36 rounded overflow-hidden border-4 border-white shadow-xl">
+              <div className="absolute top-20 lg:top-25 z-10 -right-10 lg:-right-30 w-40 h-40 md:w-50 md:h-50 lg:w-60 lg:60 aspect-square overflow-hidden border-10 border-white">
                 <img
                   src={images.topSmall}
                   alt="butcher top"
@@ -79,7 +79,7 @@ export default function AboutUs() {
               </div>
 
               {/* Bottom-left small frame */}
-              <div className="absolute -bottom-6 -left-6 w-28 md:w-32 lg:w-36 rounded overflow-hidden border-4 border-white shadow-xl">
+              <div className="absolute -bottom-15 left-30 lg:-bottom-25 lg:left-30 w-60 h-40 md:w-80 lg:w-90 lg:h-50 overflow-hidden border-10 border-white">
                 <img
                   src={images.bottomSmall}
                   alt="meat bottom"
