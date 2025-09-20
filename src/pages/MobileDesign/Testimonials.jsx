@@ -49,7 +49,7 @@ const Testimonials = () => {
   }, []);
 
   return (
-    <div className="w-full py-12 bg-white testimonial">
+    <div className="w-full pt-8 pb-4  bg-white testimonial">
       <div className="max-w-6xl mx-auto px-4 text-center">
         <h2 className="text-xl font-bold mb-4 md:mb-8 lg:mb-2 lg:text-4xl lg:font-bold">
           Customer Reviews
@@ -75,11 +75,11 @@ const Testimonials = () => {
           {testimonials.map((t, idx) => (
             <SwiperSlide key={idx} >
               <div
-                className="relative bg-white min-h-[250px] max-h-[250px] rounded-2xl shadow-md px-8 py-10 flex flex-col justify-between text-center border border-gray-200"
+                className="relative bg-white min-h-[250px] max-h-[250px] rounded-2xl shadow-md px-8 py-5 flex flex-col justify-between text-center border border-gray-200"
                 data-aos="fade-up"
                 data-aos-delay={idx * 100}
               >
-                <div className="absolute border-8 border-white bg-gray-100 rounded-full -right-4 -top-5 p-2">
+                <div className="absolute border-8 border-white bg-gray-100 rounded-full right-0 lg:-right-4 -top-5 p-2">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" className="w-8 h-8" alt="" srcset="" />
                 </div>
                 {/* Top Quotation Mark */}
