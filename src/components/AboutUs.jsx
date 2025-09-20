@@ -37,19 +37,19 @@ export default function AboutUs() {
             {/* Red stats box */}
             <div className="mt-6 inline-block bg-red-700 text-white rounded shadow-lg">
               <div className="flex flex-wrap lg:flex-nowrap text-center divide-x divide-red-700 max-w-[100vw] items-center sm:justify-center sm:p-2">
-                <div className="px-6 py-6">
+                <div className="px-6 py-6 w-[50%] lg:w-auto">
                   <div className="text-2xl font-bold mb-2">1,280+</div>
                   <div className="text-sm opacity-90">Customers</div>
                 </div>
-                <div className="px-6 py-6">
+                <div className="px-6 py-6 w-[50%] lg:w-auto">
                   <div className="text-2xl font-bold mb-2">100%</div>
                   <div className="text-sm opacity-90">Proven Quality</div>
                 </div>
-                <div className="px-6 py-6">
+                <div className="px-6 py-6 w-[50%] lg:w-auto">
                   <div className="text-2xl font-bold mb-2">4+</div>
                   <div className="text-sm opacity-90">Meats Types</div>
                 </div>
-                <div className="px-6 py-6">
+                <div className="px-6 py-6 w-[50%] lg:w-auto">
                   <div className="text-2xl font-bold mb-2">5+</div>
                   <div className="text-sm opacity-90">Coustomised Cuts</div>
                 </div>
