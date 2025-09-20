@@ -14,15 +14,21 @@ export default function AboutUs() {
       <div className="max-w-6xl mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           {/* Left content */}
-          <div className="text-left">
+          <div className="relative text-left about-bg px-6 py-12 rounded-lg z-0 overflow-hidden">
+            {/* Background image */}
+            <img
+              src="/butcher.jpg"
+              alt="background"
+              className="absolute -right-[5%] bottom-45 w-[50%] h-[50%] object-cover opacity-15 -z-10"
+            />
+
             <p className="text-lg text-red-600 font-semibold mb-1">
               Our Meat Market
             </p>
-            <h2 className="text-3xl md:text-3xl font-extrabold leading-tight mb-4">
-              WE GO ALL OUT TO RAISE MEAT
-              THAT'S PURE AND SIMPLE
+            <h2 className="text-3xl md:text-3xl font-extrabold leading-tight mb-4 text-gray-700">
+              WE GO ALL OUT TO RAISE MEAT THAT'S PURE AND SIMPLE
             </h2>
-            <p className="text-gray-500 mb-6 max-w-xl">
+            <p className="text-gray-600 mb-6 max-w-xl">
               We source high-quality meat with strict standards and humane
               practices. Freshness and taste come first — so you get a premium
               product every time.
@@ -30,7 +36,7 @@ export default function AboutUs() {
 
             {/* Red stats box */}
             <div className="mt-6 inline-block bg-red-700 text-white rounded shadow-lg">
-              <div className="flex text-center divide-x divide-red-700 max-w-[100vw] items-center sm:justify-center sm:p-2">
+              <div className="flex flex-wrap lg:flex-nowrap text-center divide-x divide-red-700 max-w-[100vw] items-center sm:justify-center sm:p-2">
                 <div className="px-6 py-6">
                   <div className="text-2xl font-bold mb-2">1,280+</div>
                   <div className="text-sm opacity-90">Customers</div>
@@ -40,12 +46,12 @@ export default function AboutUs() {
                   <div className="text-sm opacity-90">Proven Quality</div>
                 </div>
                 <div className="px-6 py-6">
-                  <div className="text-2xl font-bold mb-2">6+</div>
+                  <div className="text-2xl font-bold mb-2">4+</div>
                   <div className="text-sm opacity-90">Meats Types</div>
                 </div>
                 <div className="px-6 py-6">
-                  <div className="text-2xl font-bold mb-2">2000+</div>
-                  <div className="text-sm opacity-90">Success delivery</div>
+                  <div className="text-2xl font-bold mb-2">5+</div>
+                  <div className="text-sm opacity-90">Coustomised Cuts</div>
                 </div>
               </div>
             </div>
