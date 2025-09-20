@@ -15,6 +15,8 @@ import { ModalQuickProvider } from "./context/QuickContext";
 import "./App.css";
 import ScrollToTop from "./context/ScrollToTop";
 import WhatsAppFloatButton from "./components/WhatsAppFloatButton";
+import PaymentPage from "./pages/MobileDesign/PaymentPage";
+import OrderConfirmed from "./pages/MobileDesign/OrderConfirmed";
 function App() {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -39,6 +41,12 @@ function App() {
               <Route path="/" element={<MobileDesign />} />
               <Route path="/collections/*" element={<Collections />} />
               <Route path="/products/*" element={<PDPsec1 />} />
+              <Route path="/checkout" element={<PaymentPage />} />
+              <Route
+                path="/order-confirmed"
+                element={<OrderConfirmed />}
+              ></Route>
+              <Route path="/payment-failed" element={<OrderConfirmed />} />
               <Route path="/login" element={<Login />} />
               <Route path="/forgot-password" element={<ResetPassword />} />
               <Route path="/create-account" element={<CreateAccount />} />

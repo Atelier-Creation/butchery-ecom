@@ -19,6 +19,7 @@ import IconMenu from "../MobileDesign/MobileIconMenu";
 import { useLocation } from "react-router-dom";
 import { H1 } from "../../components/TextComponents";
 import Navbar from "../MobileDesign/Navbar";
+import MeatCutDropdown from "../MobileDesign/MeatCutDropdown";
 const menuItems = [
   {
     label: "Chicken",
@@ -60,7 +61,7 @@ function PDPsec1() {
 
   const increase = () => {
     if (quantity < 10) setQuantity(quantity + 1);
-  }
+  };
   const decrease = () => {
     if (quantity > 1) setQuantity(quantity - 1);
   };
@@ -90,7 +91,7 @@ function PDPsec1() {
 
   return (
     <>
-      {isMobile ? <MobileNavbar /> : <Navbar/>}
+      {isMobile ? <MobileNavbar /> : <Navbar />}
       {isMobile ? <IconMenu items={menuItems} /> : ""}
       <div className="flex flex-col md:flex-row lg:flex-row justify-evenly gap-3 lg:p-10 md:p-10 p-3">
         <div className="lg:w-3/4 md:w-3/4 lg:px-10  flex flex-col gap-8 w-full">
@@ -151,11 +152,15 @@ function PDPsec1() {
                 ))}
               </div>
             </div>
+            <MeatCutDropdown />
             <div>
               <p className="text-base">Quantity</p>
               <div className="flex items-center border border-gray-400 py-2 px-2 w-fit rounded-md lg:my-3 my-2">
                 {/* Decrease button */}
-                <button onClick={decrease} className="px-3 py-1 cursor-pointer focus:outline-0 focus:border-0 text-gray-500">
+                <button
+                  onClick={decrease}
+                  className="px-3 py-1 cursor-pointer focus:outline-0 focus:border-0 text-gray-500"
+                >
                   <FaMinus size={12} />
                 </button>
 
@@ -170,7 +175,10 @@ function PDPsec1() {
                 />
 
                 {/* Increase button */}
-                <button onClick={increase} className="px-3 py-1 cursor-pointer focus:outline-0 focus:border-0 text-gray-500">
+                <button
+                  onClick={increase}
+                  className="px-3 py-1 cursor-pointer focus:outline-0 focus:border-0 text-gray-500"
+                >
                   <FaPlus size={12} />
                 </button>
               </div>
@@ -210,7 +218,7 @@ function PDPsec1() {
               {open && (
                 <ul className="mt-2 ml-8 list-disc text-gray-600">
                   <li>
-                    Le Naturel Mutton Keema is finely minced meat that brings
+                    Iraichi Kadai Mutton Keema is finely minced meat that brings
                     rich flavor and unmatched tenderness to your dishes.
                   </li>
                   <li>
@@ -219,10 +227,10 @@ function PDPsec1() {
                     a premium product for your meals.
                   </li>
                   <li>
-                    Packed with protein, iron, and essential vitamins, Le
-                    Naturel Mutton Keema is perfect for a variety of dishes,
-                    from classic keema pav and mutton cutlets to hearty curries
-                    and fillings for pastries.
+                    Packed with protein, iron, and essential vitamins, Iraichi
+                    Kadai Mutton Keema is perfect for a variety of dishes, from
+                    classic keema pav and mutton cutlets to hearty curries and
+                    fillings for pastries.
                   </li>
                   <li>
                     Its versatility allows it to shine in any kitchen, whether

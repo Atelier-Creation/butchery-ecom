@@ -7,7 +7,8 @@ import { H6 } from "../TextComponents";
 import { useCart } from "./CartContext";
 const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
   const navigate = useNavigate();
-  const { cartItems, updateCartItemQuantity, drawerOpen, toggleDrawer } = useCart();
+  const { cartItems, updateCartItemQuantity, drawerOpen, toggleDrawer } =
+    useCart();
   const [activeTab, setActiveTab] = useState(null);
   // const [note, setNote] = useState("");
   // const [country, setCountry] = useState("India");
@@ -21,21 +22,17 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
       item.variant?.[0]?.sizes?.[0]?.sellingPrice ||
       item.price ||
       0;
-  
+
     // ✅ Convert to number safely
     if (typeof sellingPrice === "string") {
       sellingPrice = parseFloat(sellingPrice.replace(/[^0-9.]/g, "")) || 0;
     } else if (typeof sellingPrice === "object") {
       // in case API sends { en: "₹890.00", ta: "…" }
-      sellingPrice = parseFloat(
-        sellingPrice.en?.replace(/[^0-9.]/g, "")
-      ) || 0;
+      sellingPrice = parseFloat(sellingPrice.en?.replace(/[^0-9.]/g, "")) || 0;
     }
-  
+
     return sum + sellingPrice * (item.quantity || 1);
   }, 0);
-  
-  
 
   useEffect(() => {
     console.log("CartDrawer: cartItems updated", cartItems);
@@ -102,7 +99,10 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
                 style={{ width: "90px" }}
               />
               <p>Your cart is empty</p>
-              <button className="btn btn-dark mt-3 bg-black text-white py-2 px-5 rounded-md" onClick={onClose}>
+              <button
+                className="btn btn-dark mt-3 bg-black text-white py-2 px-5 rounded-md"
+                onClick={onClose}
+              >
                 Continue Shopping
               </button>
             </div>
@@ -130,7 +130,11 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
                     }}
                   />
                   <div className="flex-grow-1 flex lg:flex-col flex-col gap-1">
-                    <H6 en={item.title.en} ta={item.title.ta} className="text-base font-semibold"/>
+                    <H6
+                      en={item.title.en}
+                      ta={item.title.ta}
+                      className="text-base font-semibold"
+                    />
                     {/* {typeof item.title === "string"
   ? item.title.trim().split(" ").slice(0, 3).join(" ")
   : typeof item.name === "string"
@@ -149,10 +153,7 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
                     </p>
 
                     <div className="flex items-center justify-between d-flex justify-content-between align-items-center">
-                      <span
-                        className="fw-semibold text-[#EE1c25]"
-                      >
-                        
+                      <span className="fw-semibold text-[#EE1c25]">
                         {(() => {
                           const sellingPrice =
                             item.productId?.variant?.[0]?.sizes?.[0]
@@ -366,19 +367,19 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
               }`}
             >
               <button
-                className=" border py-3 rounded-2xl border-[#EE1c25] w-full"
+                className=" border py-3 rounded-2xl cursor-pointer border-[#EE1c25] w-full"
                 onClick={() => {
-                  onClose();
                   navigate("/view-cart", { state: { cartItems } });
+                  toggleDrawer(false)
                 }}
               >
                 View Cart
               </button>
               <button
-                className="w-full border py-3 rounded-2xl border-[#EE1c25] bg-[#EE1c25] text-white"
+                className="w-full border py-3 cursor-pointer rounded-2xl border-[#EE1c25] bg-[#EE1c25] text-white"
                 onClick={() => {
-                  onClose();
-                  navigate("/payment", { state: { cartItems } });
+                  navigate("/checkout", { state: { cartItems } });
+                  toggleDrawer(false)
                 }}
               >
                 Checkout

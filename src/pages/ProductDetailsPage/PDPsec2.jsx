@@ -2,22 +2,22 @@ import React,{useState} from 'react'
 import { FaChevronDown,FaChevronUp } from 'react-icons/fa'
 import { useLocation } from "react-router-dom";
 const data = [
-    {head : "What makes LeNaturel Mutton Keema flavorful and tender",
-    para : `LeNaturel Mutton Keema is freshly minced to deliver rich, authentic flavor and a soft, tender texture for every dish.`,
+    {head : "What makes Iraichi Kadai Mutton Keema flavorful and tender",
+    para : `Iraichi Kadai Mutton Keema is freshly minced to deliver rich, authentic flavor and a soft, tender texture for every dish.`,
     },
-    {head : "Is LeNaturel Mutton Keema free from antibiotics and hormones?",
+    {head : "Is Iraichi Kadai Mutton Keema free from antibiotics and hormones?",
     para : `Our keema comes from goats raised without antibiotics or hormones, ensuring a clean and natural product you can trust.`,
     },
-    {head : "What nutritional benefits does LeNaturel Mutton Keema offer?",
+    {head : "What nutritional benefits does Iraichi Kadai Mutton Keema offer?",
     para : `A powerhouse of protein, iron, and essential vitamins, it supports a healthy and balanced diet.`,
     },
-    {head : "What types of dishes can I prepare using LeNaturel Mutton Keema?",
+    {head : "What types of dishes can I prepare using Iraichi Kadai Mutton Keema?",
     para : `Ideal for keema pav, mutton cutlets, curries, stuffed parathas, or savory pastry fillings.`,
     },
-    {head : "Can LeNaturel Mutton Keema be used for both daily meals and festive cooking?",
+    {head : "Can Iraichi Kadai Mutton Keema be used for both daily meals and festive cooking?",
     para : `Whether for everyday meals or special occasions, its fresh taste adds depth to every recipe.`,
     },
-    {head : "How does LeNaturel ensure ethical and sustainable sourcing for its mutton keema?",
+    {head : "How does Iraichi Kadai ensure ethical and sustainable sourcing for its mutton keema?",
     para : `Our goats are nurtured with care in a sustainable manner, ensuring quality meat with no compromise on ethics.`,
     },
 ]
@@ -56,11 +56,11 @@ function PDPsec2() {
         </div>
   
         {/* Right Image Section */}
-        <div className='w-full lg:h-[80vh] h-[50vh]'>
+        <div className='w-full lg:h-[80vh] h-[50vh] '>
           <img
             src={product.img}
-            className='h-full w-full object-cover'
-            alt="LeNaturel Mutton Keema"
+            className='h-full w-full object-cover rounded-xl'
+            alt="Iraichi Kadai Mutton Keema"
           />
         </div>
       </div>
