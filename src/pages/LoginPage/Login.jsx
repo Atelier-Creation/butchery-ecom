@@ -1,11 +1,12 @@
-import React,{useState,useEffect} from 'react'
-import Footer from '../../components/Footer/Footer'
-import MobileFooter from '../MobileDesign/MobileFooter'
-import { useNavigate } from 'react-router-dom'
-import NewNavbar from '../MobileDesign/NewNavbar'
-import MobileNavbar from '../MobileDesign/MobileNavbar'
-import IconMenu from '../MobileDesign/MobileIconMenu'
-import Navbar from '../MobileDesign/Navbar'
+import React, { useState, useEffect } from "react";
+import Footer from "../../components/Footer/Footer";
+import MobileFooter from "../MobileDesign/MobileFooter";
+import { useNavigate } from "react-router-dom";
+import NewNavbar from "../MobileDesign/NewNavbar";
+import MobileNavbar from "../MobileDesign/MobileNavbar";
+import IconMenu from "../MobileDesign/MobileIconMenu";
+import Navbar from "../MobileDesign/Navbar";
+import { loginUser } from "../../api/authApi"; // ✅ your backend call
 
 const menuItems = [
   {
@@ -29,37 +30,107 @@ const menuItems = [
     icon: "//lenaturelmeat.com/cdn/shop/files/fish-svgrepo-com_32x32.svg?v=1753957578",
   },
 ];
+
 function Login() {
-    const navigate = useNavigate();
-    const [isMobile, setIsMobile] = useState(false);
-  
-    useEffect(() => {
-      const handleResize = () => setIsMobile(window.innerWidth <= 768);
-      handleResize(); // run once on mount
-      window.addEventListener("resize", handleResize);
-      return () => window.removeEventListener("resize", handleResize);
-    }, []);
+  const navigate = useNavigate();
+  const [isMobile, setIsMobile] = useState(false);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    handleResize(); // run once on mount
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const handleLogin = async () => {
+    setError("");
+    if (!email || !password) {
+      setError("Email and Password are required");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await loginUser({ email, password });
+
+      if (response?.token) {
+        // ✅ store token and user in localStorage
+        localStorage.setItem("token", response.token);
+        localStorage.setItem("user", JSON.stringify(response.user));
+
+        // ✅ navigate to profile/dashboard
+        navigate("/profile");
+      } else {
+        setError("Invalid login response");
+      }
+    } catch (err) {
+      setError(err?.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
-      {isMobile ? <MobileNavbar /> : <Navbar/>}
-      {isMobile ?<IconMenu items={menuItems} />: ""}
-    <div className='flex flex-col lg:flex-col items-center justify-center gap-3 my-10 lg:w-120 md:w-110 w-full lg:mx-auto md:mx-auto px-5'>
-      <h1 className='text-3xl font-bold mb-4'>Login</h1>
-      <input type='text' required placeholder='Email' className=' py-3 w-full pl-2 border border-gray-200 focus:border-gray-200 rounded-md'/>
-      <input type='text' required placeholder='Password' className='py-3 w-full  pl-2 border border-gray-200 focus:border-gray-200 rounded-md mt-3'/>
-        <div className='text-start text-[#EE1c25] w-full'>
-      <a href='/forgot-password' className='border-b text-start '>Forgot your password?</a>
+      {isMobile ? <MobileNavbar /> : <Navbar />}
+      {isMobile ? <IconMenu items={menuItems} /> : ""}
+
+      <div className="flex flex-col lg:flex-col items-center justify-center gap-3 my-10 lg:w-120 md:w-110 w-full lg:mx-auto md:mx-auto px-5">
+        <h1 className="text-3xl font-bold mb-4">Login</h1>
+
+        {error && <p className="text-red-500">{error}</p>}
+
+        <input
+          type="text"
+          required
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="py-3 w-full pl-2 border border-gray-200 focus:border-gray-200 rounded-md"
+        />
+        <input
+          type="password"
+          required
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="py-3 w-full pl-2 border border-gray-200 focus:border-gray-200 rounded-md mt-3"
+        />
+
+        <div className="text-start text-[#EE1c25] w-full">
+          <a href="/forgot-password" className="border-b text-start">
+            Forgot your password?
+          </a>
+        </div>
+
+        <div>
+          <button
+            onClick={handleLogin}
+            disabled={loading}
+            className="py-3 px-7 bg-[#EE1c25] text-white rounded-md mt-3 cursor-pointer disabled:opacity-50"
+          >
+            {loading ? "Signing in..." : "Sign in"}
+          </button>
+        </div>
+
+        <div className="text-center text-[#EE1c25]">
+          <a
+            href="/create-account"
+            className="border-b text-center cursor-pointer"
+          >
+            Create account
+          </a>
+        </div>
       </div>
-      <div>
-        <button onClick={()=>navigate("/profile")} className='py-3 px-7 bg-[#EE1c25] text-white rounded-md mt-3 cursor-pointer'>Sign in</button>
-      </div>
-      <div className='text-center text-[#EE1c25]'>
-      <a href='/create-account' className='border-b text-center cursor-pointer'>Create account</a>
-      </div>
+
+      <MobileFooter />
     </div>
-    <MobileFooter/>
-    </div>
-  )
+  );
 }
 
-export default Login
+export default Login;
