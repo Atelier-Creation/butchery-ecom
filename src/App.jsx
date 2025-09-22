@@ -41,7 +41,7 @@ function App() {
         /> */}
               <Route path="/" element={<MobileDesign />} />
               <Route path="/collections/*" element={<Collections />} />
-              <Route path="/products/*" element={<PDPsec1 />} />
+              <Route path="/products/:id" element={<PDPsec1 />} />
               <Route path="/checkout" element={<PaymentPage />} />
               <Route
                 path="/order-confirmed"

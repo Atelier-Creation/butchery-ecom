@@ -13,7 +13,7 @@ export const createProduct = async (productData) => {
 // Get all products
 export const getProducts = async () => {
   const res = await API.get("/");
-  return res.data.data;
+  return res.data;
 };
 
 // Get product by ID
