@@ -6,7 +6,7 @@ import NewNavbar from "../MobileDesign/NewNavbar";
 import MobileNavbar from "../MobileDesign/MobileNavbar";
 import IconMenu from "../MobileDesign/MobileIconMenu";
 import Navbar from "../MobileDesign/Navbar";
-import { loginUser } from "../../api/authApi"; // ✅ your backend call
+import { loginUser } from "../../api/authApi"; 
 
 const menuItems = [
   {

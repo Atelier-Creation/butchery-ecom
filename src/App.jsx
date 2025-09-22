@@ -40,7 +40,7 @@ function App() {
           element={isMobile ? <MobileDesign /> : <HomePage />}
         /> */}
               <Route path="/" element={<MobileDesign />} />
-              <Route path="/collections/*" element={<Collections />} />
+              <Route path="/collections/:id" element={<Collections />} />
               <Route path="/products/*" element={<PDPsec1 />} />
               <Route path="/checkout" element={<PaymentPage />} />
               <Route
