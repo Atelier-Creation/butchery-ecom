@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./ProfilePageInfo.css";
+import { Mail, SquarePen } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import { S3Client } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
@@ -67,7 +68,7 @@ function ProfilePageInfo() {
   );
 
   useEffect(() => {
-    const stored = localStorage.getItem("userData");
+    const stored = localStorage.getItem("user");
     if (stored) {
       setLocalUser(JSON.parse(stored));
       console.log("user data : " ,stored)
@@ -75,33 +76,31 @@ function ProfilePageInfo() {
   }, []);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("authUser");
-    console.log(storedUser)
-    if (!storedUser) return;
+  const storedUser = localStorage.getItem("user"); // ✅ match login.jsx
+  if (!storedUser) return;
 
-    const parsedUser = JSON.parse(storedUser);
-    const id = parsedUser.id || parsedUser._id;
-    const loadUser = async () => {
-      try {
-        const data = await getUserById(id);
-        console.log("user :", data);
-        setUser(data.user);
-        setFormData({
-          name: data.user.name || "",
-          phone: data.user.phone || "",
-          email: data.user.email || "",
-        });
-        // Fetch addresses
-        const addressData = await getAddressByUserId(id);
-        setAddresses(addressData.addresses?.slice(0, 2) || []);
-      } catch (err) {
-        console.error("Failed to fetch user:", err);
-        setErrorMessage("Failed to load profile. Please try again.");
-      }
-    };
+  const parsedUser = JSON.parse(storedUser);
+  const id = parsedUser.id || parsedUser._id;
 
-    loadUser();
-  }, []); // ✅ Add empty dependency array to run only on mount
+  const loadUser = async () => {
+    try {
+      const data = await getUserById(id);
+      setUser(data.user);
+      setFormData({
+        name: data.user.name || "",
+        phone: data.user.phone || "",
+        email: data.user.email || "",
+      });
+      const addressData = await getAddressByUserId(id);
+      setAddresses(addressData.addresses?.slice(0, 2) || []);
+    } catch (err) {
+      setErrorMessage("Failed to load profile.");
+    }
+  };
+
+  loadUser();
+}, []);
+
 
   const handleEditClick = () => {
     setEditMode(true);
@@ -234,7 +233,7 @@ function ProfilePageInfo() {
                 document.getElementById("profileFileInput").click();
               }}
             >
-              <i className="bi bi-pencil-square"></i>
+              <SquarePen />
             </div>
           )}
           <input
@@ -247,7 +246,8 @@ function ProfilePageInfo() {
         </div>
 
         {!editMode && (
-          <i className="bi bi-pencil-square" onClick={handleEditClick}></i>
+          <SquarePen onClick={handleEditClick}/>
+          // <i className="bi bi-pencil-square" onClick={handleEditClick}></i>
         )}
         <div className="user-info-name-phone-email-con">
           {editMode ? (
@@ -291,14 +291,14 @@ function ProfilePageInfo() {
             </>
           ) : (
             <>
-              <h2>{user?.name || localUser?.firstName + " " + localUser?.lastName}</h2>
+              <h2>{user?.name || localUser?.name}</h2>
               <div className="user-phone-email-info">
-                <div className="user-phone-icon-div">
+                {/* <div className="user-phone-icon-div">
                   <i class="bi bi-telephone"></i>
-                  <p>{localUser.number || "9876543210"}</p>
-                </div>
+                  <p>{user.number}</p>
+                </div> */}
                 <div className="user-phone-icon-div">
-                  <i class="bi bi-envelope"></i>
+                  <Mail />
                   <p>{user?.email || localUser?.email}</p>
                 </div>
               </div>
@@ -330,10 +330,7 @@ function ProfilePageInfo() {
                   <h6>
                     {index === 0 ? "Delivery Address" : "Billing Address"}
                   </h6>
-                  <i
-                    className="bi bi-pencil-square"
-                    onClick={() => handleAddressEdit(addr)}
-                  ></i>
+                  <SquarePen />
                 </div>
 
                 {addressEditId === addr._id ? (

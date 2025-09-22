@@ -55,45 +55,46 @@ export const PincodeModal = () => {
   const navigate = useNavigate();
   const { closeModal } = useModal();
 
-  const handleCheck = async () => {
+  // Allowed service areas
+  const allowedPincodes = {
+    "641011": "Saibaba Colony",
+    "641004": "Peelamedu",
+    "641012": "Gandhipuram",
+    "641002": "R.S. Puram",
+    "641035": "Saravanampatti",
+    "641018": "Race Course",
+    "641005": "Singanallur",
+    "641014": "Coimbatore Civil Aerodrome",
+    "641015": "Uppilipalayam",
+    "641016": "Ondipudur",
+  };
+
+  const handleCheck = () => {
     if (!pincode) {
       setAvailability("Please enter a pincode ❌");
       return;
     }
 
     setLoading(true);
-    try {
-      const res = await fetch(
-        `https://api.postalpincode.in/pincode/${pincode}`
-      );
-      const data = await res.json();
 
-      if (data[0].Status === "Success" && data[0].PostOffice.length > 0) {
-        const placeName = data[0].PostOffice[0].Name;
-        setAvailability(`Delivery available in ${placeName} ✅`);
+    setTimeout(() => {
+      if (allowedPincodes[pincode]) {
+        setAvailability(
+          `Delivery available in ${allowedPincodes[pincode]} ✅`
+        );
       } else {
         setAvailability("Sorry, delivery not available ❌");
       }
-    } catch (error) {
-      console.error(error);
-      setAvailability("Error checking delivery. Try again later ❌");
-    } finally {
       setLoading(false);
-    }
+    }, 800); // simulate a check delay
   };
 
   const handleCheckOut = () => {
-    // Only proceed if delivery is available (green text)
-    handleCheck();
-    if (availability && availability.includes("✅")) {
-      closeModal(); // Close the modal
-      navigate("/checkout"); // Redirect to checkout
+    if (allowedPincodes[pincode]) {
+      closeModal();
+      navigate("/checkout");
     } else {
-      handleCheck();
-      setTimeout(() => {
-        closeModal();
-        navigate("/checkout");
-      }, 2000);
+      setAvailability("Sorry, delivery not available ❌");
     }
   };
 

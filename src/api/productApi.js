@@ -22,6 +22,12 @@ export const getProductById = async (id) => {
   return res.data;
 };
 
+// get products by category id
+export const getProductsByCategory = async (category) => {
+  const res = await API.get(`/category/${category}`);
+  return res.data.data;
+};
+
 // Update product
 export const updateProduct = async (id, updatedData) => {
   const res = await API.put(`/${id}`, updatedData);

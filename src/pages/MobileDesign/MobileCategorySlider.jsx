@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -6,55 +6,40 @@ import "swiper/css/pagination";
 import Aos from "aos";
 import "aos/dist/aos.css";
 import { useNavigate } from "react-router-dom";
+import { getCategories } from "../../api/categorieApi";
 
 const MobileCategorySlider = () => {
   const navigate = useNavigate();
-  const collections = [
-    {
-      title: { en: "Chicken", ta: "நாட்டு கோழி" },
-      subtitles: "Country",
-      img: "/Meat/cat-8.png",
-      desc: {
-        en: "Tender, juicy country chicken, freshly sourced daily.",
-        ta: "மிக நனைந்த, சுவையான நாட்டு கோழி, தினமும் புதியதாக கிடைக்கும்.",
-      },
-      link: "/collections/country-chicken",
-      bg: "#7d8d2a",
-    },
-    {
-      title: { en: "Mutton", ta: "மட்டன்" },
-      subtitles: "Fresh",
-      img: "/Meat/cat-1.png",
-      desc: {
-        en: "Premium goat meat, tender and flavorful.",
-        ta: "உயர்தர மட்டன், மிருதுவானதும் சுவையானதும்.",
-      },
-      link: "/collections/mutton",
-      bg: "#e7a545",
-    },
-    {
-      title: { en: "Chicken", ta: "கோழி" },
-      subtitles: "Broiler",
-      img: "/Meat/cat-9.png",
-      desc: {
-        en: "Fresh broiler chicken, protein-rich and easy to cook.",
-        ta: "புதிய கோழி, புரதம் நிறைந்தது, சமையல் எளிது.",
-      },
-      link: "/collections/broiler-chicken-meat",
-      bg: "#8b2a2a",
-    },
-    {
-      title: { en: "Duck", ta: "வாத்து" },
-      subtitles: "Fresh",
-      img: "/Meat/cat-10.png",
-      desc: {
-        en: "Farm-fresh duck meat with rich taste.",
-        ta: "பண்ணை புதிய வாத்து இறைச்சி, சுவை மிகுந்தது.",
-      },
-      link: "/collections/duck-meat",
-      bg: "#d98b4e",
-    },
-  ];
+  const [collections, setCollections] = useState([]);
+
+  useEffect(() => {
+    const colors = ["#7d8d2a", "#e7a545", "#8b2a2a", "#d98b4e"];
+    const fetchCategories = async () => {
+      try {
+        const data = await getCategories();
+        const mappedData = data.map((item, index) => {
+          const nameParts = item.name.split(" ");
+          const subtitles = nameParts[0];
+          const titleEn =
+            nameParts.length > 1 ? nameParts.slice(1).join(" ") : nameParts[0];
+
+          return {
+            id: item._id, // save category ID
+            title: { en: titleEn, ta: item.tamilName },
+            subtitles: subtitles,
+            img: item.image,
+            desc: { en: item.description, ta: item.tamilDescription },
+            bg: colors[index % colors.length],
+          };
+        });
+        setCollections(mappedData);
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     Aos.init({ duration: 1000, easing: "ease-in-out", once: true });
@@ -66,7 +51,7 @@ const MobileCategorySlider = () => {
         Enjoy Fresh Meals With The Best Quality
       </p>
 
-      {/* Mobile View (Swiper) */}
+      {/* Mobile View */}
       <div className="block md:hidden category">
         <Swiper
           modules={[Pagination, Autoplay]}
@@ -79,6 +64,7 @@ const MobileCategorySlider = () => {
           {collections.map((item, idx) => (
             <SwiperSlide key={idx}>
               <div
+                onClick={() => navigate(`/collections/${item.id}`)} // use ID here
                 style={{ backgroundColor: item.bg }}
                 className="relative group z-50 cursor-pointer shadow-2xl rounded-xl h-[360px] sm:h-[300px] md:h-[340px] overflow-visible transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-1"
                 data-aos="fade-up"
@@ -91,31 +77,25 @@ const MobileCategorySlider = () => {
                 />
                 <div className="p-4 absolute bottom-0 text-left flex flex-col gap-1 h-auto">
                   <div>
-                    <span
-                      className="text-2xl inline-block text-gray-200 "
-                      style={{ marginBottom: "-3px" }}
-                    >
+                    <span className="text-2xl inline-block text-gray-200" style={{ marginBottom: "-3px" }}>
                       {item.subtitles}
                     </span>
                     <h3 className="text-3xl font-semibold mb-2 text-gray-50">
-                      {item.title.en}{" "}
-                      <span className="text-xl block">{item.title.ta}</span>
+                      {item.title.en} <span className="text-xl block">{item.title.ta}</span>
                     </h3>
                   </div>
                   <p className="text-gray-100 text-sm opacity-90 mb-3">
                     {item.desc.en + " "}
-                    <span className="text-gray-100 text-xs opacity-90">
-                      ({item.desc.ta})
-                    </span>
+                    <span className="text-gray-100 text-xs opacity-90">({item.desc.ta})</span>
                   </p>
-                  <a
-                    onClick={() => navigate(item.link)}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); navigate(`/collections/${item.id}`); }}
                     className="mt-auto text-center w-1/2 inline-block bg-black text-white px-4 py-2 rounded-full text-sm 
-             transition-all duration-300 ease-in-out 
-             hover:bg-[#4e210b] hover:scale-105 hover:shadow-lg active:scale-95"
+                      transition-all duration-300 ease-in-out 
+                      hover:bg-[#4e210b] hover:scale-105 hover:shadow-lg active:scale-95"
                   >
                     ORDER NOW
-                  </a>
+                  </button>
                 </div>
               </div>
             </SwiperSlide>
@@ -123,11 +103,12 @@ const MobileCategorySlider = () => {
         </Swiper>
       </div>
 
-      {/* Desktop View (Grid) */}
+      {/* Desktop View */}
       <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-6 mt-[5%]">
         {collections.map((item, idx) => (
           <div
             key={idx}
+            onClick={() => navigate(`/collections/${item.id}`)} // use ID
             style={{ backgroundColor: item.bg }}
             className="relative group cursor-pointer shadow-2xl rounded-xl h-[300px] overflow-visible transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-1"
             data-aos="fade-up"
@@ -140,44 +121,34 @@ const MobileCategorySlider = () => {
             />
             <div className="p-4 absolute bottom-0 text-left flex flex-col gap-1 h-auto">
               <div>
-                <span
-                  className="text-lg font-medium inline-block text-gray-100"
-                  style={{ marginBottom: "-3px" }}
-                >
+                <span className="text-lg font-medium inline-block text-gray-100" style={{ marginBottom: "-3px" }}>
                   {item.subtitles}
                 </span>
                 <h3 className="text-4xl font-semibold mb-1 text-gray-50">
-                  {item.title.en}{" "}
-                  <span className=" block text-xs">( {item.title.ta} )</span>
+                  {item.title.en} <span className="block text-xs">( {item.title.ta} )</span>
                 </h3>
               </div>
               <p className="text-gray-100 text-sm opacity-90 mb-3">
                 {item.desc.en + " "}
-                <span className="text-gray-100 text-xs opacity-90">
-                  ({item.desc.ta})
-                </span>
+                <span className="text-gray-100 text-xs opacity-90">({item.desc.ta})</span>
               </p>
-
-              <a
-                onClick={() => navigate(item.link)}
-                className="relative overflow-hidden group/button 
-             mt-auto text-center w-1/2 inline-block shadow-lg
-             bg-black text-white px-4 py-2 
-             rounded-full text-sm 
-             transition-all duration-300 ease-in-out 
-             hover:bg-black hover:scale-105 
-             hover:shadow-xl active:scale-95"
+              <button
+                onClick={(e) => { e.stopPropagation(); navigate(`/collections/${item.id}`); }}
+                className="relative overflow-hidden group/button mt-auto text-center w-1/2 inline-block shadow-lg
+                  bg-black text-white px-4 py-2 rounded-full text-sm 
+                  transition-all duration-300 ease-in-out 
+                  hover:bg-black hover:scale-105 
+                  hover:shadow-xl active:scale-95"
               >
                 ORDER NOW
-                {/* Shine overlay */}
                 <span
                   className="absolute top-0 left-[-75%] w-[50%] h-full 
-                   bg-gradient-to-r from-transparent via-white/30 to-transparent 
-                   transform skew-x-[-20deg] 
-                   group-hover/button:left-[125%] 
-                   transition-all duration-700 ease-in-out"
+                    bg-gradient-to-r from-transparent via-white/30 to-transparent 
+                    transform skew-x-[-20deg] 
+                    group-hover/button:left-[125%] 
+                    transition-all duration-700 ease-in-out"
                 ></span>
-              </a>
+              </button>
             </div>
           </div>
         ))}

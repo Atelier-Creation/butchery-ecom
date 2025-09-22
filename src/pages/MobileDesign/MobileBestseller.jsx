@@ -30,7 +30,8 @@ const MobileBestseller = ({
     // ✅ Fetch products
     const fetchProducts = async () => {
       try {
-        const response = await getProducts(); // ✅ Log products
+        const response = await getProducts();
+        console.log("Fetched products:", response.data); // ✅ Log products
         setProducts(response.data); // ✅ Store in state
       } catch (error) {
         console.error("Error fetching products:", error);
