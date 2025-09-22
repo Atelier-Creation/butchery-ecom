@@ -294,11 +294,11 @@ function ProfilePageInfo() {
               <h2>{user?.name || localUser?.firstName + " " + localUser?.lastName}</h2>
               <div className="user-phone-email-info">
                 <div className="user-phone-icon-div">
-                  <i class="bi bi-telephone"></i>
+                  <i className="bi bi-telephone"></i>
                   <p>{localUser.number || "9876543210"}</p>
                 </div>
                 <div className="user-phone-icon-div">
-                  <i class="bi bi-envelope"></i>
+                  <i className="bi bi-envelope"></i>
                   <p>{user?.email || localUser?.email}</p>
                 </div>
               </div>

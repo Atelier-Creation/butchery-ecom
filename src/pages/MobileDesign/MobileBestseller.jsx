@@ -89,7 +89,7 @@ const MobileBestseller = ({
                  transition-all duration-300 ease-out 
                  hover:shadow-xl hover:-translate-y-1"
               onClick={() =>
-                navigate(`/products/${item.title}`, {
+                navigate(`/products/${item.title.en}`, {
                   state: { product: item },
                 })
               }
