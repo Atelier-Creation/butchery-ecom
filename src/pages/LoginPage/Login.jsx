@@ -6,7 +6,10 @@ import NewNavbar from "../MobileDesign/NewNavbar";
 import MobileNavbar from "../MobileDesign/MobileNavbar";
 import IconMenu from "../MobileDesign/MobileIconMenu";
 import Navbar from "../MobileDesign/Navbar";
-import { loginUser } from "../../api/authApi"; // ✅ your backend call
+import { loginUser } from "../../api/authApi"; 
+
+// ✅ Import Lucide icons
+import { Eye, EyeClosed } from "lucide-react";
 
 const menuItems = [
   {
@@ -37,12 +40,13 @@ function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // 👁️ toggle state
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    handleResize(); // run once on mount
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -59,11 +63,8 @@ function Login() {
       const response = await loginUser({ email, password });
 
       if (response?.token) {
-        // ✅ store token and user in localStorage
         localStorage.setItem("token", response.token);
         localStorage.setItem("user", JSON.stringify(response.user));
-
-        // ✅ navigate to profile/dashboard
         navigate("/profile");
       } else {
         setError("Invalid login response");
@@ -93,19 +94,41 @@ function Login() {
           onChange={(e) => setEmail(e.target.value)}
           className="py-3 w-full pl-2 border border-gray-200 focus:border-gray-200 rounded-md"
         />
-        <input
-          type="password"
-          required
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="py-3 w-full pl-2 border border-gray-200 focus:border-gray-200 rounded-md mt-3"
-        />
 
-        <div className="text-start text-[#EE1c25] w-full">
-          <a href="/forgot-password" className="border-b text-start">
-            Forgot your password?
-          </a>
+        {/* 👁️ Password field with eye icon */}
+        <div className="relative w-full">
+          <input
+            type={showPassword ? "text" : "password"}
+            required
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="py-3 w-full pl-2 pr-10 border border-gray-200 focus:border-gray-200 rounded-md mt-3"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 mt-2 text-gray-500"
+          >
+            {showPassword ? <EyeClosed size={20} /> : <Eye size={20} />}
+          </button>
+        </div>
+
+        <div className="flex justify-between w-full mt-2">
+          <div className="text-start text-[#EE1c25] w-full">
+            <a href="/forgot-password" className="border-b text-start">
+              Forgot your password?
+            </a>
+          </div>
+
+          <div className="text-end text-[#EE1c25] w-full">
+            <a
+              href="/create-account"
+              className="border-b text-end cursor-pointer"
+            >
+              Create account
+            </a>
+          </div>
         </div>
 
         <div>
@@ -116,15 +139,6 @@ function Login() {
           >
             {loading ? "Signing in..." : "Sign in"}
           </button>
-        </div>
-
-        <div className="text-center text-[#EE1c25]">
-          <a
-            href="/create-account"
-            className="border-b text-center cursor-pointer"
-          >
-            Create account
-          </a>
         </div>
       </div>
 

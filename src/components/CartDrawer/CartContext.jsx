@@ -46,9 +46,10 @@ export const CartProvider = ({ children }) => {
       const existingItem = prev.find(
         i =>
           (i.id === item.id || i._id === item._id) &&
-          i.color === item.color &&
-          i.size === item.size
+          i.size === item.size &&
+          i.cutType === item.cutType
       );
+      
       
       if (existingItem) {
         return prev.map(i => {

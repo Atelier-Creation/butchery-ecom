@@ -27,7 +27,7 @@ const MobileFooter = () => {
   return (
     <footer className="relative pt-12 text-white z-10 mt-20 sm:mt-28 lg:mt-40 bg-[#222222]">
       {/* Background for top wave */}
-      <div className="absolute -top-10 lg:-top-50 left-0 w-full">
+      <div className="absolute -top-10 lg:-top-30 left-0 w-full">
         <img src={bgImage} alt="bg" className="w-full object-cover" />
       </div>
       {/* <div className="absolute top-0 left-0 w-full">
@@ -88,13 +88,10 @@ const MobileFooter = () => {
               <img
                 src="/ik-white.svg"
                 alt="Logo"
-                className="h-20 lg:h-38 object-contain"
+                className="h-30 lg:h-43 object-contain"
               />
             </Link>
-            <div className="flex flex-col gap-4">
-              <img src="/fssai-logo.png" alt="fssai" className="h-20" />
-              <img src="/gov-approved-msme.png" alt="msme" className="h-10" />
-            </div>
+
           </div>
           <p className="text-sm text-start leading-relaxed">
             Having had very bitter experiences with the local meat shops and
@@ -159,6 +156,11 @@ const MobileFooter = () => {
           </a>
         </div>
       </div>
+      <div className="flex items-center justify-end gap-4 relative z-[100] mr-[100px] mt-[-100px]">
+        <img src="/fssai-logo.png" alt="fssai" className="h-20" />
+        <img src="/gov-approved-msme.png" alt="msme" className="h-10" />
+      </div>
+
 
       {/* Bottom Bar */}
       <div className="relative z-10 text-center bg-[#222] py-2 text-gray-300 text-xs sm:text-sm lg:text-base">
@@ -173,6 +175,7 @@ const MobileFooter = () => {
         </a>{" "}
         All Rights Reserved.
       </div>
+
 
       {/* Background bottom wave */}
       {/* <div className="absolute bottom-0 left-0 w-full">

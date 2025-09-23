@@ -58,7 +58,7 @@ function PDPsec2() {
         {/* Right Image Section */}
         <div className='w-full lg:h-[80vh] h-[50vh] '>
           <img
-            src={product.img}
+            src="https://lenaturelmeat.com/cdn/shop/files/Lalipop1.webp?v=1756895386&width=360"
             className='h-full w-full object-cover rounded-xl'
             alt="Iraichi Kadai Mutton Keema"
           />

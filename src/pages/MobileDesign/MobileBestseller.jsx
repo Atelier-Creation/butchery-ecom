@@ -1,11 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Eye } from "lucide-react";
 import { Button, P } from "../../components/TextComponents";
 import { useNavigate } from "react-router-dom";
 import { QuickModal, useQuickModal } from "../../context/QuickContext";
 import Aos from "aos";
-
-// ✅ Swiper imports
+import { getProducts } from "../../api/productApi";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
@@ -15,18 +14,30 @@ import "swiper/css/pagination";
 const MobileBestseller = ({
   title = "Best Sellers",
   subtitle = "Most popular product near you!",
-  products = [],
   onViewAll,
 }) => {
   const { openModal } = useQuickModal();
   const navigate = useNavigate();
-
-  const handleBuyNow = () => {
-    openModal(<QuickModal />);
+  const [products, setProducts] = useState([]);
+  const handleBuyNow = (productId) => {
+    openModal(<QuickModal productId={productId} />);
   };
 
   useEffect(() => {
     Aos.init({ duration: 1000, easing: "ease-in-out", once: true });
+
+    // ✅ Fetch products
+    const fetchProducts = async () => {
+      try {
+        const response = await getProducts();
+        console.log("Fetched products:", response.data); // ✅ Log products
+        setProducts(response.data); // ✅ Store in state
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchProducts();
   }, []);
 
   return (
@@ -89,7 +100,7 @@ const MobileBestseller = ({
                  transition-all duration-300 ease-out 
                  hover:shadow-xl hover:-translate-y-1"
               onClick={() =>
-                navigate(`/products/${item.title.en}`, {
+                navigate(`/products/${item._id}`, {
                   state: { product: item },
                 })
               }
@@ -107,8 +118,8 @@ const MobileBestseller = ({
                 {/* Product Image */}
                 <div className="overflow-hidden rounded-xl">
                   <img
-                    src={item.img}
-                    alt={item.title.en}
+                    src={item.images[0]}
+                    alt={item.name}
                     className="w-full aspect-square object-cover 
                        transform transition-transform duration-500 
                        group-hover:scale-105"
@@ -119,7 +130,7 @@ const MobileBestseller = ({
                 <span
                   onClick={(e) => {
                     e.stopPropagation(); // ✅ prevent navigation
-                    handleBuyNow();
+                    handleBuyNow(item._id);
                   }}
                   className="absolute bottom-2 right-2 cursor-pointer bg-[#EE1c25] text-white text-xs px-2.5 py-2 rounded-md
                      opacity-0 translate-y-2 transition-all duration-300
@@ -132,17 +143,17 @@ const MobileBestseller = ({
               {/* Content */}
               <div className="p-2">
                 <P
-                  en={item.title.en}
-                  ta={item.title.ta}
-                  className="text-md font-medium line-clamp-2 transition-colors duration-300 group-hover:text-[#EE1c25]"
+                  en={item.name}
+                  ta={item.tamilName}
+                  className="text-md h-[50px] font-medium line-clamp-2 transition-colors duration-300 group-hover:text-[#EE1c25]"
                 />
                 <div className="mt-2 flex items-center gap-2">
                   <span className="text-[#EE1c25] font-semibold text-md">
-                    {item.price}
+                    ₹{item.weightOptions[0].price}
                   </span>
-                  {item.oldPrice && (
+                  {item.weightOptions[0].discountPrice && (
                     <span className="text-gray-500 line-through text-md">
-                      {item.oldPrice}
+                      ₹{item.weightOptions[0].discountPrice}
                     </span>
                   )}
                 </div>

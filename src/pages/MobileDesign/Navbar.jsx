@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Phone,
   Mail,
@@ -12,11 +12,31 @@ import { MdOutlineShoppingBag } from "react-icons/md";
 import { FaPhoneAlt } from "react-icons/fa";
 import { IoLocationSharp, IoMail } from "react-icons/io5";
 import LocationDropdown from "../../components/LocationDropdown";
-import CartDrawer from "../../components/CartDrawer/CartDrawer"; 
+import CartDrawer from "../../components/CartDrawer/CartDrawer";
 import { useCart } from "../../components/CartDrawer/CartContext";
+import { getCartByUserId } from "../../api/cartApi"; // import your API
+
 const Navbar = () => {
   const navigate = useNavigate();
-  const { cartItems, removeFromCart, addToCart, toggleDrawer } = useCart();
+  const { toggleDrawer } = useCart();
+  const [cartCount, setCartCount] = useState(0);
+
+  const fetchCart = async () => {
+    try {
+      const res = await getCartByUserId();
+      if (res.success) {
+        setCartCount(res.data.items?.length || 0);
+      }
+    } catch (err) {
+      console.error("Failed to fetch cart:", err);
+    }
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) fetchCart();
+  }, []);
+
   return (
     <header className="w-full">
       {/* Top Bar */}
@@ -31,14 +51,6 @@ const Navbar = () => {
             <span className="text-gray-600">customercare@iraichikadai.com</span>
           </div>
         </div>
-        {/* <div>
-          <button
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="hover:underline me-6 inline-flex items-center gap-1text-gray-800"
-          >
-           <IoLocationSharp size={20} color="#E41D25" />  Coimbatore <ChevronDown size={14} />
-          </button>
-        </div> */}
         <LocationDropdown />
       </div>
 
@@ -56,9 +68,7 @@ const Navbar = () => {
           />
         </div>
         <div className="py-2 ps-15">
-          <div
-            className="h-12 w-auto"
-          />
+          <div className="h-12 w-auto" />
         </div>
         <div className="flex gap-10">
           {/* Menu Links */}
@@ -94,23 +104,36 @@ const Navbar = () => {
             <div className="p-2 bg-[#BC141B91] border border-[#FFFFFF30] rounded-full">
               <Search className="cursor-pointer " size={18} />
             </div>
+
+            {/* Shopping Bag with Cart Count */}
             <div
-              onClick={() =>  // prevent bubbling
-                toggleDrawer(true)}
-              className="p-2 bg-[#BC141B91] border border-[#FFFFFF30] rounded-full"
+              onClick={() => toggleDrawer(true)}
+              className="relative p-2 bg-[#BC141B91] border border-[#FFFFFF30] rounded-full cursor-pointer"
             >
               <MdOutlineShoppingBag className="cursor-pointer " size={18} />
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-yellow-400 text-red-800 text-xs font-bold px-1.5 py-0.5 rounded-full">
+                  {cartCount}
+                </span>
+              )}
             </div>
+
             <div
               onClick={(e) => {
-                e.stopPropagation(); // stop event bubbling
-                navigate("/login");
+                e.stopPropagation();
+                const token = localStorage.getItem("token"); 
+                if (token) {
+                  navigate("/profile"); 
+                } else {
+                  navigate("/login"); 
+                }
               }}
               className="p-2 bg-[#BC141B91] border border-[#FFFFFF30] rounded-full"
             >
               <User className="cursor-pointer " size={18} />
             </div>
-             <CartDrawer />
+
+            <CartDrawer />
           </div>
         </div>
       </div>

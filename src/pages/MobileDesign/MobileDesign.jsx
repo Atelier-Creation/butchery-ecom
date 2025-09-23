@@ -169,55 +169,8 @@ const MobileDesign = () => {
     });
   }, []);
   // Transform API products to MobileBestseller format
-  const formatProductsForBestseller = (apiProducts) => {
-    return apiProducts.map((prod) => {
-      // Pick the first weight option as default
-      const defaultWeightOption = prod.weightOptions?.[0] || {
-        price: 0,
-        weight: 0,
-      };
-
-      return {
-        id: prod._id,
-        title: {
-          en: prod.name,
-          ta: prod.name, // You can replace with Tamil translation if available
-        },
-        img: prod.images?.[0] || "", // first image
-        price: `₹${defaultWeightOption.price.toFixed(2)}`,
-        oldPrice: `₹${defaultWeightOption.price.toFixed(2) * 1.85}`, // If you have a discount or old price
-        tag: "Sale", // You can set tags like "Sale" if needed
-        unit: prod.unit,
-        weightOptions: prod.weightOptions,
-        cutType: prod.cutType,
-      };
-    });
-  };
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    handleResize(); // run once on mount
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   // console.log(productss)
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const data = await getProducts();
-        const formattedProducts = formatProductsForBestseller(data);
-        setProducts(formattedProducts);
-      } catch (err) {
-        console.error("Error fetching products:", err);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
 
   return (
     <div className="bg-white min-h-screen">
@@ -247,7 +200,6 @@ const MobileDesign = () => {
         <MobileBestseller
           title="We Produce The Best Selected Meats For You"
           subtitle="Most popular product near you!"
-          products={products}
           onViewAll={() => console.log("View all clicked")}
         />
       </div>

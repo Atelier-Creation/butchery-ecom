@@ -13,13 +13,19 @@ export const createProduct = async (productData) => {
 // Get all products
 export const getProducts = async () => {
   const res = await API.get("/");
-  return res.data.data;
+  return res.data;
 };
 
 // Get product by ID
 export const getProductById = async (id) => {
   const res = await API.get(`/${id}`);
   return res.data;
+};
+
+// get products by category id
+export const getProductsByCategory = async (category) => {
+  const res = await API.get(`/category/${category}`);
+  return res.data.data;
 };
 
 // Update product

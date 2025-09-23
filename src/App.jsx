@@ -40,8 +40,8 @@ function App() {
           element={isMobile ? <MobileDesign /> : <HomePage />}
         /> */}
               <Route path="/" element={<MobileDesign />} />
-              <Route path="/collections/*" element={<Collections />} />
-              <Route path="/products/*" element={<PDPsec1 />} />
+              <Route path="/collections/:id" element={<Collections />} />
+              <Route path="/products/:id" element={<PDPsec1 />} />
               <Route path="/checkout" element={<PaymentPage />} />
               <Route
                 path="/order-confirmed"
@@ -63,3 +63,4 @@ function App() {
 }
 
 export default App;
+

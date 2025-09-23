@@ -99,6 +99,10 @@
     display: flex;
     gap: 10px;
   }
+
+  .user-phone-icon-div i{
+    color: gray;
+  }
   .user-phone-email-info{
     display: flex;
     gap: 50px;
@@ -137,13 +141,14 @@
     justify-content: space-between;
     align-items: center;
   }
-  .user-info-con i.bi-pencil-square {
+  .user-info-con svg.lucide-square-pen {
     position: absolute;
     top: 10px;   /* adjust as needed */
     right: 10px; /* adjust as needed */
-    font-size: 20px; /* optional: size of the icon */
+    /* font-size: 20px;  */
     cursor: pointer; /* makes it look clickable */
-    color: #333; /* optional: change color */
+    
+   
   }
   .edit-mode-input-field{
     width: 60%;
