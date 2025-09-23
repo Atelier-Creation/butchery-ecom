@@ -25,7 +25,7 @@ const testimonials = [
     bg: "/Testimonial/testimonial_3.png",
   },
   {
-    text: "I love how juicy Licious’ Chicken Breast Boneless is!",
+    text: "I love how juicy Iraichi Kadai, Chicken Breast Boneless is!",
     name: "Alfateh Mustafa",
     city: "Coimbatore",
     bg: "/Testimonial/testimonial_4.png",
