@@ -5,68 +5,70 @@ import { NotebookPen, TruckIcon, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { H6 } from "../TextComponents";
 import { useCart } from "./CartContext";
+import { 
+  getCartByUserId, 
+  removeFromCart as removeFromCartAPI, 
+  updateCartItemAPI 
+} from "../../api/cartApi";
+
 const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
   const navigate = useNavigate();
-  const { cartItems, updateCartItemQuantity, drawerOpen, toggleDrawer } =
-    useCart();
-  const [activeTab, setActiveTab] = useState(null);
-  // const [note, setNote] = useState("");
-  // const [country, setCountry] = useState("India");
-  // const [postalCode, setPostalCode] = useState("");
-  const ShipPrice = 123456;
-  // const [shippingRate, setShippingRate] = useState(null);
-  const [recommendedItems, setRecommendedItems] = useState([]);
-  const total = cartItems.reduce((sum, item) => {
-    let sellingPrice =
-      item.productId?.variant?.[0]?.sizes?.[0]?.sellingPrice ||
-      item.variant?.[0]?.sizes?.[0]?.sellingPrice ||
-      item.price ||
-      0;
+  const { drawerOpen, toggleDrawer } = useCart();
 
-    // ✅ Convert to number safely
-    if (typeof sellingPrice === "string") {
-      sellingPrice = parseFloat(sellingPrice.replace(/[^0-9.]/g, "")) || 0;
-    } else if (typeof sellingPrice === "object") {
-      // in case API sends { en: "₹890.00", ta: "…" }
-      sellingPrice = parseFloat(sellingPrice.en?.replace(/[^0-9.]/g, "")) || 0;
-    }
+  const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-    return sum + sellingPrice * (item.quantity || 1);
-  }, 0);
+  // Calculate total
+  const total = cartItems.reduce(
+    (sum, item) => sum + (item.price || 0) * (item.quantity || 0),
+    0
+  );
 
+  // Fetch cart from backend on drawer open
   useEffect(() => {
-    console.log("CartDrawer: cartItems updated", cartItems);
-  }, [cartItems]);
-  // useEffect(() => {
-  //   const fetchRecommended = async () => {
-  //     try {
-  //       if (cartItems.length > 0 && cartItems[0].categoryId) {
-  //         const categoryId = cartItems[0].categoryId;
-  //         const response = await fetchProductsByCategory(categoryId);
-  //         const products = Array.isArray(response.data) ? response.data : [];
-  //         const cartItemIds = cartItems.map((item) => item._id);
-  //         const filtered = products.filter((p) => !cartItemIds.includes(p._id));
-  //         setRecommendedItems(filtered);
-  //       } else {
-  //         // Fetch all products if cart is empty
-  //         const response = await getAllProducts({ random: true, limit: 20 });
-  //         setRecommendedItems(response.data);
-  //       }
-  //     } catch (error) {
-  //       console.error("Failed to fetch recommended items", error);
-  //     }
-  //   };
+    const fetchCart = async () => {
+      setLoading(true);
+      try {
+        const data = await getCartByUserId(); // backend gets user from token
+        setCartItems(data.data.items || []);
+      } catch (err) {
+        console.error("Failed to fetch cart", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  //   if (show) fetchRecommended();
-  // }, [show, cartItems]);
+    if (drawerOpen) fetchCart();
+  }, [drawerOpen]);
 
-  // Inside your component, before return()
-  const handleIncrement = (id) => {
-    updateCartItemQuantity(id, 1);
+  // Update cart item quantity via API
+  const handleUpdateQuantity = async (item, delta) => {
+    try {
+      const newQuantity = (item.quantity || 0) + delta;
+      if (newQuantity < 1) return; // prevent quantity < 1
+      await updateCartItemAPI(item._id, { quantity: newQuantity });
+      // update local state
+      setCartItems(prev =>
+        prev.map(i => (i._id === item._id ? { ...i, quantity: newQuantity } : i))
+      );
+    } catch (err) {
+      console.error("Failed to update quantity", err);
+    }
   };
 
-  const handleDecrement = (id) => {
-    updateCartItemQuantity(id, -1);
+  // Remove item from cart
+  const handleRemove = async (item) => {
+    try {
+      if (typeof onRemove === "function") {
+        await onRemove(item);
+      } else {
+        await removeFromCartAPI(item._id);
+      }
+      // Remove locally
+      setCartItems(prev => prev.filter(i => i._id !== item._id));
+    } catch (err) {
+      console.error("Failed to remove item", err);
+    }
   };
 
   return (
@@ -76,22 +78,20 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
         onClick={() => toggleDrawer(false)}
       ></div>
       <div className={`cart-drawer ${drawerOpen ? "open" : ""} text-black`}>
-        <div className="py-5 border-b border-gray-200 flex justify-between items-center cart-drawer-header d-flex justify-content-between align-items-center px-3 py-md-2 border-bottom">
-          <h5 className="mb-0 fs-6 fw-normal text-lg font-semibold">
+        <div className="py-5 border-b flex justify-between items-center px-3">
+          <h5 className="mb-0 text-lg font-semibold">
             {cartItems.length ? "Item Added to Your Cart" : "Shopping Cart"}
           </h5>
-          <button
-            className="btn p-0 m-0 border-0"
-            title="Close cart"
-            onClick={() => toggleDrawer(false)}
-          >
+          <button onClick={() => toggleDrawer(false)}>
             <X />
           </button>
         </div>
 
         <div className="cart-drawer-body px-3 py-2">
-          {cartItems.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-2 text-center my-5 d-flex flex-column align-items-center">
+          {loading ? (
+            <p>Loading cart...</p>
+          ) : cartItems.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-2 text-center my-5">
               <img
                 src="/cart_empty.svg"
                 alt="Empty Cart"
@@ -107,285 +107,75 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
               </button>
             </div>
           ) : (
-            <>
-              {cartItems.map((item) => (
-                <div
-                  key={item._id || item.id || item.productId?._id}
-                  className="d-flex my-3 flex gap-3"
-                >
-                  <img
-                    src={
-                      item.image ||
-                      item.images?.[0] ||
-                      item.variant?.[0]?.images?.[0]?.url ||
-                      item.productId?.images?.[0] ||
-                      "/fallback.png"
-                    }
-                    alt={item.title || item.name}
-                    className="me-3"
-                    style={{
-                      width: "100px",
-                      height: "100px",
-                      objectFit: "cover",
-                    }}
-                  />
-                  <div className="flex-grow-1 flex lg:flex-col flex-col gap-1">
-                    <H6
-                      en={item.title.en}
-                      ta={item.title.ta}
-                      className="text-base font-semibold"
-                    />
-                    {/* {typeof item.title === "string"
-  ? item.title.trim().split(" ").slice(0, 3).join(" ")
-  : typeof item.name === "string"
-  ? item.name.trim().split(" ").slice(0, 3).join(" ")
-  : typeof item.productId?.name === "string"
-  ? item.productId.name.trim().split(" ").slice(0, 3).join(" ")
-  : "Unnamed Product"}
-
-                    </h6> */}
-                    <p className="text-muted mb-1">
-                      {item.colorsText
-                        ? item.colorsText
-                        : item.variant?.[0]?.title
-                        ? item.variant[0].title
-                        : item.productId?.variant?.[0]?.title}
-                    </p>
-
-                    <div className="flex items-center justify-between d-flex justify-content-between align-items-center">
-                      <span className="fw-semibold text-[#EE1c25]">
-                        {(() => {
-                          const sellingPrice =
-                            item.productId?.variant?.[0]?.sizes?.[0]
-                              ?.sellingPrice ||
-                            item.variant?.[0]?.sizes?.[0]?.sellingPrice;
-
-                          const basePrice = sellingPrice || item.price || 0;
-
-                          return (
-                            basePrice.toLocaleString("en-IN") +
-                            (item.price && item.price !== basePrice
-                              ? ` | ₹${item.price.toLocaleString("en-IN")}`
-                              : "")
-                          );
-                        })()}{" "}
-                        X {item.quantity}
-                      </span>
-
-                      <button
-                        className="text-red-700  border-b btn btn-link btn-sm text-danger p-0"
-                        onClick={() => {
-                          onRemove(item);
-                        }}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                    <div className="quantity-box-cart-drawer">
-                      <button
-                        onClick={() =>
-                          handleDecrement(
-                            item._id || item.id || item.productId?._id
-                          )
-                        }
-                        disabled={item.quantity === 1}
-                      >
-                        -
-                      </button>
-                      <span>{item.quantity}</span>
-                      <button
-                        onClick={() =>
-                          handleIncrement(
-                            item._id || item.id || item.productId?._id
-                          )
-                        }
-                      >
-                        +
-                      </button>
-                    </div>
+            cartItems.map((item) => (
+              <div
+                key={item._id}
+                className="d-flex my-3 flex gap-3"
+              >
+                <img
+                  src={item.product.images || "/fallback.png"}
+                  alt={item.product.name}
+                  className="me-3"
+                  style={{ width: "100px", height: "100px", objectFit: "cover" }}
+                />
+                <div className="flex-grow-1 flex flex-col gap-1">
+                  <H6 en={item.product.name} className="text-base font-semibold" />
+                  {item.weight && <p className="text-muted mb-1">{item.weight} g</p>}
+                  <div className="flex items-center justify-between">
+                    <span className="fw-semibold text-[#EE1c25]">
+                      ₹{item.price} X {item.quantity}
+                    </span>
+                    <button
+                      className="text-red-700 btn btn-link p-0"
+                      onClick={() => handleRemove(item)}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  <div className="quantity-box-cart-drawer">
+                    <button 
+                      onClick={() => handleUpdateQuantity(item, -1)} 
+                      disabled={item.quantity === 1}
+                    >
+                      -
+                    </button>
+                    <span>{item.quantity}</span>
+                    <button onClick={() => handleUpdateQuantity(item, 1)}>+</button>
                   </div>
                 </div>
-              ))}
-              {/* {(!activeTab || cartItems.length === 0) && (
-                <RecommendedSlider
-                  recommendedItems={recommendedItems}
-                  onAddToCart={(item) => {
-                    console.log("Adding from slider:", item); // Optional Debug
-                    onAddToCart(item); // ✅ Pass full item object
-                  }}
-                />
-              )} */}
-            </>
+              </div>
+            ))
           )}
         </div>
 
-        {/* You may also like */}
-        {/* <div className="cart-drawer-recommend px-3 py-3 border-top">
-        <h6 className="mb-3">You may also like</h6>
-        {recommendedItems.map((item) => (
-          <div key={item.id} className="d-flex mb-3">
-            <img src={item.image} alt={item.title} style={{ width: '100px', height: '100px', objectFit: 'cover' }} className="me-3" />
-            <div className='d-flex align-items-center justify-content-between w-100'>
-             <div> <p className="mb-1 fw-semibold">{item.title}</p>
-              <p className="mb-1 small text-decoration-line-through text-muted">₹{item.oldPrice}</p>
-              <p className="mb-1 fw-bold price">₹{item.price}</p></div>
-              <button className="btn btn-link m-0 btn-sm p-2 text-dark rounded" onClick={() => onAddToCart(item)}>+ Add to Cart</button>
-            </div>
-          </div>
-        ))}
-      </div> */}
-        {/* {cartItems.length === 0 && (
-          <RecommendedSlider
-            recommendedItems={recommendedItems}
-            onAddToCart={(item) => {
-              console.log("Adding from slider:", item); // Optional Debug
-              onAddToCart(item); // ✅ Pass full item object
-            }}
-          />
-        )} */}
-
         {cartItems.length > 0 && (
-          <>
-            <div className="border-top p-3 mt-3">
-              {/* Tab Buttons */}
-              {/* <div className="d-flex justify-content-around align-items-center mb-3 gap-3">
-                <button
-                  className={`btn d-flex align-items-center gap-2 border-0 rounded-0 m-0 px-2 py-1 ${
-                    activeTab === "notes" ? "text-dark" : "text-muted"
-                  }`}
-                  onClick={() =>
-                    setActiveTab(activeTab === "notes" ? null : "notes")
-                  }
-                >
-                  <NotebookPen size={18} />
-                  <span>Note</span>
-                </button>
-
-                <div
-                  style={{ height: "20px", width: "1px", background: "#ccc" }}
-                ></div>
-
-                <button
-                  className={`btn d-flex align-items-center gap-2 border-0 rounded-0 m-0 px-2 py-1 ${
-                    activeTab === "shipping" ? "text-dark" : "text-muted"
-                  }`}
-                  onClick={() =>
-                    setActiveTab(activeTab === "shipping" ? null : "shipping")
-                  }
-                >
-                  <TruckIcon size={18} />
-                  <span>Shipping</span>
-                </button>
-              </div> */}
-
-              {/* Tab Contents */}
-              {/* {activeTab === "notes" && (
-                <div className="mb-3">
-                  <textarea
-                    className="form-control costum-textarea"
-                    placeholder="Order Special instruction"
-                    value={note}
-                    onChange={(e) => setNote(e.target.value)}
-                    rows={3}
-                  />
-                  <div className="d-flex border-bottom gap-2 mt-3">
-                    <button
-                      className="btn btn-dark rounded-0 h-100 m-0"
-                      style={{ flex: "0 0 60%" }}
-                    >
-                      Save
-                    </button>
-                    <button
-                      className="btn btn-outline-dark rounded-0 m-0 h-100"
-                      style={{ flex: "0 0 40%" }}
-                      onClick={() => setActiveTab(null)}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              )} */}
-
-              {/* {activeTab === "shipping" && (
-                <div className="mb-3">
-                  <CountrySelect country={country} setCountry={setCountry} />
-                  <input
-                    type="text"
-                    className="form-control mb-3 costum-textarea"
-                    placeholder="Postal/zip Code"
-                    value={postalCode}
-                    onChange={(e) => setPostalCode(e.target.value)}
-                  />
-                  <div className="d-flex gap-2">
-                    <button
-                      className="btn btn-dark rounded-0 m-0 h-100"
-                      style={{ flex: "0 0 60%" }}
-                      onClick={() => {
-                        setShippingRate(123);
-                      }}
-                    >
-                      Calculate
-                    </button>
-                    <button
-                      className="btn btn-outline-dark rounded-0 m-0 h-100"
-                      style={{ flex: "0 0 40%" }}
-                      onClick={() => setActiveTab(null)}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-
-                  {shippingRate && (
-                    <div className="mt-2">
-                      <small>
-                        <div className="Ship">
-                          <p className="tex-muted">
-                            We found 1 shipping rate(s) for your address
-                            International Shipping:{" "}
-                            <strong style={{ color: "#d6791f" }}>
-                              ₹ {shippingRate.toLocaleString()}
-                            </strong>
-                          </p>
-                        </div>
-                      </small>
-                    </div>
-                  )}
-                </div>
-              )} */}
-
-              {/* Subtotal */}
-              <div className="border-t border-gray-200 pt-10 flex justify-between items-center d-flex justify-content-between fw-bold mt-3">
-                <strong className=" text-2xl font-bold">Subtotal</strong>
-                <span className="text-2xl">₹{total.toLocaleString()}</span>
-              </div>
+          <div className="border-top p-3 mt-3">
+            <div className="flex justify-between items-center mt-3">
+              <strong className="text-2xl font-bold">Subtotal</strong>
+              <span className="text-2xl">₹{total.toLocaleString()}</span>
             </div>
 
-            {/* Footer Buttons */}
-            <div
-              className={`cart-drawer-footer p-3 ${
-                !drawerOpen ? "mobile-footer-hidden" : ""
-              }`}
-            >
+            <div className="cart-drawer-footer p-3">
               <button
-                className=" border py-3 rounded-2xl cursor-pointer border-[#EE1c25] w-full"
+                className="border py-3 rounded-2xl w-full border-[#EE1c25]"
                 onClick={() => {
                   navigate("/view-cart", { state: { cartItems } });
-                  toggleDrawer(false)
+                  toggleDrawer(false);
                 }}
               >
                 View Cart
               </button>
               <button
-                className="w-full border py-3 cursor-pointer rounded-2xl border-[#EE1c25] bg-[#EE1c25] text-white"
+                className="w-full border py-3 rounded-2xl border-[#EE1c25] bg-[#EE1c25] text-white"
                 onClick={() => {
                   navigate("/checkout", { state: { cartItems } });
-                  toggleDrawer(false)
+                  toggleDrawer(false);
                 }}
               >
                 Checkout
               </button>
             </div>
-          </>
+          </div>
         )}
       </div>
     </>
