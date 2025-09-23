@@ -1,31 +1,22 @@
-import React, { createContext, useContext, useState } from "react";
-import { FaBicycle, FaTimes } from "react-icons/fa";
-import {
-  FaBook,
-  FaChevronDown,
-  FaMinus,
-  FaChevronUp,
-  FaNotesMedical,
-  FaPlus,
-} from "react-icons/fa";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { FaTimes, FaMinus, FaPlus, FaBook, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { useCart } from "../components/CartDrawer/CartContext";
 import { useModal, PincodeModal } from "./GlobalModal";
 import MeatCutDropdown from "../pages/MobileDesign/MeatCutDropdown";
-import BuyNowButton from "../components/BuyNowButton";
 import { useNavigate } from "react-router-dom";
-// Create context
+import { getProductById } from "../api/productApi";
+import { addToCartAPI } from "../api/cartApi";
+
 const QuickContext = createContext();
 
-// Provider to wrap the app
 export const ModalQuickProvider = ({ children }) => {
-  const [modalContent, setModalContent] = useState(null); // content to render
+  const [modalContent, setModalContent] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
 
   const openModal = (content) => {
     setModalContent(content);
     setIsOpen(true);
   };
-
   const closeModal = () => {
     setModalContent(null);
     setIsOpen(false);
@@ -35,150 +26,213 @@ export const ModalQuickProvider = ({ children }) => {
     <QuickContext.Provider value={{ openModal, closeModal }}>
       {children}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center lg:justify-end justify-center bg-black/50 backdrop-blur-sm">
-          <div
-            className="bg-white p-6 rounded-xl w-10/12 max-w-md shadow-lg relative 
-                    max-h-[95vh] overflow-y-auto"
-          >
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm">
+          <div className="absolute top-5 right-5 bg-white p-6 rounded-xl w-100 shadow-lg max-h-[90vh] overflow-y-auto">
+
+            {/* Close button at top-right */}
+            <button
+              onClick={closeModal}
+              className="absolute top-3 right-3 cursor-pointer z-50 bg-gray-200 rounded-full p-1 hover:bg-gray-300"
+            >
+              <FaTimes size={18} className="text-gray-600" />
+            </button>
+
             {modalContent}
-            <div className="flex justify-end mt-4 absolute top-1 right-1">
-              <button onClick={closeModal} className="cursor-pointer">
-                <FaTimes size={18} className="text-gray-600" />
-              </button>
-            </div>
           </div>
         </div>
       )}
+
+
     </QuickContext.Provider>
   );
 };
 
-// Custom hook to use modal
 export const useQuickModal = () => useContext(QuickContext);
 
-/* ----------------- PincodeModal component ----------------- */
-export const QuickModal = () => {
+export const QuickModal = ({ productId }) => {
   const { addToCart, toggleDrawer } = useCart();
-  const { closeModal } = useQuickModal(); // ✅ for closing QuickModal only
+  const { closeModal } = useQuickModal();
   const { openModal } = useModal();
   const navigate = useNavigate();
 
-  const [selected, setSelected] = useState("0.500 Grms");
+  const [product, setProduct] = useState(null);
+  const [selected, setSelected] = useState(null);
+  const [selectedDrop, setSelectedDrop] = useState("");
   const [quantity, setQuantity] = useState(1);
-  const options = ["0.500 Grms", "0.750 Grms", "1 KG"];
+  const [openDescription, setOpenDescription] = useState(false);
 
-  const product = {
-    id: "goat-mutton-keema-001",
-    title: "Goat - Mutton Keema",
-    image:
-      "https://lenaturelmeat.com/cdn/shop/files/NT4.png?v=1719991493&width=533",
-    price: 275,
-    oldPrice: 1350,
-    size: selected,
-    quantity: quantity,
-  };
+  // Fetch product dynamically from backend
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await getProductById(productId);
+        const prod = response.data?.[0] || response.data || null;
+        setProduct(prod);
+      } catch (error) {
+        console.error("Error fetching product:", error);
+      }
+    };
+    if (productId) fetchProduct();
+  }, [productId]);
 
-  const increase = () => setQuantity(quantity + 1);
+  // Set default weight option
+  useEffect(() => {
+    if (product?.weightOptions?.length) {
+      setSelected(product.weightOptions[0]);
+    }
+  }, [product]);
+
+  const increase = () => quantity < 10 && setQuantity(quantity + 1);
   const decrease = () => quantity > 1 && setQuantity(quantity - 1);
 
-  const handleAddToCart = () => {
-    addToCart(product);
-    closeModal();
-    toggleDrawer(true);
+  const handleAddToCart = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+    if (!selectedDrop && product?.cutType?.length) {
+      alert("Please select a cut type");
+      return;
+    }
+    if (!selected) {
+      alert("Please select a size");
+      return;
+    }
+
+    try {
+      await addToCartAPI(product._id, quantity, selected.price, selected._id);
+      addToCart({
+        ...product,
+        quantity,
+        size: `${selected.weight} g`,
+        cutType: selectedDrop || "",
+        price: selected.price,
+        discountPrice: selected.discountPrice,
+        id: product._id,
+        title: { en: product.name, ta: product.tamilName },
+        image: product.images?.[0],
+      });
+      toggleDrawer(true);
+      closeModal();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to add item to cart. Please try again.");
+    }
   };
 
-  // ✅ New handleBuyNow with pincode check & auto redirect
   const handleBuyNow = () => {
-    closeModal()
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
     openModal(
       <PincodeModal
         onCheckSuccess={() => {
-          addToCart(product); // Add product to cart
-          // closeModal(); // Close modal
-          window.location.href = "/checkout"; // Redirect to checkout
+          addToCart({
+            ...product,
+            quantity,
+            size: `${selected.weight} g`,
+            cutType: selectedDrop || "",
+            price: selected.price,
+            discountPrice: selected.discountPrice,
+            id: product._id,
+            title: { en: product.name, ta: product.tamilName },
+            image: product.images?.[0],
+          });
+          window.location.href = "/checkout";
         }}
       />
     );
+    closeModal();
   };
+
+  if (!product) return <p>Loading...</p>;
 
   return (
     <div className="flex flex-col gap-3 p-1">
-      <div className="flex flex-col gap-8 w-full">
-        <img
-          src={product.image}
-          className="w-full lg:h-80 md:h-80 h-70 aspect-square object-cover lg:rounded-3xl rounded"
-        />
-      </div>
+      <img
+        src={product.images?.[0]}
+        className="w-full lg:h-80 md:h-80 h-70 aspect-square object-cover lg:rounded-3xl rounded"
+      />
 
       <div className="flex flex-col gap-3">
         <p className="text-xs">Iraichi Kadai</p>
-        <h1 className="text-4xl font-bold">{product.title}</h1>
+        <h1 className="text-4xl font-bold">
+          {product.name} <span className="text-sm block mt-3">{product.tamilName}</span>
+        </h1>
 
         <div className="flex flex-row gap-2 items-center">
-          <p className="text-lg font-semibold">Rs. {product.price}</p>
-          <p className="text-gray-500 line-through">Rs. {product.oldPrice}</p>
-          <button className="bg-[#EE1c25] text-white text-base px-5 py-0.5 rounded-md">
-            sale
-          </button>
+          <p className="text-lg font-semibold">Rs. {selected?.price}</p>
+          <p className="text-gray-500 line-through">Rs. {selected?.discountPrice}</p>
+          <button className="bg-[#EE1c25] text-white text-base px-5 py-0.5 rounded-md">sale</button>
         </div>
 
         <div>
           <p className="text-base">Size</p>
           <div className="flex lg:flex-row lg:gap-3 lg:my-3 my-2 gap-2 flex-wrap">
-            {options.map((option) => (
+            {product.weightOptions?.map((opt) => (
               <button
-                key={option}
-                onClick={() => setSelected(option)}
-                className={`lg:px-5 lg:py-2 px-3 py-2 rounded-md text-base border transition duration-300 ${
-                  selected === option
-                    ? "bg-[#EE1c25] text-white border-[#EE1c25]"
-                    : "bg-transparent text-black border-gray-400"
-                }`}
+                key={opt._id}
+                onClick={() => setSelected(opt)}
+                className={`lg:px-5 lg:py-2 px-3 py-2 rounded-md text-base border transition duration-300 ${selected?._id === opt._id ? "bg-[#EE1c25] text-white border-[#EE1c25]" : "bg-transparent text-black border-gray-400"
+                  }`}
               >
-                {option}
+                {opt.weight} g
               </button>
             ))}
           </div>
         </div>
 
-        <MeatCutDropdown />
+        <div className="flex flex-col gap-2 w-50">
+          <label className="font-medium text-gray-700">Type of Cut</label>
+          <select
+            value={selectedDrop}
+            onChange={(e) => setSelectedDrop(e.target.value)}
+            className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 bg-white text-gray-800"
+          >
+            <option value="">Please select</option>
+            {product.cutType?.map((cut) => (
+              <option key={cut} value={cut}>
+                {cut}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        <div>
-          <p className="text-base">Quantity</p>
-          <div className="flex items-center border border-gray-400 py-2 px-2 w-fit rounded-md lg:my-3 my-2">
-            <button onClick={decrease} className="px-3 py-1 cursor-pointer">
-              <FaMinus size={15} />
-            </button>
-            <input
-              type="text"
-              value={quantity}
-              readOnly
-              className="w-12 text-center focus:outline-0"
-            />
-            <button onClick={increase} className="px-3 py-1 cursor-pointer">
-              <FaPlus size={15} />
-            </button>
-          </div>
+        <div className="flex items-center border border-gray-400 py-2 px-2 w-fit rounded-md lg:my-3 my-2">
+          <button onClick={decrease} className="px-3 py-1 cursor-pointer"><FaMinus size={15} /></button>
+          <input type="text" value={quantity} readOnly className="w-12 text-center focus:outline-0" />
+          <button onClick={increase} className="px-3 py-1 cursor-pointer"><FaPlus size={15} /></button>
         </div>
 
         <div className="flex flex-col gap-3">
-          <button
-            className="border py-3 rounded-md border-[#EE1c25]"
-            onClick={handleAddToCart}
-          >
-            Add to cart
-          </button>
-          <button
-            onClick={handleBuyNow}
-            className="border py-3 rounded-md border-[#EE1c25] bg-[#EE1c25] text-white"
-          >
-            Buy it now
-          </button>
+          <button className="border py-3 rounded-md border-[#EE1c25]" onClick={handleAddToCart}>Add to cart</button>
+          <button onClick={handleBuyNow} className="border py-3 rounded-md border-[#EE1c25] bg-[#EE1c25] text-white">Buy it now</button>
         </div>
 
         <div>
           <p className="text-base">Order Notes</p>
           <textarea className="border border-gray-400 rounded-md w-full h-30 my-3" />
+        </div>
+
+        <div>
+          <div onClick={() => setOpenDescription(!openDescription)} className="flex flex-row justify-between items-center border-t border-b border-gray-200 py-4 px-2 cursor-pointer">
+            <div className="flex flex-row gap-3 items-center">
+              <FaBook />
+              <p className="text-base font-semibold">Description</p>
+            </div>
+            {openDescription ? <FaChevronUp size={15} /> : <FaChevronDown size={15} />}
+          </div>
+          {openDescription && (
+            <ul className="mt-2 ml-8 list-disc text-gray-600">
+              {product.description?.split("\n")?.map((desc, idx) => (
+                <li key={idx}>{desc}</li>
+              )) || <li>{product.description}</li>}
+            </ul>
+          )}
         </div>
       </div>
     </div>

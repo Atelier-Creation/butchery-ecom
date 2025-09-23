@@ -7,7 +7,7 @@ import Wishlist from "./Wishlist/Wishlist";
 import { useLocation, useNavigate } from "react-router-dom";
 import CartPageProfile from "./CartPageProfile/CartPageProfile";
 import MyOrders from "./MyOrders/MyOrders";
-import NewNavbar from "../../pages/MobileDesign/NewNavbar";
+import Navbar from "../../pages/MobileDesign/Navbar";
 import MobileNavbar from "../../pages/MobileDesign/MobileNavbar";
 import MobileFooter from "../../pages/MobileDesign/MobileFooter";
 import IconMenu from "../../pages/MobileDesign/MobileIconMenu";
@@ -49,7 +49,7 @@ function ProfilePage() {
 
   return (
     <>
-      {isMobile ? <MobileNavbar /> : <NewNavbar />}
+      {isMobile ? <MobileNavbar /> : <Navbar />}
       {isMobile ? <IconMenu items={menuItems} /> : ""}
 
       <div className="categories-page-container"></div>

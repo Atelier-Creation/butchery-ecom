@@ -49,9 +49,9 @@ const Collectiongrid = () => {
 }, [id]);
 
 
-  const handleBuyNow = (product) => {
-    openModal(<QuickModal product={product} />);
-  };
+  const handleBuyNow = (productId) => {
+  openModal(<QuickModal productId={productId} />);
+};
 
   if (loading) return <p className="text-center py-10">Loading products...</p>;
 
@@ -87,7 +87,7 @@ const Collectiongrid = () => {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleBuyNow(item.fullData);
+                    handleBuyNow(item.id);
                   }}
                   className="absolute inset-x-4 bottom-4 bg-red-800 text-white text-sm py-2 cursor-pointer rounded-md opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-1 z-20"
                 >

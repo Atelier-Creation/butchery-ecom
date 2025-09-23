@@ -136,7 +136,7 @@ function PDPsec1() {
     <>
       {isMobile ? <MobileNavbar /> : <Navbar />}
       {isMobile ? <IconMenu items={menuItems} /> : ""}
-      <div className="flex flex-col md:flex-row lg:flex-row justify-evenly gap-3 lg:p-10 md:p-10 p-3">
+      <div className="flex flex-col md:flex-row lg:flex-row justify-evenly gap-3 mt-5 lg:p-10 md:p-10 p-3">
         <div className="lg:w-3/4 md:w-3/4 lg:px-10 flex flex-col gap-8 w-full">
           <img
             src={product?.images?.[0]}
@@ -224,18 +224,34 @@ function PDPsec1() {
               </div>
               {openDescription && (
                 <ul className="mt-2 ml-8 list-disc text-gray-600">
-                  {product?.description?.split("\n")?.map((desc, idx) => (
-                    <li key={idx}>{desc}</li>
-                  )) || <li>{product?.description}</li>}
+                  {/* English description */}
+                  {product?.description
+                    ? product.description.split("\n").map((desc, idx) => (
+                      <li key={`en-${idx}`}>{desc}</li>
+                    ))
+                    : null}
+
+                  {/* Tamil description */}
+                  {product?.tamilDescription
+                    ? product.tamilDescription.split("\n").map((desc, idx) => (
+                      <li key={`ta-${idx}`}>{desc}</li>
+                    ))
+                    : null}
                 </ul>
               )}
+
             </div>
           </div>
         </div>
       </div>
 
       <PDPsec2 />
-      <PDPsec3 />
+      <PDPsec3
+        title="You may also like"
+        categoryId={product?.category}  // Pass the category
+        currentProductId={product?._id} // Exclude current product
+        onViewAll={() => console.log("View all clicked")}
+      />
       <MobileFooter />
     </>
   );
