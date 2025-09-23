@@ -8,7 +8,7 @@ export default function AboutUs() {
     bottomSmall:
       "https://images.unsplash.com/photo-1633961562073-df87b5c9cfe8?q=80&w=698&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   };
-
+const videoId = "bTm9satDbww";
   return (
     <section className="w-full bg-white py-16">
       <div className="max-w-6xl mx-auto px-4">
@@ -56,9 +56,23 @@ export default function AboutUs() {
               </div>
             </div>
           </div>
+          {/* Right side YouTube video */}
+           <div className="relative w-full flex justify-center lg:justify-center">
+            <div className="w-[320px] md:w-[380px] lg:w-full relative aspect-video overflow-hidden rounded-lg pointer-events-none">
+              <iframe
+                className="w-[300%] h-[100%] -ml-[100%] object-cover"
+                src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&controls=0&start=143&amp;end=195;&loop=0&playlist=${videoId}&modestbranding=1&rel=0&showinfo=0`}
+                title="About Us Video"
+                frameBorder="0"
+                allow="autoplay; encrypted-media"
+                allowFullScreen
+              ></iframe>
+               <div className="absolute top-0 left-0 w-full h-full pointer-events-none"></div>
+            </div>
+          </div>
 
-          {/* Right images (stacked collage) */}
-          <div className="relative w-full flex justify-center lg:justify-center">
+          {/* Right images (stacked collage) flex */}
+          <div className="relative w-full  justify-center hidden lg:justify-center">
             <div className="w-[320px] md:w-[380px] lg:w-[420px] relative">
               {/* Big image */}
               <div className="overflow-hidden">
