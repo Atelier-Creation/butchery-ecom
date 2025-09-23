@@ -61,8 +61,8 @@ const videoId = "bTm9satDbww";
             <div className="w-[320px] md:w-[380px] lg:w-full relative aspect-video overflow-hidden rounded-lg pointer-events-none">
               <iframe
                 className="w-[300%] h-[100%] -ml-[100%] object-cover"
-                src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&controls=0&start=143&amp;end=195;&loop=0&playlist=${videoId}&modestbranding=1&rel=0&showinfo=0`}
-                title="About Us Video"
+                src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=0&playlist=${videoId}&start=143&amp;end=195;&modestbranding=1&rel=0&showinfo=0`}
+                title="About iraichi Kadai Video"
                 frameBorder="0"
                 allow="autoplay; encrypted-media"
                 allowFullScreen
@@ -72,7 +72,7 @@ const videoId = "bTm9satDbww";
           </div>
 
           {/* Right images (stacked collage) flex */}
-          <div className="relative w-full  justify-center hidden lg:justify-center">
+          <div className="relative w-full  justify-center hidden lg:justify-center lg:hidden">
             <div className="w-[320px] md:w-[380px] lg:w-[420px] relative">
               {/* Big image */}
               <div className="overflow-hidden">
