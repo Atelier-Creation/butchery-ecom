@@ -110,6 +110,11 @@ function CreateAccount() {
           placeholder='Password'
           className='py-3 w-full pl-2 border border-gray-200 focus:border-gray-200 rounded-md mt-3'
         />
+        <div className="text-start text-[#EE1c25] w-full">
+            <a href="/login" className="border-b text-start">
+              Already have an account? Login
+            </a>
+          </div>
         <div>
           <button
             onClick={handleCreate}

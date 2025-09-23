@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { QuickModal, useQuickModal } from "../../context/QuickContext";
 import Aos from "aos";
 import { getProducts } from "../../api/productApi";
-// ✅ Swiper imports
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
@@ -146,7 +145,7 @@ const MobileBestseller = ({
                 <P
   en={item.name}
   ta={item.tamilName}
-                  className="text-md font-medium line-clamp-2 transition-colors duration-300 group-hover:text-[#EE1c25]"
+                  className="text-md h-[50px] font-medium line-clamp-2 transition-colors duration-300 group-hover:text-[#EE1c25]"
                 />
                 <div className="mt-2 flex items-center gap-2">
                   <span className="text-[#EE1c25] font-semibold text-md">

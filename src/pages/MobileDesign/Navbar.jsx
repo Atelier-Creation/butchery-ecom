@@ -12,7 +12,7 @@ import { MdOutlineShoppingBag } from "react-icons/md";
 import { FaPhoneAlt } from "react-icons/fa";
 import { IoLocationSharp, IoMail } from "react-icons/io5";
 import LocationDropdown from "../../components/LocationDropdown";
-import CartDrawer from "../../components/CartDrawer/CartDrawer"; 
+import CartDrawer from "../../components/CartDrawer/CartDrawer";
 import { useCart } from "../../components/CartDrawer/CartContext";
 const Navbar = () => {
   const navigate = useNavigate();
@@ -95,7 +95,7 @@ const Navbar = () => {
               <Search className="cursor-pointer " size={18} />
             </div>
             <div
-              onClick={() =>  // prevent bubbling
+              onClick={() => 
                 toggleDrawer(true)}
               className="p-2 bg-[#BC141B91] border border-[#FFFFFF30] rounded-full"
             >
@@ -103,14 +103,20 @@ const Navbar = () => {
             </div>
             <div
               onClick={(e) => {
-                e.stopPropagation(); // stop event bubbling
-                navigate("/login");
+                e.stopPropagation();
+                const token = localStorage.getItem("token"); 
+                if (token) {
+                  navigate("/profile"); 
+                } else {
+                  navigate("/login"); 
+                }
               }}
               className="p-2 bg-[#BC141B91] border border-[#FFFFFF30] rounded-full"
             >
               <User className="cursor-pointer " size={18} />
             </div>
-             <CartDrawer />
+
+            <CartDrawer />
           </div>
         </div>
       </div>
