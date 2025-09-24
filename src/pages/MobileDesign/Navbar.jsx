@@ -130,7 +130,7 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Centered Logo */}
-        <div className="flex items-center justify-center w-full md:hidden h-14 relative overflow-visible">
+        <div className="flex items-center ml-10  w-full md:hidden h-14 relative overflow-visible">
           <div
             className="cursor-pointer z-40"
             onClick={() => navigate("/")}

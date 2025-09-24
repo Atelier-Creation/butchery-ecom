@@ -16,7 +16,7 @@ const MobileBanner = () => {
       head: "Fresh, Tender & Juicy Meat Every Day Hygienically Cut, Packed & Delivered",
       para: "Experience meat the way it should be – clean, healthy, and full of flavor.",
     },
-    
+
     {
       image: image2,
       head: "பசுமையான இறைச்சி, நாட்டு சுவை, உங்கள் குடும்பத்திற்காக.",
@@ -108,24 +108,21 @@ const MobileBanner = () => {
               </div>
             </div>
 
-            <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 flex items-center gap-4 text-black lg:text-gray-200 px-3 py-1 rounded-full">
+            <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 flex items-center gap-4 text-white lg:text-gray-200 px-3 py-1 rounded-full">
               <FiChevronLeft
                 size={20}
                 className="cursor-pointer"
                 onClick={() => swiperRef.current?.slidePrev()}
               />
-              {/* Two dots */}
-              {/* Dynamic Dots */}
               <div className="flex gap-2">
                 {images.map((_, dotIdx) => (
                   <span
                     key={dotIdx}
                     onClick={() => swiperRef.current?.slideToLoop(dotIdx)}
-                    className={`w-3 h-3 rounded-full cursor-pointer ${
-                      activeIndex === dotIdx
-                        ? "bg-black lg:bg-gray-200"
-                        : "bg-transparent border"
-                    }`}
+                    className={`w-3 h-3 rounded-full cursor-pointer ${activeIndex === dotIdx
+                        ? "bg-white lg:bg-gray-200"
+                        : "bg-transparent border border-white lg:border-gray-200"
+                      }`}
                   ></span>
                 ))}
               </div>
@@ -135,19 +132,12 @@ const MobileBanner = () => {
                 onClick={() => swiperRef.current?.slideNext()}
               />
               {isPlaying ? (
-                <FiPause
-                  size={20}
-                  className="cursor-pointer"
-                  onClick={toggleAutoplay}
-                />
+                <FiPause size={20} className="cursor-pointer" onClick={toggleAutoplay} />
               ) : (
-                <FiPlay
-                  size={20}
-                  className="cursor-pointer"
-                  onClick={toggleAutoplay}
-                />
+                <FiPlay size={20} className="cursor-pointer" onClick={toggleAutoplay} />
               )}
             </div>
+
           </SwiperSlide>
         ))}
       </Swiper>

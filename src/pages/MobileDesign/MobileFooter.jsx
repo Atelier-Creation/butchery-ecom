@@ -32,9 +32,9 @@ const MobileFooter = () => {
       </div>
 
       {/* Mobile Section */}
-      <div className="my-8 lg:hidden flex flex-col items-center justify-center px-4 gap-4">
+      <div className="md:my-8 my-1 lg:hidden flex flex-col items-center justify-center px-4 gap-4">
         <Link to={"/"}>
-          <img src="/logo.svg" alt="Logo" className="h-16 sm:h-38 object-contain" />
+          <img src="/ik-white.svg" alt="Logo" className="h-38 sm:h-38 object-contain" />
         </Link>
         <p className="text-sm text-center leading-relaxed">
           Having had very bitter experiences with the local meat shops and
