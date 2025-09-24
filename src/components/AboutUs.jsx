@@ -69,7 +69,7 @@ export default function AboutUs() {
               ></iframe>
             </div>
             <div
-              className="absolute top-20 lg:-top-25 z-10 -right-10 lg:-right-25 
+              className="absolute hidden lg:block top-20 lg:-top-15 z-10 -right-10 lg:-right-25 
   w-40 h-40 md:w-50 md:h-50 lg:w-60 aspect-square 
   overflow-hidden rounded-lg border border-gray-50 float-rotate-slow shadow-2xl"
             >
@@ -81,7 +81,7 @@ export default function AboutUs() {
             </div>
 
             <div
-              className="absolute -bottom-15 left-30 lg:-bottom-30 lg:-left-10 
+              className="absolute hidden lg:block -bottom-30 left-30 lg:-bottom-20 lg:-left-20 
   w-40 h-40 md:w-80 lg:w-60 lg:h-50 
   overflow-hidden rounded-lg border border-gray-50 float-rotate-delay shadow-2xl"
             >

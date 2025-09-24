@@ -67,24 +67,38 @@ p .english-font{
 
 @keyframes floatRotate {
   0%, 100% {
-    transform: translateY(0) rotate(0deg);
+    transform: translateY(3px) rotate(-2deg);
   }
   25% {
-    transform: translateY(-8px) rotate(-1deg);
+    transform: translateY(-8px) rotate(-1.7deg);
   }
   50% {
-    transform: translateY(0) rotate(0deg);
+    transform: translateY(3px) rotate(-1deg);
   }
   75% {
-    transform: translateY(-8px) rotate(1deg);
+    transform: translateY(-8px) rotate(1.7deg);
   }
+}
+@keyframes float {
+	0% {
+		box-shadow: 0 5px 15px 0px rgba(0,0,0,0.6);
+		transform: translatey(0px);
+	}
+	50% {
+		box-shadow: 0 25px 15px 0px rgba(0,0,0,0.2);
+		transform: translatey(-20px);
+	}
+	100% {
+		box-shadow: 0 5px 15px 0px rgba(0,0,0,0.6);
+		transform: translatey(0px);
+	}
 }
 
 .float-rotate-slow {
-  animation: floatRotate 6s ease-in-out infinite;
+  animation: float 6s ease-in-out infinite;
 }
 
 .float-rotate-delay {
-  animation: floatRotate 5s ease-in-out infinite;
+  animation: float 5s ease-in-out infinite;
   animation-delay: 2.5s;
 }
