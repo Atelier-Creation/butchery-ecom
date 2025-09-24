@@ -47,7 +47,11 @@ const Navbar = () => {
       const message =
         res?.message ?? res?.data?.message ?? (res?.data && res.data.message);
 
-      if (message && message.toLowerCase().includes("invalid") && message.toLowerCase().includes("expired")) {
+      if (
+        message &&
+        message.toLowerCase().includes("invalid") &&
+        message.toLowerCase().includes("expired")
+      ) {
         handleInvalidToken(message);
         return;
       }
@@ -65,7 +69,11 @@ const Navbar = () => {
         err?.message ||
         "";
 
-      if (typeof errMsg === "string" && errMsg.toLowerCase().includes("invalid") && errMsg.toLowerCase().includes("expired")) {
+      if (
+        typeof errMsg === "string" &&
+        errMsg.toLowerCase().includes("invalid") &&
+        errMsg.toLowerCase().includes("expired")
+      ) {
         handleInvalidToken(errMsg);
         return;
       }
@@ -140,7 +148,10 @@ const Navbar = () => {
         {/* Mobile Right: cart + account */}
         <div className="absolute right-4 top-1/2 transform -translate-y-1/2 md:hidden flex items-center gap-3 z-50">
           <button
-            onClick={() => toggleDrawer(true)}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleDrawer(true);
+            }}
             aria-label="Open cart"
             className="relative p-2 bg-[#BC141B91] border border-[#FFFFFF30] rounded-full"
           >
@@ -309,6 +320,9 @@ const Navbar = () => {
           </div>
         </div>
       )}
+
+      {/* Ensure CartDrawer is available on all viewports */}
+      <CartDrawer />
     </header>
   );
 };
