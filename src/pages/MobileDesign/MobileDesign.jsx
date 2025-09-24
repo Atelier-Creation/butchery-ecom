@@ -175,12 +175,7 @@ const MobileDesign = () => {
   return (
     <div className="bg-white min-h-screen">
       {isMobile ? <MobileNavbar /> : <Navbar />}
-
-      {isMobile ? (
-        <div>
-          <IconMenu items={menuItems} />
-        </div>
-      ) : null}
+      {isMobile ? <IconMenu items={menuItems} /> : ""}
 
       <div data-aos="fade-up" data-aos-delay="100">
         <MobileBanner />

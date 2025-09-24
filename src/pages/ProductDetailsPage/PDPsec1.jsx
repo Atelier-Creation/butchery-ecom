@@ -41,15 +41,9 @@ function PDPsec1() {
   const [selectedDrop, setSelectedDrop] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [openDescription, setOpenDescription] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  
 
-  // Handle window resize for mobile
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  
 
   // Fetch product by ID
   useEffect(() => {
@@ -134,8 +128,8 @@ function PDPsec1() {
 
   return (
     <>
-      {isMobile ? <MobileNavbar /> : <Navbar />}
-      {isMobile ? <IconMenu items={menuItems} /> : ""}
+      <Navbar />
+      
       <div className="flex flex-col md:flex-row lg:flex-row justify-evenly gap-3 mt-5 lg:p-10 md:p-10 p-3">
         <div className="lg:w-3/4 md:w-3/4 lg:px-10 flex flex-col gap-8 w-full">
           <img

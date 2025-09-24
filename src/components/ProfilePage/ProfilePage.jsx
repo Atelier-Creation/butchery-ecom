@@ -49,8 +49,7 @@ function ProfilePage() {
 
   return (
     <>
-      {isMobile ? <MobileNavbar /> : <Navbar />}
-      {isMobile ? <IconMenu items={menuItems} /> : ""}
+      <Navbar />
 
       <div className="categories-page-container"></div>
       <div className="profile-page-wrapper">

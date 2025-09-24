@@ -10,7 +10,7 @@ export default function AboutUs() {
   };
   const videoId = "bTm9satDbww";
   return (
-    <section className="w-full bg-white py-16">
+    <section className="w-full bg-white py-3">
       <div className="max-w-6xl mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           {/* Left content */}
