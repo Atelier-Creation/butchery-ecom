@@ -39,7 +39,7 @@ const Collections = () => {
   }, []);
   return (
     <>
-      {isMobile ? <MobileNavbar /> : <Navbar/>}
+      {isMobile ? <MobileNavbar /> : <Navbar />}
       {isMobile ? <IconMenu items={menuItems} /> : ""}
       {/* <IconMenu items={menuItems} /> */}
       <Collectiongrid />

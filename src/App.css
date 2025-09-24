@@ -63,3 +63,28 @@ p .english-font{
 .animate-spin-slow {
   animation: spin-slow 10s linear infinite; /* Adjust duration as needed */
 }
+
+
+@keyframes floatRotate {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-8px) rotate(-1deg);
+  }
+  50% {
+    transform: translateY(0) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-8px) rotate(1deg);
+  }
+}
+
+.float-rotate-slow {
+  animation: floatRotate 6s ease-in-out infinite;
+}
+
+.float-rotate-delay {
+  animation: floatRotate 5s ease-in-out infinite;
+  animation-delay: 2.5s;
+}

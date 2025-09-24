@@ -11,11 +11,16 @@ export default {
         spinslow: {
           'from': { transform: 'rotate(0deg)' },
           'to': { transform: 'rotate(360deg)' },
-        }
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
       },
       animation: {
         marquee: "marquee 10s linear infinite",
         spinslow: "spinslow 10s linear infinite",
+        float: 'float 4s ease-in-out infinite',
       },
     },
   },
