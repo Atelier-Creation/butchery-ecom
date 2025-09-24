@@ -77,7 +77,7 @@ export default function ShoppingCart() {
 
   return (
     <>
-      {isMobile ? <MobileNavbar /> : <Navbar />}
+       <Navbar />
       <div className="max-w-7xl mx-auto px-4 py-10">
         <h2 className="text-center text-2xl tracking-wide font-bold mb-20">
           YOUR SHOPPING CART

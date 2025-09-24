@@ -29,18 +29,11 @@ const menuItems = [
   },
 ];
 const Collections = () => {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    handleResize(); // run once on mount
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  
   return (
     <>
-      {isMobile ? <MobileNavbar /> : <Navbar />}
-      {isMobile ? <IconMenu items={menuItems} /> : ""}
+       <Navbar/>
+      
       {/* <IconMenu items={menuItems} /> */}
       <Collectiongrid />
       <MobileFooter />

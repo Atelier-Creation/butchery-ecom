@@ -78,8 +78,7 @@ function Login() {
 
   return (
     <div>
-      {isMobile ? <MobileNavbar /> : <Navbar />}
-      {isMobile ? <IconMenu items={menuItems} /> : ""}
+       <Navbar />
 
       <div className="flex flex-col lg:flex-col items-center justify-center gap-3 my-10 lg:w-120 md:w-110 w-full lg:mx-auto md:mx-auto px-5">
         <h1 className="text-3xl font-bold mb-4">Login</h1>

@@ -247,7 +247,7 @@ function PaymentPage() {
         </div>
       )}
 
-      {isMobile ? <MobileNavbar /> : <Navbar />}
+       <Navbar />
 
       <div className="flex gap-12 justify-center mt-20 mb-52 px-4 flex-col lg:flex-row">
         <div className="lg:w-1/2 w-full space-y-8">

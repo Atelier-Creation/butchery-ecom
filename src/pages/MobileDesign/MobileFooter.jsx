@@ -30,17 +30,11 @@ const MobileFooter = () => {
       <div className="absolute -top-10 lg:-top-30 left-0 w-full">
         <img src={bgImage} alt="bg" className="w-full object-cover" />
       </div>
-      {/* <div className="absolute top-0 left-0 w-full">
-        <img src={rectBg} alt="rect-bg" className="w-full h-[65vh] object-cover" />
-      </div> */}
+
       {/* Mobile Section */}
       <div className="my-8 lg:hidden flex flex-col items-center justify-center px-4 gap-4">
         <Link to={"/"}>
-          <img
-            src="/logo.svg"
-            alt="Logo"
-            className="h-16 sm:h-38 object-contain"
-          />
+          <img src="/logo.svg" alt="Logo" className="h-16 sm:h-38 object-contain" />
         </Link>
         <p className="text-sm text-center leading-relaxed">
           Having had very bitter experiences with the local meat shops and
@@ -75,6 +69,12 @@ const MobileFooter = () => {
             <li>Notifications</li>
           </ul>
         </FooterSection>
+
+        {/* Mobile-only logos under Settings */}
+        <div className="flex items-center justify-center gap-4 mt-4 lg:hidden">
+          <img src="/fssai-logo.png" alt="fssai" className="h-12" />
+          <img src="/gov-approved-msme.png" alt="msme" className="h-6" />
+        </div>
       </div>
 
       {/* Desktop Section */}
@@ -85,13 +85,8 @@ const MobileFooter = () => {
         <div className="w-80 z-10">
           <div className="flex items-center justify-center gap-5 mb-4">
             <Link to={"/"}>
-              <img
-                src="/ik-white.svg"
-                alt="Logo"
-                className="h-30 lg:h-43 object-contain"
-              />
+              <img src="/ik-white.svg" alt="Logo" className="h-30 lg:h-43 object-contain" />
             </Link>
-
           </div>
           <p className="text-sm text-start leading-relaxed">
             Having had very bitter experiences with the local meat shops and
@@ -104,63 +99,36 @@ const MobileFooter = () => {
         {/* Links */}
         <div className="lg:flex flex-col gap-2 z-10">
           <h4 className="text-xl font-semibold">Quick Links</h4>
-          <a href="/" className="hover:underline">
-            Search
-          </a>
-          <a href="/" className="hover:underline">
-            Product Link
-          </a>
-          <a href="/" className="hover:underline">
-            Contact Us
-          </a>
-          <a href="/" className="hover:underline">
-            Special Product
-          </a>
-          <a href="/" className="hover:underline">
-            Recipe
-          </a>
+          <a href="/" className="hover:underline">Search</a>
+          <a href="/" className="hover:underline">Product Link</a>
+          <a href="/" className="hover:underline">Contact Us</a>
+          <a href="/" className="hover:underline">Special Product</a>
+          <a href="/" className="hover:underline">Recipe</a>
         </div>
 
         <div className="lg:flex flex-col gap-2 z-10">
           <h4 className="text-xl font-semibold">Policies</h4>
-          <a href="/" className="hover:underline">
-            Privacy Policy
-          </a>
-          <a href="/" className="hover:underline">
-            Terms of Service
-          </a>
-          <a href="/" className="hover:underline">
-            Shipping policy
-          </a>
-          <a href="/" className="hover:underline">
-            Return & Refund policy
-          </a>
+          <a href="/" className="hover:underline">Privacy Policy</a>
+          <a href="/" className="hover:underline">Terms of Service</a>
+          <a href="/" className="hover:underline">Shipping policy</a>
+          <a href="/" className="hover:underline">Return & Refund policy</a>
         </div>
 
         <div className="lg:flex flex-col gap-2 z-10">
           <h4 className="text-xl font-semibold">Settings</h4>
-          <a href="/" className="hover:underline">
-            Home
-          </a>
-          <a href="/" className="hover:underline">
-            Meat-Product
-          </a>
-          <a href="/" className="hover:underline">
-            Recipe
-          </a>
-          <a href="/" className="hover:underline">
-            About us
-          </a>
-          <a href="/" className="hover:underline">
-            Contact us
-          </a>
+          <a href="/" className="hover:underline">Home</a>
+          <a href="/" className="hover:underline">Meat-Product</a>
+          <a href="/" className="hover:underline">Recipe</a>
+          <a href="/" className="hover:underline">About us</a>
+          <a href="/" className="hover:underline">Contact us</a>
         </div>
       </div>
-      <div className="flex items-center justify-end gap-4 relative z-[100] mr-[100px] mt-[-100px]">
+
+      {/* Desktop logos (unchanged, visible only on lg and up) */}
+      <div className="hidden lg:flex items-center justify-end gap-4 relative z-[100] mr-[100px] mt-[-100px]">
         <img src="/fssai-logo.png" alt="fssai" className="h-20" />
         <img src="/gov-approved-msme.png" alt="msme" className="h-10" />
       </div>
-
 
       {/* Bottom Bar */}
       <div className="relative z-10 text-center bg-[#222] py-2 text-gray-300 text-xs sm:text-sm lg:text-base">
@@ -175,16 +143,6 @@ const MobileFooter = () => {
         </a>{" "}
         All Rights Reserved.
       </div>
-
-
-      {/* Background bottom wave */}
-      {/* <div className="absolute bottom-0 left-0 w-full">
-        <img
-          src={rectBg}
-          alt="rect-bg"
-          className="w-full h-[68vh] lg:h-full object-cover"
-        />
-      </div> */}
     </footer>
   );
 };
