@@ -185,7 +185,7 @@ const Navbar = () => {
               Home
             </a>
             <a
-              href="#"
+              href="/collections/all"
               className="relative font-medium pb-2  after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-full after:h-[3px] after:bg-yellow-300 after:rounded-full after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:origin-left"
             >
               Product
@@ -270,7 +270,7 @@ const Navbar = () => {
               <a href="/" onClick={() => setMobileOpen(false)} className="py-2 ">
                 Home
               </a>
-              <a href="#" onClick={() => setMobileOpen(false)} className="py-2 ">
+              <a href="/collections/all" onClick={() => setMobileOpen(false)} className="py-2 ">
                 Product
               </a>
               <a href="#" onClick={() => setMobileOpen(false)} className="py-2 ">
