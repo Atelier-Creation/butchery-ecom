@@ -12,7 +12,8 @@ import image3 from "../../assets/images/top-view-raw-meat-slices-with-greens-red
 const MobileBanner = () => {
   const images = [
     {
-      image: "https://plus.unsplash.com/premium_photo-1668616814974-496fb1ed7a7e?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      image:
+        "https://plus.unsplash.com/premium_photo-1668616814974-496fb1ed7a7e?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       head: "Fresh, Tender & Juicy Meat Every Day Hygienically Cut, Packed & Delivered",
       para: "Experience meat the way it should be – clean, healthy, and full of flavor.",
     },
@@ -29,25 +30,11 @@ const MobileBanner = () => {
       para: "Bringing back the taste of tradition with meat you can truly trust.",
     },
     {
-      image: "https://images.unsplash.com/photo-1682991136736-a2b44623eeba?q=80&w=1031&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      image:
+        "https://images.unsplash.com/photo-1682991136736-a2b44623eeba?q=80&w=1031&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       head: "சுத்தமாக வெட்டிய இறைச்சி,1 மணி நேரத்தில் உங்கள் வீட்டு வாசலில்.",
       para: "சுவை,பசுமை, விரைவு – அனைத்தும் ஒரே இடத்தில், இறைச்சி கடையில்.",
     },
-    // {
-    //   image: "/top-view-raw-meat-prepared-be-cooked.jpg",
-    //   head: "உங்கள் குடும்ப சாப்பாட்டிற்கு – பசுமையான இறைச்சி, 1 மணி நேரத்தில் டெலிவரி!",
-    //   para: "நாட்டுக்கோழி, மட்டன், கோழி – தினமும் பசுமையாக வெட்டி, பாதுகாப்பாக வழங்குகிறோம்.",
-    // },
-    // {
-    //   image: "/indian-chicken-gravy.webp",
-    //   head: "Authentic Indian Chicken Gravy",
-    //   para: "Richly spiced and slow-cooked to perfection, this classic chicken curry brings the true taste of India to your table.",
-    // },
-    // {
-    //   image: "/raw-chicken-wooden-board-with-bunch-fresh-vegetables-spices.jpg",
-    //   head: "அசல் இந்திய கோழி குழம்பு",
-    //   para: "மசாலா நிறைந்த, மெதுவாக சமைக்கப்பட்ட இந்த குழம்பு, இந்தியாவின் உண்மையான சுவையை உங்களின் மேசைக்கு கொண்டு வருகிறது.",
-    // },
   ];
 
   const swiperRef = useRef(null);
@@ -64,7 +51,8 @@ const MobileBanner = () => {
   };
 
   return (
-    <div className="w-full h-90 max-w-md mx-auto overflow-hidden lg:w-full lg:h-[80vh] lg:max-w-none">
+    // added `relative` so mobile fixed buttons can position correctly
+    <div className="relative w-full h-90 max-w-md mx-auto overflow-hidden lg:w-full lg:h-[80vh] lg:max-w-none">
       <Swiper
         onSwiper={(swiper) => (swiperRef.current = swiper)}
         onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
@@ -91,7 +79,8 @@ const MobileBanner = () => {
                 {src.para}
               </p>
 
-              <div className="flex flex-row lg:flex-row gap-2 lg:mt-3">
+              {/* keep the overlay buttons only on lg and up */}
+              <div className="hidden lg:flex flex-row gap-2 lg:mt-3">
                 {/* Get Started button */}
                 <Button
                   ta={"Order Now"}
@@ -108,10 +97,11 @@ const MobileBanner = () => {
               </div>
             </div>
 
-            <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 flex items-center gap-4 text-white lg:text-gray-200 px-3 py-1 rounded-full">
+            {/* desktop overlay controls (hidden on mobile) — icons white on lg+ */}
+            <div className="hidden lg:flex absolute bottom-5 left-1/2 transform -translate-x-1/2 items-center gap-4 text-white px-3 py-1 rounded-full">
               <FiChevronLeft
                 size={20}
-                className="cursor-pointer"
+                className="cursor-pointer text-white"
                 onClick={() => swiperRef.current?.slidePrev()}
               />
               <div className="flex gap-2">
@@ -119,28 +109,80 @@ const MobileBanner = () => {
                   <span
                     key={dotIdx}
                     onClick={() => swiperRef.current?.slideToLoop(dotIdx)}
-                    className={`w-3 h-3 rounded-full cursor-pointer ${activeIndex === dotIdx
-                        ? "bg-white lg:bg-gray-200"
-                        : "bg-transparent border border-white lg:border-gray-200"
+                    className={`w-3 h-3 rounded-full cursor-pointer ${activeIndex === dotIdx ? "bg-white" : "bg-transparent border border-white"
                       }`}
                   ></span>
                 ))}
               </div>
               <FiChevronRight
                 size={20}
-                className="cursor-pointer"
+                className="cursor-pointer text-white"
                 onClick={() => swiperRef.current?.slideNext()}
               />
               {isPlaying ? (
-                <FiPause size={20} className="cursor-pointer" onClick={toggleAutoplay} />
+                <FiPause size={20} className="cursor-pointer text-white" onClick={toggleAutoplay} />
               ) : (
-                <FiPlay size={20} className="cursor-pointer" onClick={toggleAutoplay} />
+                <FiPlay size={20} className="cursor-pointer text-white" onClick={toggleAutoplay} />
               )}
             </div>
 
           </SwiperSlide>
         ))}
       </Swiper>
+
+      {/* mobile fixed buttons at bottom of the banner (visible only on mobile) */}
+      <div className="absolute left-0 right-0 bottom-[60px] z-[100] flex justify-center gap-2 px-4 lg:hidden">
+        <Button
+          ta={"Order Now"}
+          en={"Order Now"}
+          className="py-2 px-5 border rounded border-[#EE1c25] bg-[#EE1c25] text-white transition duration-300 hover:bg-transparent hover:text-[#EE1c25]"
+        />
+        <Button
+          ta={"View all"}
+          en={"View all"}
+          className="py-2 px-5 border bg-transparent rounded border-white text-white transition duration-300 hover:bg-[#EE1c25] hover:text-white hover:border-[#EE1c25]"
+        />
+      </div>
+
+      {/* mobile controls shown under the banner (visible only on mobile). icons black on mobile, white on lg+ */}
+      <div className="flex items-center gap-4 justify-center mt-4 lg:hidden">
+        <FiChevronLeft
+          size={20}
+          className="cursor-pointer text-black lg:text-white"
+          onClick={() => swiperRef.current?.slidePrev()}
+        />
+        <div className="flex gap-2">
+          {images.map((_, dotIdx) => (
+            <span
+              key={dotIdx}
+              onClick={() => swiperRef.current?.slideToLoop(dotIdx)}
+              className={`w-3 h-3 rounded-full cursor-pointer ${activeIndex === dotIdx
+                ? "bg-black lg:bg-white"
+                : "bg-transparent border border-black lg:border-white"
+                }`}
+            ></span>
+          ))}
+        </div>
+        <FiChevronRight
+          size={20}
+          className="cursor-pointer text-black lg:text-white"
+          onClick={() => swiperRef.current?.slideNext()}
+        />
+        {isPlaying ? (
+          <FiPause
+            size={20}
+            className="cursor-pointer text-black lg:text-white"
+            onClick={toggleAutoplay}
+          />
+        ) : (
+          <FiPlay
+            size={20}
+            className="cursor-pointer text-black lg:text-white"
+            onClick={toggleAutoplay}
+          />
+        )}
+      </div>
+
     </div>
   );
 };
