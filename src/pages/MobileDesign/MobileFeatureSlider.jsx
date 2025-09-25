@@ -20,7 +20,7 @@ const FeatureSlider = ({ features }) => {
   }, []);
 
   return (
-    <div className="w-full px-4 py-8" data-aos="zoom-in" data-aos-delay="100">
+    <div className="w-full px-4 py2 md:py-8" data-aos="zoom-in" data-aos-delay="100">
       <Swiper
         modules={[Autoplay]}
         spaceBetween={20}
@@ -44,7 +44,7 @@ const FeatureSlider = ({ features }) => {
               <img
                 src={item.img}
                 alt={item.title.en}
-                className="w-28 h-28 object-contain mb-4"
+                className="w-28 h-28 object-contain mb-1 md:mb-4"
               />
               <H3
                 className="text-lg font-semibold text-gray-800"

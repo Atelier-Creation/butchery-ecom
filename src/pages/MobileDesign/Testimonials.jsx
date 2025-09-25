@@ -49,7 +49,7 @@ const Testimonials = () => {
   }, []);
 
   return (
-    <div className="w-full pt-8 pb-4  bg-white testimonial">
+    <div className="w-full pt-4 md:pt-8 pb-4  bg-white testimonial">
       <div className="max-w-6xl mx-auto px-4 text-center">
         <h2 className="text-xl font-bold mb-4 md:mb-8 lg:mb-2 lg:text-4xl lg:font-bold">
           Customer Reviews
@@ -75,7 +75,7 @@ const Testimonials = () => {
           {testimonials.map((t, idx) => (
             <SwiperSlide key={idx} >
               <div
-                className="relative bg-white min-h-[250px] max-h-[250px] rounded-2xl shadow-md px-8 py-5 flex flex-col justify-between text-center border border-gray-200"
+                className="relative bg-white min-h-[250px] max-h-[250px] rounded-2xl shadow-md md-2 md:px-8 py-5 flex flex-col justify-between text-center border border-gray-200"
                 data-aos="fade-up"
                 data-aos-delay={idx * 100}
               >
@@ -88,7 +88,7 @@ const Testimonials = () => {
                 </div>
 
                 {/* Review Text */}
-                <p className="text-gray-800 text-base leading-relaxed">
+                <p className="text-gray-800 md:mt-5 mt-10 pl-10 pr-10 text-base leading-relaxed">
                   {t.text}
                 </p>
 

@@ -27,7 +27,7 @@ export const ModalQuickProvider = ({ children }) => {
       {children}
       {isOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm">
-          <div className="absolute top-5 right-5 bg-white p-6 rounded-xl w-80 shadow-lg max-h-[90vh] overflow-y-auto">
+          <div className="absolute top-5 right-5 bg-white p-6 rounded-xl w-100 shadow-lg max-h-[90vh] overflow-y-auto">
 
             {/* Close button at top-right */}
             <button
@@ -160,7 +160,7 @@ export const QuickModal = ({ productId }) => {
 
       <div className="flex flex-col gap-3">
         <p className="text-xs">Iraichi Kadai</p>
-        <h1 className="text-4xl font-bold">
+        <h1 className="text-xl font-bold">
           {product.name} <span className="text-sm block mt-3">{product.tamilName}</span>
         </h1>
 
