@@ -26,8 +26,8 @@ export const ModalQuickProvider = ({ children }) => {
     <QuickContext.Provider value={{ openModal, closeModal }}>
       {children}
       {isOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm">
-          <div className="absolute top-5 right-5 bg-white p-6 rounded-xl w-100 shadow-lg max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs">
+          <div className="absolute top-5 right-0 bg-white p-6 rounded-xl w-100 shadow-lg max-h-[95vh] overflow-y-auto">
 
             {/* Close button at top-right */}
             <button
@@ -88,6 +88,7 @@ export const QuickModal = ({ productId }) => {
   const handleAddToCart = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
+      closeModal()      
       navigate("/login");
       return;
     }
@@ -149,7 +150,33 @@ export const QuickModal = ({ productId }) => {
     closeModal();
   };
 
-  if (!product) return <p>Loading...</p>;
+  if (!product)
+    return (
+      <div className="animate-pulse flex flex-col gap-4 p-2">
+        <div className="w-full h-60 bg-gray-200 rounded-lg" />
+        <div className="flex flex-col gap-3">
+          <div className="h-4 bg-gray-200 w-24 rounded" />
+          <div className="h-6 bg-gray-200 w-48 rounded" />
+          <div className="h-4 bg-gray-200 w-32 rounded" />
+
+          <div className="flex gap-2 mt-2">
+            <div className="h-10 w-20 bg-gray-200 rounded" />
+            <div className="h-10 w-20 bg-gray-200 rounded" />
+          </div>
+
+          <div className="flex gap-2 mt-4">
+            <div className="h-12 flex-1 bg-gray-200 rounded" />
+            <div className="h-12 flex-1 bg-gray-200 rounded" />
+          </div>
+
+          <div className="mt-4 space-y-2">
+            <div className="h-4 bg-gray-200 w-32 rounded" />
+            <div className="h-4 bg-gray-200 w-3/4 rounded" />
+            <div className="h-4 bg-gray-200 w-2/3 rounded" />
+          </div>
+        </div>
+      </div>
+    );
 
   return (
     <div className="flex flex-col gap-3 p-1">

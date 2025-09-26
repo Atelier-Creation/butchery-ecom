@@ -59,8 +59,8 @@ function PaymentPage() {
   const [shippingLastName, setShippingLastName] = useState("");
   const [shippingAddress, setShippingAddress] = useState("");
   const [shippingCity, setShippingCity] = useState("");
-  const [shippingZip, setShippingZip] = useState("");
-  const [shippingState, setShippingState] = useState("");
+  const [shippingPinCode, setShippingPinCode] = useState("");
+  const [shippingState, setShippingState] = useState("Tamil Nadu");
   const [shippingCountry, setShippingCountry] = useState("India");
 
   const [billingFirstName, setBillingFirstName] = useState("");
@@ -68,14 +68,13 @@ function PaymentPage() {
   const [billingAddress, setBillingAddress] = useState("");
   const [billingCity, setBillingCity] = useState("");
   const [billingState, setBillingState] = useState("");
-  const [billingZip, setBillingZip] = useState("");
+  const [billingPinCode, setBillingPinCode] = useState("");
   const [sameAsShipping, setSameAsShipping] = useState(false);
 
   const [showFields, setShowFields] = useState(false);
   const [gstNumber, setGstNumber] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const [location, setLocation] = useState(null);
   const [mapUrl, setMapUrl] = useState("");
   const [errors, setErrors] = useState({});
@@ -128,14 +127,14 @@ function PaymentPage() {
       setBillingAddress(shippingAddress);
       setBillingCity(shippingCity);
       setBillingState(shippingState);
-      setBillingZip(shippingZip);
+      setBillingPinCode(shippingPinCode);
     } else {
       setBillingFirstName("");
       setBillingLastName("");
       setBillingAddress("");
       setBillingCity("");
       setBillingState("");
-      setBillingZip("");
+      setBillingPinCode("");
     }
   };
 
@@ -158,7 +157,7 @@ function PaymentPage() {
         newErrors.shippingAddress = "Address is required.";
       if (!shippingCity.trim()) newErrors.shippingCity = "City is required.";
       if (!shippingState.trim()) newErrors.shippingState = "State is required.";
-      if (!shippingZip.trim()) newErrors.shippingZip = "Zip code is required.";
+      if (!shippingPinCode.trim()) newErrors.shippingPinCode = "PinCode is required.";
     }
 
     // Billing address
@@ -171,19 +170,13 @@ function PaymentPage() {
         newErrors.billingAddress = "Address is required.";
       if (!billingCity.trim()) newErrors.billingCity = "City is required.";
       if (!billingState.trim()) newErrors.billingState = "State is required.";
-      if (!billingZip.trim()) newErrors.billingZip = "Zip code is required.";
+      if (!billingPinCode.trim()) newErrors.billingPinCode = "PinCode is required.";
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   useEffect(() => {
     const fetchLocation = async () => {
@@ -405,14 +398,14 @@ function PaymentPage() {
 
                 <input
                   type="text"
-                  placeholder="Zip Code"
-                  value={shippingZip}
-                  onChange={(e) => setShippingZip(e.target.value)}
+                  placeholder="PinCode"
+                  value={shippingPinCode}
+                  onChange={(e) => setShippingPinCode(e.target.value)}
                   className="w-full h-[52px] border border-gray-300 rounded px-4"
                 />
-                {errors.shippingZip && (
+                {errors.shippingPinCode && (
                   <p className="text-red-500 text-sm mt-1">
-                    {errors.shippingZip}
+                    {errors.shippingPinCode}
                   </p>
                 )}
               </div>
@@ -432,11 +425,11 @@ function PaymentPage() {
                     height="300"
                     frameBorder="0"
                     style={{ border: 0, marginBottom: "1rem" }}
-                    src={`https://www.google.com/maps?q=${location.latitude},${location.longitude}&hl=en&z=18&output=embed`}
+                    src={`${mapUrl}&hl=en&z=18&output=embed`}
                     allowFullScreen
                   ></iframe>
                   <a
-                    href={`https://www.google.com/maps?q=${location.latitude},${location.longitude}`}
+                    href={mapUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 underline"
@@ -536,14 +529,14 @@ function PaymentPage() {
 
             <input
               type="text"
-              placeholder="Zip Code"
-              value={billingZip}
-              onChange={(e) => setBillingZip(e.target.value)}
+              placeholder="PinCode"
+              value={billingPinCode}
+              onChange={(e) => setBillingPinCode(e.target.value)}
               disabled={sameAsShipping}
               className="w-full h-[52px] border border-gray-300 rounded px-4"
             />
-            {errors.billingZip && (
-              <p className="text-red-500 text-sm mt-1">{errors.billingZip}</p>
+            {errors.billingPinCode && (
+              <p className="text-red-500 text-sm mt-1">{errors.billingPinCode}</p>
             )}
           </div>
 
