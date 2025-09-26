@@ -43,6 +43,7 @@ function App() {
         /> */}
               <Route path="/" element={<MobileDesign />} />
               <Route path="/collections/:id" element={<Collections />} />
+              <Route path="/collections/All" element={<Collections />} />
               <Route path="/products/:id" element={<PDPsec1 />} />
               <Route path="/checkout" element={<PaymentPage />} />
               <Route path="/terms-conditions" element={<TermsContion/>} />

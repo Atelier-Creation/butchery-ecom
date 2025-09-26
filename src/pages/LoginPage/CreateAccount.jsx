@@ -74,8 +74,7 @@ function CreateAccount() {
 
   return (
     <div>
-      {isMobile ? <MobileNavbar /> : <Navbar />}
-      {isMobile && <IconMenu items={menuItems} />}
+      <Navbar />
       <div className='flex flex-col lg:flex-col items-center justify-center gap-3 my-10 lg:w-120 md:w-110 w-full lg:mx-auto md:mx-auto px-5'>
         <h1 className='text-3xl font-bold mb-4'>Create account</h1>
         <input
@@ -110,6 +109,11 @@ function CreateAccount() {
           placeholder='Password'
           className='py-3 w-full pl-2 border border-gray-200 focus:border-gray-200 rounded-md mt-3'
         />
+        <div className="text-start text-[#EE1c25] w-full">
+            <a href="/login" className="border-b text-start">
+              Already have an account? Login
+            </a>
+          </div>
         <div>
           <button
             onClick={handleCreate}

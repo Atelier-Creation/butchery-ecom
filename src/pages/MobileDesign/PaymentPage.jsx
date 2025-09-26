@@ -6,6 +6,7 @@ import MobileFooter from "./MobileFooter";
 import MobileNavbar from "./MobileNavbar";
 import Navbar from "./Navbar";
 import { useNavigate } from "react-router-dom";
+import { getCartByUserId, removeFromCart as removeFromCartAPI } from "../../api/cartApi";
 
 const indianStates = [
   "Andhra Pradesh",
@@ -49,6 +50,8 @@ const indianStates = [
 function PaymentPage() {
   const navigate = useNavigate();
   const [deliveryOption, setDeliveryOption] = useState("ship");
+  const [cartItems, setCartItems] = useState([]);
+  const [total, setTotal] = useState(0);
   const [contactInfo, setContactInfo] = useState("");
   const [mobileInfo, setMobileInfo] = useState("");
 
@@ -76,6 +79,27 @@ function PaymentPage() {
   const [location, setLocation] = useState(null);
   const [mapUrl, setMapUrl] = useState("");
   const [errors, setErrors] = useState({});
+
+  const fetchCart = async () => {
+    try {
+      const data = await getCartByUserId();
+      if (data.success && data.data.items) {
+        setCartItems(data.data.items);
+        const subtotal = data.data.items.reduce(
+          (sum, item) => sum + (item.price || 0) * (item.quantity || 0),
+          0
+        );
+        setTotal(subtotal);
+      }
+    } catch (err) {
+      console.error("Failed to fetch cart", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchCart();
+  }, []);
+
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -223,7 +247,7 @@ function PaymentPage() {
         </div>
       )}
 
-      {isMobile ? <MobileNavbar /> : <Navbar />}
+       <Navbar />
 
       <div className="flex gap-12 justify-center mt-20 mb-52 px-4 flex-col lg:flex-row">
         <div className="lg:w-1/2 w-full space-y-8">
@@ -537,26 +561,48 @@ function PaymentPage() {
         </div>
 
         {/* RIGHT SIDE */}
+         {/* RIGHT SIDE: Order Summary */}
         <div className="lg:w-2/5 w-full bg-gray-100 p-6 lg:sticky top-0 h-screen">
           <h5 className="text-xl font-semibold mb-4">Order Summary</h5>
           <div className="space-y-4 overflow-y-auto max-h-[70vh] pr-2 cart-items-wrapper">
-            <div className="flex justify-between items-center gap-4 border-b pb-4">
-              <div className="flex gap-4 items-center">
-                <img
-                  src="/Meat/cat-8.png"
-                  alt="Product"
-                  className="w-[100px] h-[100px] rounded"
-                />
-                <div>
-                  <h3 className="text-base font-semibold">Country Chicken</h3>
-                  <p className="text-sm text-gray-500">1(500gm) x ₹140</p>
+            {cartItems.length === 0 ? (
+              <p>Your cart is empty</p>
+            ) : (
+              cartItems.map((item) => (
+                <div
+                  key={item._id}
+                  className="flex justify-between items-center gap-4 border-b pb-4"
+                >
+                  <div className="flex gap-4 items-center">
+                    <img
+                      src={item.product.images || "/fallback.png"}
+                      alt={item.product.name}
+                      className="w-[100px] h-[100px] rounded"
+                    />
+                    <div>
+                      <h3 className="text-base font-semibold">{item.product.name}</h3>
+                      <p className="text-sm text-gray-500">
+                        {item.quantity} x ₹{item.price}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end gap-1">
+                    <span className="text-lg font-medium">
+                      ₹{(item.price * item.quantity).toLocaleString()}
+                    </span>
+                    <button
+                      className="text-red-600 text-sm underline"
+                      onClick={() => handleRemoveItem(item._id)}
+                    >
+                      Remove
+                    </button>
+                  </div>
                 </div>
-              </div>
-              <span className="text-lg font-medium">₹140</span>
-            </div>
-            <div className="flex justify-between">
+              ))
+            )}
+            <div className="flex justify-between mt-4">
               <h6 className="text-lg font-bold">Total</h6>
-              <span className="text-lg font-medium">₹140</span>
+              <span className="text-lg font-medium">₹{total.toLocaleString()}</span>
             </div>
           </div>
         </div>

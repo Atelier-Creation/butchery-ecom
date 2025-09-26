@@ -1,105 +1,103 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-const products = [
-    {
-      id: 1,
-      title: "Country Chicken (Naattu Kozhi) Curry Cut Meat",
-      img: "https://lenaturelmeat.com/cdn/shop/files/NT4.png?v=1719991493&width=533",
-      price: "₹385.00",
-      oldPrice: "₹420.00",
-      tag: "Sale",
-    },
-    {
-      id: 2,
-      title: "Country Chicken (Naattu Kozhi) Boneless",
-      img: "https://lenaturelmeat.com/cdn/shop/files/Goat_Keema_3.jpg?v=1746256020&width=533",
-      price: "₹250.00",
-      oldPrice: "₹300.00",
-      tag: "Sale",
-    },
-    {
-      id: 3,
-      title: "Country Chicken (Naattu Kozhi) Lollipop Pack of 6",
-      img: "https://lenaturelmeat.com/cdn/shop/files/top-view-delicious-salmon-table.jpg?v=1753342530&width=533",
-      price: "₹520.00",
-      oldPrice: "₹600.00",
-      tag: "",
-    },
-    {
-      id: 4,
-      title: "Country Chicken (Naattu Kozhi) Chicken Mince/Keema",
-      img: "https://lenaturelmeat.com/cdn/shop/files/Broiler1.jpg?v=1686210766&width=533",
-      price: "₹250.00",
-      oldPrice: "₹280.00",
-      tag: "Sale",
-    },
-  ];
-const PDPsec3 = ({ 
-  title = "You may also like", 
-//   subtitle = "Most popular product near you!", 
-//   products = [], 
-  onViewAll 
+import { getProductsByCategory } from "../../api/productApi";
+
+const PDPsec3 = ({
+  title = "You may also like",
+  categoryId,
+  currentProductId, // to exclude current product from list
+  onViewAll,
 }) => {
   const navigate = useNavigate();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!categoryId) return;
+
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const response = await getProductsByCategory(categoryId);
+        // Exclude current product
+        const filtered = response.filter((p) => p._id !== currentProductId);
+        setProducts(filtered);
+      } catch (err) {
+        console.error("Failed to fetch products:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [categoryId, currentProductId]);
+
+  if (loading)
+    return <p className="text-center py-10">Loading products...</p>;
+
+  if (!products.length)
+    return <p className="text-center py-10">No related products found.</p>;
+
   return (
     <div className="block px-4 py-6 lg:px-10 lg:mt-10">
-      <div className="lg:flex lg:justify-between">
-      <div>
-      {/* {subtitle && <p className="text-xs text-gray-600 mb-1 lg:text-base">{subtitle}</p>} */}
-      <h2 className="text-xl font-bold mb-4 lg:mb-8 lg:text-4xl lg:font-bold">{title}</h2>
-      </div>
-            {/* View All Button */}
-            {onViewAll && (
-        <div className="hidden lg:block mt-6 text-center">
-          <button
-            onClick={onViewAll}
-            className="bg-[#EE1c25] text-white px-6 py-2 rounded-md font-medium"
-          >
-            View all
-          </button>
+      <div className="lg:flex lg:justify-between items-center">
+        <div>
+          <h2 className="text-xl font-bold mb-4 lg:mb-8 lg:text-4xl">{title}</h2>
         </div>
-      )}
+
+        {onViewAll && (
+          <div className="hidden lg:block mt-6 text-center">
+            <button
+              onClick={onViewAll}
+              className="bg-[#EE1c25] text-white px-6 py-2 rounded-md font-medium"
+            >
+              View all
+            </button>
+          </div>
+        )}
       </div>
+
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {products.map((item) => (
           <div
-            key={item.id}
+            key={item._id}
             className="rounded-xl shadow-md overflow-hidden relative cursor-pointer"
             onClick={() =>
-              navigate(`/products/${item.title}`, { state: { product: item } })
+              navigate(`/products/${item._id}`, { state: { product: item } })
             }
           >
             {/* Sale Tag */}
             <div className="relative">
-              {item.tag && (
+              {item.status === "Sale" && (
                 <span className="absolute top-2 left-2 bg-[#EE1c25] text-white text-xs px-2 py-0.5 rounded-md">
-                  {item.tag}
+                  Sale
                 </span>
               )}
 
               {/* Product Image */}
               <img
-                src={item.img}
-                alt={item.title}
+                src={item.images?.[0]}
+                alt={item.name}
                 className="w-full rounded-xl h-full aspect-square object-cover"
               />
 
+              {/* Quick View / Eye Icon */}
               <span className="absolute bottom-2 right-2 bg-[#EE1c25] text-white text-xs px-2.5 py-2 rounded-md">
                 <Eye size={18} />
               </span>
             </div>
 
-            {/* Content */}
+            {/* Product Info */}
             <div className="p-2">
-              <p className="text-md font-medium line-clamp-2">{item.title}</p>
+              <p className="text-md font-medium line-clamp-2">{item.name}</p>
               <div className="mt-2 flex items-center gap-2">
                 <span className="text-[#EE1c25] font-semibold text-md">
-                  {item.price}
+                  ₹{item.weightOptions?.[0]?.price || 0}.00
                 </span>
-                {item.oldPrice && (
+                {item.weightOptions?.[0]?.discountPrice && (
                   <span className="text-gray-500 line-through text-md">
-                    {item.oldPrice}
+                    ₹{item.weightOptions?.[0]?.discountPrice || 0}.00
                   </span>
                 )}
               </div>
@@ -108,7 +106,7 @@ const PDPsec3 = ({
         ))}
       </div>
 
-      {/* View All Button */}
+      {/* Mobile View All Button */}
       {onViewAll && (
         <div className="mt-6 text-center lg:hidden">
           <button
