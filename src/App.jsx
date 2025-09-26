@@ -18,6 +18,8 @@ import WhatsAppFloatButton from "./components/WhatsAppFloatButton";
 import PaymentPage from "./pages/MobileDesign/PaymentPage";
 import OrderConfirmed from "./pages/MobileDesign/OrderConfirmed";
 import ShoppingCart from "./pages/MobileDesign/ShoppingCart";
+import PrivacyPolicy from "./components/PrivacyPolicy";
+import TermsContion from "./components/Terms-Contion";
 function App() {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -43,6 +45,7 @@ function App() {
               <Route path="/collections/:id" element={<Collections />} />
               <Route path="/products/:id" element={<PDPsec1 />} />
               <Route path="/checkout" element={<PaymentPage />} />
+              <Route path="/terms-conditions" element={<TermsContion/>} />
               <Route
                 path="/order-confirmed"
                 element={<OrderConfirmed />}
@@ -53,6 +56,7 @@ function App() {
               <Route path="/forgot-password" element={<ResetPassword />} />
               <Route path="/create-account" element={<CreateAccount />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy/>} />
             </Routes>
           </ModalQuickProvider>
         </ModalProvider>

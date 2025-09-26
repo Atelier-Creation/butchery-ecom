@@ -3,10 +3,10 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import bgImage from "../../assets/images/Untitled/42621686_9008027 1-cropped.svg";
 import rectBg from "../../assets/images/Untitled/Rectangle 203.svg";
-
+import { useNavigate } from "react-router-dom";
 const FooterSection = ({ title, children }) => {
   const [open, setOpen] = useState(false);
-
+const navigate = useNavigate()
   return (
     <div className="mb-4 w-full">
       <button
@@ -62,8 +62,8 @@ const MobileFooter = () => {
 
         <FooterSection title="Policies">
           <ul className="space-y-1">
-            <li>Privacy Policy</li>
-            <li>Terms of Service</li>
+            <li onClick={()=>navigate('/privacy-policy')}>Privacy Policy</li>
+            <li onClick={()=>navigate('/terms-conditions')}>Terms of Service</li>
             <li>Refund Policy</li>
           </ul>
         </FooterSection>
@@ -126,10 +126,10 @@ const MobileFooter = () => {
 
         <div className="lg:flex flex-col gap-2 z-10">
           <h4 className="text-xl font-semibold">Policies</h4>
-          <a href="/" className="hover:underline">
+          <a href="/privacy-policy" className="hover:underline">
             Privacy Policy
           </a>
-          <a href="/" className="hover:underline">
+          <a href="/terms-conditions" className="hover:underline">
             Terms of Service
           </a>
           <a href="/" className="hover:underline">
