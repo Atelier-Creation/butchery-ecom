@@ -451,7 +451,7 @@ function PaymentPage() {
           )}
 
           {/* BILLING */}
-          <div className="space-y-4">
+          {/* <div className="space-y-4">
             <h3 className="text-2xl font-bold">Billing Address</h3>
             <label className="flex items-center gap-2 text-sm text-gray-700">
               <input
@@ -545,7 +545,7 @@ function PaymentPage() {
             {errors.billingZip && (
               <p className="text-red-500 text-sm mt-1">{errors.billingZip}</p>
             )}
-          </div>
+          </div> */}
 
           {/* ACTION */}
           <div className="mt-8">

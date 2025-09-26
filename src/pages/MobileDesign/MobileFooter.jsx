@@ -24,6 +24,7 @@ const navigate = useNavigate()
 };
 
 const MobileFooter = () => {
+  const navigate = useNavigate()
   return (
     <footer className="relative pt-12 text-white z-10 mt-20 sm:mt-28 lg:mt-40 bg-[#222222]">
       {/* Background for top wave */}
@@ -120,8 +121,8 @@ const MobileFooter = () => {
           <a href="/" className="hover:underline">
             Return & Refund policy
           </a>
-          <a href="/" className="hover:underline">Privacy Policy</a>
-          <a href="/" className="hover:underline">Terms of Service</a>
+          <a href="/privacy-policy" className="hover:underline">Privacy Policy</a>
+          <a href="/terms-conditions" className="hover:underline">Terms of Service</a>
           <a href="/" className="hover:underline">Shipping policy</a>
           <a href="/" className="hover:underline">Return & Refund policy</a>
         </div>
