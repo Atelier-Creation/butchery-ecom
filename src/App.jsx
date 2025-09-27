@@ -23,7 +23,18 @@ import TermsContion from "./components/Terms-Contion";
 import usePushNotifications from "./hooks/usePushNotifications";
 function App() {
   usePushNotifications();
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const notificationId = urlParams.get("notificationId");
+
+    if (notificationId) {
+      fetch(`${API_URL}/notifications/track/${notificationId}`, {
+        method: "POST",
+      });
+    }
+  }, []);
   return (
     <Router>
       <CartProvider>
