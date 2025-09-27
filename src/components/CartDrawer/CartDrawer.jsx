@@ -29,8 +29,17 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
     const fetchCart = async () => {
       setLoading(true);
       try {
+        const localData = localStorage.getItem("user_cart");
+        if (localData) {
+          setCartItems(JSON.parse(localData));
+          setLoading(false);
+        }
+
         const data = await getCartByUserId(); // backend gets user from token
-        setCartItems(data.data.items || []);
+        if (data?.data?.items) {
+          setCartItems(data.data.items);
+          localStorage.setItem("user_cart", JSON.stringify(data.data.items));
+        }
       } catch (err) {
         console.error("Failed to fetch cart", err);
       } finally {
@@ -48,9 +57,13 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
       if (newQuantity < 1) return; // prevent quantity < 1
       await updateCartItemAPI(item._id, { quantity: newQuantity });
       // update local state
-      setCartItems(prev =>
-        prev.map(i => (i._id === item._id ? { ...i, quantity: newQuantity } : i))
-      );
+      setCartItems(prev => {
+        const updated = prev.map(i =>
+          i._id === item._id ? { ...i, quantity: newQuantity } : i
+        );
+        localStorage.setItem("user_cart", JSON.stringify(updated));
+        return updated;
+      });
     } catch (err) {
       console.error("Failed to update quantity", err);
     }
@@ -65,7 +78,11 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
         await removeFromCartAPI(item._id);
       }
       // Remove locally
-      setCartItems(prev => prev.filter(i => i._id !== item._id));
+      setCartItems(prev => {
+        const updated = prev.filter(i => i._id !== item._id);
+        localStorage.setItem("user_cart", JSON.stringify(updated));
+        return updated;
+      });
     } catch (err) {
       console.error("Failed to remove item", err);
     }
