@@ -242,7 +242,7 @@ function PaymentPage() {
 
        <Navbar />
 
-      <div className="flex gap-12 justify-center mt-20 mb-52 px-4 flex-col lg:flex-row">
+      <div className="flex gap-12 justify-center mt-20 mb-52 px-4 flex-col-reverse lg:flex-row">
         <div className="lg:w-1/2 w-full space-y-8">
           {/* CONTACT */}
           <div className="space-y-4">
@@ -326,7 +326,7 @@ function PaymentPage() {
                     placeholder="First Name"
                     value={shippingFirstName}
                     onChange={(e) => setShippingFirstName(e.target.value)}
-                    className="flex-1 h-[52px] border border-gray-300 rounded px-4"
+                    className="flex-1 h-[52px] border border-gray-300 rounded px-4 py-4 lg:py-0"
                   />
                   {errors.shippingFirstName && (
                     <p className="text-red-500 text-sm mt-1">
@@ -338,7 +338,7 @@ function PaymentPage() {
                     placeholder="Last Name"
                     value={shippingLastName}
                     onChange={(e) => setShippingLastName(e.target.value)}
-                    className="flex-1 h-[52px] border border-gray-300 rounded px-4"
+                    className="flex-1 h-[52px] border border-gray-300 rounded px-4 py-4 lg:py-0"
                   />
                   {errors.shippingLastName && (
                     <p className="text-red-500 text-sm mt-1">
@@ -351,7 +351,7 @@ function PaymentPage() {
                   placeholder="Address"
                   value={shippingAddress}
                   onChange={(e) => setShippingAddress(e.target.value)}
-                  className="w-full h-[52px] border border-gray-300 rounded px-4"
+                  className="w-full h-[52px] border border-gray-300 rounded px-4 "
                 />
                 {errors.shippingAddress && (
                   <p className="text-red-500 text-sm mt-1">
@@ -555,7 +555,7 @@ function PaymentPage() {
 
         {/* RIGHT SIDE */}
          {/* RIGHT SIDE: Order Summary */}
-        <div className="lg:w-2/5 w-full bg-gray-100 p-6 lg:sticky top-0 h-screen">
+        <div className="lg:w-2/5 w-full bg-gray-100 p-6 lg:sticky top-0 lg:h-screen">
           <h5 className="text-xl font-semibold mb-4">Order Summary</h5>
           <div className="space-y-4 overflow-y-auto max-h-[70vh] pr-2 cart-items-wrapper">
             {cartItems.length === 0 ? (

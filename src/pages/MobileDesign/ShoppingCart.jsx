@@ -4,7 +4,11 @@ import MobileNavbar from "./MobileNavbar";
 import Navbar from "./Navbar";
 import MobileFooter from "./MobileFooter";
 import { useNavigate } from "react-router-dom";
-import { getCartByUserId, removeFromCart, updateCartItemAPI } from "../../api/cartApi";
+import {
+  getCartByUserId,
+  removeFromCart,
+  updateCartItemAPI,
+} from "../../api/cartApi";
 import { useModal } from "../../context/GlobalModal";
 
 export default function ShoppingCart() {
@@ -70,31 +74,37 @@ export default function ShoppingCart() {
   };
 
   // Calculate subtotal
-  const subtotal = cartItems.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
-  ).toFixed(2);
+  const subtotal = cartItems
+    .reduce((acc, item) => acc + item.price * item.quantity, 0)
+    .toFixed(2);
 
   return (
     <>
-       <Navbar />
+      <Navbar />
+
       <div className="max-w-7xl mx-auto px-4 py-10">
-        <h2 className="text-center text-2xl tracking-wide font-bold mb-20">
+        <h2 className="text-center text-2xl tracking-wide font-bold mb-10">
           YOUR SHOPPING CART
         </h2>
 
-        {/* Table Head */}
-        <div className="grid grid-cols-3 text-gray-500 text-sm font-medium border-b border-gray-200 pb-3">
-          <p>PRODUCT</p>
-          <p className="text-center">QUANTITY</p>
-          <p className="text-right">TOTAL</p>
-        </div>
+        {/* Table Head - Hide on Mobile */}
+        {!isMobile && (
+          <div className="grid grid-cols-3 text-gray-500 text-sm font-medium border-b border-gray-200 pb-3">
+            <p>PRODUCT</p>
+            <p className="text-center">QUANTITY</p>
+            <p className="text-right">TOTAL</p>
+          </div>
+        )}
 
         {/* Cart Items */}
         {cartItems.map((item) => (
           <div
             key={item._id}
-            className="grid grid-cols-3 items-center py-6 border-b border-gray-200"
+            className={`${
+              isMobile
+                ? "flex flex-col gap-4 border-b border-gray-200 py-4"
+                : "grid grid-cols-3 items-center py-6 border-b border-gray-200"
+            }`}
           >
             {/* Product Info */}
             <div className="flex gap-4 items-center">
@@ -104,16 +114,27 @@ export default function ShoppingCart() {
                 className="w-24 h-20 object-cover border border-gray-500 rounded"
               />
               <div>
-                {/* <p className="text-sm text-gray-500">Brand : {item.product.brand || "N/A"}</p> */}
                 <p className="font-semibold text-base">{item.product.name}</p>
                 <p className="text-sm text-gray-500">
-                  Weight: <span className="text-red-600">{item.product.weight || "N/A"}</span>
+                  Weight:{" "}
+                  <span className="text-red-600">
+                    {item.product.weight || "N/A"}
+                  </span>
                 </p>
+                {isMobile && (
+                  <p className="mt-1 font-medium">
+                    ₹{(item.price * item.quantity).toFixed(2)}
+                  </p>
+                )}
               </div>
             </div>
 
             {/* Quantity Selector */}
-            <div className="flex items-center justify-center">
+            <div
+              className={`flex items-center ${
+                isMobile ? "justify-between mt-2" : "justify-center"
+              }`}
+            >
               <div className="flex border border-gray-700 rounded-full overflow-hidden">
                 <button
                   onClick={() =>
@@ -141,17 +162,19 @@ export default function ShoppingCart() {
               </button>
             </div>
 
-            {/* Price */}
-            <div className="text-right font-medium text-base">
-              ₹{(item.price * item.quantity).toFixed(2)}
-            </div>
+            {/* Price (Hide on Mobile) */}
+            {!isMobile && (
+              <div className="text-right font-medium text-base">
+                ₹{(item.price * item.quantity).toFixed(2)}
+              </div>
+            )}
           </div>
         ))}
 
         {/* Continue Shopping */}
         <div className="mt-6">
           <button
-            className="bg-black text-white px-6 py-2 font-medium text-sm"
+            className="bg-black text-white w-[100%] lg:w-auto px-6 py-3 lg:py-2 rounded-xs font-medium text-sm"
             onClick={() => navigate("/collections")}
           >
             CONTINUE SHOPPING
@@ -159,7 +182,12 @@ export default function ShoppingCart() {
         </div>
 
         {/* Extra Inputs Section */}
-        <div className="grid grid-cols-3 gap-6 mt-10 border-t border-gray-700 pt-8">
+        <div
+          className={`grid ${
+            isMobile ? "grid-cols-1 gap-6" : "grid-cols-3 gap-6"
+          } mt-10 border-t border-gray-700 pt-8`}
+        >
+          {/* Instructions */}
           <div className="col-span-1">
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
               <span className="text-gray-500">✎</span> Order Special Instruction
@@ -171,6 +199,7 @@ export default function ShoppingCart() {
             ></textarea>
           </div>
 
+          {/* Shipping */}
           <div className="col-span-1">
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
               <span className="text-gray-500">🚚</span> Estimate Shipping Rates
@@ -187,13 +216,18 @@ export default function ShoppingCart() {
             />
           </div>
 
-          <div className="col-span-1 flex flex-col items-end justify-start">
+          {/* Summary */}
+          <div
+            className={`col-span-1 flex flex-col ${
+              isMobile ? "items-start" : "items-end"
+            } justify-start`}
+          >
             <p className="text-lg font-semibold">Subtotal ₹ {subtotal}</p>
             <p className="text-sm text-gray-500 mt-1 mb-4">
               Taxes and Shipping Calculated at Checkout
             </p>
             <button
-              className="bg-black text-white px-8 py-2 rounded font-medium text-sm"
+              className="bg-black text-white w-[100%] py-4 lg:w-auto px-8 lg:py-2 rounded font-medium text-sm"
               onClick={() => {
                 const token = localStorage.getItem("token");
                 if (!token) {
@@ -208,13 +242,18 @@ export default function ShoppingCart() {
 
             <div className="flex gap-2 mt-4">
               <img src="/payment-icon/visa.svg" alt="Visa" className="h-5" />
-              <img src="/payment-icon/master.svg" alt="Mastercard" className="h-5" />
+              <img
+                src="/payment-icon/master.svg"
+                alt="Mastercard"
+                className="h-5"
+              />
               <img src="/payment-icon/paypal.svg" alt="RuPay" className="h-5" />
               <img src="/payment-icon/UPI.png" alt="UPI" className="h-5" />
             </div>
           </div>
         </div>
       </div>
+
       <MobileFooter />
     </>
   );
