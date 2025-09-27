@@ -5,10 +5,10 @@ import { NotebookPen, TruckIcon, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { H6 } from "../TextComponents";
 import { useCart } from "./CartContext";
-import { 
-  getCartByUserId, 
-  removeFromCart as removeFromCartAPI, 
-  updateCartItemAPI 
+import {
+  getCartByUserId,
+  removeFromCart as removeFromCartAPI,
+  updateCartItemAPI,
 } from "../../api/cartApi";
 
 const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
@@ -57,8 +57,8 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
       if (newQuantity < 1) return; // prevent quantity < 1
       await updateCartItemAPI(item._id, { quantity: newQuantity });
       // update local state
-      setCartItems(prev => {
-        const updated = prev.map(i =>
+      setCartItems((prev) => {
+        const updated = prev.map((i) =>
           i._id === item._id ? { ...i, quantity: newQuantity } : i
         );
         localStorage.setItem("user_cart", JSON.stringify(updated));
@@ -78,8 +78,8 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
         await removeFromCartAPI(item._id);
       }
       // Remove locally
-      setCartItems(prev => {
-        const updated = prev.filter(i => i._id !== item._id);
+      setCartItems((prev) => {
+        const updated = prev.filter((i) => i._id !== item._id);
         localStorage.setItem("user_cart", JSON.stringify(updated));
         return updated;
       });
@@ -94,13 +94,13 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
         className={`cart-backdrop ${drawerOpen ? "show" : ""}`}
         onClick={() => toggleDrawer(false)}
       ></div>
-      <div className={`cart-drawer ${drawerOpen ? "open" : ""} text-black`}>
-        <div className="py-5 border-b flex justify-between items-center px-3">
-          <h5 className="mb-0 text-lg font-semibold">
+      <div className={`cart-drawer ${drawerOpen ? "open" : ""} text-gray-700 `}>
+        <div className="py-5 border-b border-gray-400 flex justify-between items-center px-3">
+          <h5 className="mb-0 text-lg font-medium text-gray-600">
             {cartItems.length ? "Item Added to Your Cart" : "Shopping Cart"}
           </h5>
           <button onClick={() => toggleDrawer(false)}>
-            <X />
+            <X className="text-gray-400" />
           </button>
         </div>
 
@@ -108,7 +108,7 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
           {loading ? (
             <p>Loading cart...</p>
           ) : cartItems.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-2 text-center my-5">
+            <div className="flex flex-col items-center justify-center gap-2 text-center mt-[50%]">
               <img
                 src="/cart_empty.svg"
                 alt="Empty Cart"
@@ -118,26 +118,35 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
               <p>Your cart is empty</p>
               <button
                 className="btn btn-dark mt-3 bg-black text-white py-2 px-5 rounded-md"
-                onClick={onClose}
+                onClick={() => {
+                  navigate('/collections/all');
+                  toggleDrawer(false);
+                }}
               >
                 Continue Shopping
               </button>
             </div>
           ) : (
             cartItems.map((item) => (
-              <div
-                key={item._id}
-                className="d-flex my-3 flex gap-3"
-              >
+              <div key={item._id} className="d-flex my-3 flex gap-3">
                 <img
                   src={item.product.images || "/fallback.png"}
                   alt={item.product.name}
                   className="me-3"
-                  style={{ width: "100px", height: "100px", objectFit: "cover" }}
+                  style={{
+                    width: "100px",
+                    height: "100px",
+                    objectFit: "cover",
+                  }}
                 />
                 <div className="flex-grow-1 flex flex-col gap-1">
-                  <H6 en={item.product.name} className="text-base font-semibold" />
-                  {item.weight && <p className="text-muted mb-1">{item.weight} g</p>}
+                  <H6
+                    en={item.product.name}
+                    className="text-base font-semibold"
+                  />
+                  {item.weight && (
+                    <p className="text-muted mb-1">{item.weight} g</p>
+                  )}
                   <div className="flex items-center justify-between">
                     <span className="fw-semibold text-[#EE1c25]">
                       ₹{item.price} X {item.quantity}
@@ -150,14 +159,16 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
                     </button>
                   </div>
                   <div className="quantity-box-cart-drawer">
-                    <button 
-                      onClick={() => handleUpdateQuantity(item, -1)} 
+                    <button
+                      onClick={() => handleUpdateQuantity(item, -1)}
                       disabled={item.quantity === 1}
                     >
                       -
                     </button>
                     <span>{item.quantity}</span>
-                    <button onClick={() => handleUpdateQuantity(item, 1)}>+</button>
+                    <button onClick={() => handleUpdateQuantity(item, 1)}>
+                      +
+                    </button>
                   </div>
                 </div>
               </div>
@@ -172,7 +183,11 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
               <span className="text-2xl">₹{total.toLocaleString()}</span>
             </div>
 
-            <div className="cart-drawer-footer p-3">
+            <div
+              className={`cart-drawer-footer p-3 ${
+                drawerOpen ? "" : "mobile-footer-hidden"
+              }`}
+            >
               <button
                 className="border py-3 rounded-2xl w-full border-[#EE1c25]"
                 onClick={() => {

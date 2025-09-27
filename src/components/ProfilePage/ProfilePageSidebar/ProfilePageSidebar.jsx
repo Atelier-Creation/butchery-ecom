@@ -2,6 +2,7 @@ import "./ProfilePageSidebar.css";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Toast } from "react-bootstrap";
+import { EllipsisVertical } from "lucide-react";
 
 function ProfilePageSidebar({ setActiveSection, activeSection }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -34,13 +35,10 @@ function ProfilePageSidebar({ setActiveSection, activeSection }) {
     <div className="profile-page-sidebar-con">
       {/* Mobile menu toggle button */}
       <div
-        className="mobile-menu-toggle"
+        className="mobile-menu-toggle ms-2 bg-gray-200"
         onClick={() => setMenuOpen(!menuOpen)}
       >
-        <i
-          className="bi bi-list"
-          style={{ fontSize: "24px", cursor: "pointer" }}
-        ></i>
+       <EllipsisVertical/>
       </div>
 
       {/* Sidebar items for mobile */}

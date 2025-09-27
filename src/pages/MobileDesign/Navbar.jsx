@@ -91,7 +91,7 @@ const Navbar = () => {
     <header className="w-full">
       {/* Top Bar - stays mostly the same on desktop; hides on small screens */}
       <div className="bg-gray-100 text-sm py-2.5 px-4 flex justify-between items-center">
-        <div className="flex items-center gap-4 ms-60 hidden sm:flex">
+        <div className="lg:flex items-center gap-4 ms-60 hidden ">
           <div className="flex items-center gap-1">
             <FaPhoneAlt size={16} />
             <span className="text-gray-600">1800-313-3903</span>

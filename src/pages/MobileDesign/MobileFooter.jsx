@@ -26,7 +26,7 @@ const FooterSection = ({ title, children }) => {
 const MobileFooter = () => {
   const navigate = useNavigate()
   return (
-    <footer className="relative pt-12 text-white z-10 mt-20 sm:mt-28 lg:mt-40 bg-[#222222]">
+    <footer className="relative pt-12 text-white z-10 mt-20 sm:mt-28 lg:mt-40 bg-[#222222] lg:bg-[#fff]">
       {/* Background for top wave */}
       <div className="absolute -top-10 lg:-top-30 left-0 w-full">
         <img src={bgImage} alt="bg" className="w-full object-cover" />
