@@ -61,14 +61,14 @@ export default function AboutUs() {
             <div className="w-[320px] md:w-[380px] lg:w-full lg:h-[400px] relative shadow-xl aspect-square overflow-hidden rounded-lg pointer-events-none">
               <iframe
                 className="w-[300%] h-[100%] -ml-[100%] object-cover"
-                src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}&start=143&amp;end=195;&modestbranding=1&rel=0&showinfo=0`}
+                src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}&start=144&end=195&modestbranding=1&rel=0&showinfo=0`}
                 title="About iraichi Kadai Video"
                 frameBorder="0"
                 allow="autoplay; encrypted-media"
                 allowFullScreen
               ></iframe>
             </div>
-            <div
+            {/* <div
               className="absolute hidden lg:block top-20 lg:-top-15 z-10 -right-10 lg:-right-25 
   w-40 h-40 md:w-50 md:h-50 lg:w-60 aspect-square 
   overflow-hidden rounded-lg border border-gray-50 float-rotate-slow shadow-2xl"
@@ -90,7 +90,7 @@ export default function AboutUs() {
                 alt="meat bottom"
                 className="w-full h-full object-cover block"
               />
-            </div>
+            </div> */}
           </div>
 
           {/* Right images (stacked collage) flex */}

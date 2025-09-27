@@ -132,7 +132,7 @@ const Navbar = () => {
         {/* Mobile Centered Logo */}
         <div className="flex items-center ml-10  w-full md:hidden h-14 relative overflow-visible">
           <div
-            className="cursor-pointer z-40"
+            className="cursor-pointer z-40 "
             onClick={() => navigate("/")}
             aria-label="Go to home"
           >

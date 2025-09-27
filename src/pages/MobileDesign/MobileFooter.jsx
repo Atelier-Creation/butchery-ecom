@@ -6,7 +6,7 @@ import rectBg from "../../assets/images/Untitled/Rectangle 203.svg";
 import { useNavigate } from "react-router-dom";
 const FooterSection = ({ title, children }) => {
   const [open, setOpen] = useState(false);
-const navigate = useNavigate()
+
   return (
     <div className="mb-4 w-full">
       <button
@@ -24,6 +24,7 @@ const navigate = useNavigate()
 };
 
 const MobileFooter = () => {
+  const navigate = useNavigate();
   return (
     <footer className="relative pt-12 text-white z-10 mt-20 sm:mt-28 lg:mt-40 bg-[#222222]">
       {/* Background for top wave */}
@@ -34,7 +35,11 @@ const MobileFooter = () => {
       {/* Mobile Section */}
       <div className="md:my-8 my-1 lg:hidden flex flex-col items-center justify-center px-4 gap-4">
         <Link to={"/"}>
-          <img src="/ik-white.svg" alt="Logo" className="h-38 sm:h-38 object-contain" />
+          <img
+            src="/ik-white.svg"
+            alt="Logo"
+            className="h-38 sm:h-38 object-contain"
+          />
         </Link>
         <p className="text-sm text-center leading-relaxed">
           Having had very bitter experiences with the local meat shops and
@@ -49,15 +54,17 @@ const MobileFooter = () => {
           <ul className="space-y-1">
             <li>Home</li>
             <li>Products</li>
-            <li>About</li>
+            <li>Search</li>
             <li>Contact</li>
           </ul>
         </FooterSection>
 
         <FooterSection title="Policies">
           <ul className="space-y-1">
-            <li onClick={()=>navigate('/privacy-policy')}>Privacy Policy</li>
-            <li onClick={()=>navigate('/terms-conditions')}>Terms of Service</li>
+            <li onClick={() => navigate("/privacy-policy")}>Privacy Policy</li>
+            <li onClick={() => navigate("/terms-conditions")}>
+              Terms of Service
+            </li>
             <li>Refund Policy</li>
           </ul>
         </FooterSection>
@@ -85,7 +92,11 @@ const MobileFooter = () => {
         <div className="w-80 z-10">
           <div className="flex items-center justify-center gap-5 mb-4">
             <Link to={"/"}>
-              <img src="/ik-white.svg" alt="Logo" className="h-30 lg:h-43 object-contain" />
+              <img
+                src="/ik-white.svg"
+                alt="Logo"
+                className="h-30 lg:h-43 object-contain"
+              />
             </Link>
           </div>
           <p className="text-sm text-start leading-relaxed">
@@ -97,16 +108,23 @@ const MobileFooter = () => {
         </div>
 
         {/* Links */}
-        <div className="lg:flex flex-col gap-2 z-10">
+        <div className="lg:flex flex-col gap-2 z-10 mt-5">
           <h4 className="text-xl font-semibold">Quick Links</h4>
-          <a href="/" className="hover:underline">Search</a>
-          <a href="/" className="hover:underline">Product Link</a>
-          <a href="/" className="hover:underline">Contact Us</a>
-          <a href="/" className="hover:underline">Special Product</a>
-          <a href="/" className="hover:underline">Recipe</a>
+          <a href="/" className="hover:underline">
+            Search
+          </a>
+          <a href="/" className="hover:underline">
+            Products
+          </a>
+          <a href="/" className="hover:underline">
+            Contact Us
+          </a>
+          <a href="/" className="hover:underline">
+            Recipe
+          </a>
         </div>
 
-        <div className="lg:flex flex-col gap-2 z-10">
+        <div className="lg:flex flex-col gap-2 z-10 mt-5">
           <h4 className="text-xl font-semibold">Policies</h4>
           <a href="/privacy-policy" className="hover:underline">
             Privacy Policy
@@ -120,19 +138,25 @@ const MobileFooter = () => {
           <a href="/" className="hover:underline">
             Return & Refund policy
           </a>
-          <a href="/" className="hover:underline">Privacy Policy</a>
-          <a href="/" className="hover:underline">Terms of Service</a>
-          <a href="/" className="hover:underline">Shipping policy</a>
-          <a href="/" className="hover:underline">Return & Refund policy</a>
         </div>
 
-        <div className="lg:flex flex-col gap-2 z-10">
+        <div className="lg:flex flex-col gap-2 z-10 mt-5">
           <h4 className="text-xl font-semibold">Settings</h4>
-          <a href="/" className="hover:underline">Home</a>
-          <a href="/" className="hover:underline">Meat-Product</a>
-          <a href="/" className="hover:underline">Recipe</a>
-          <a href="/" className="hover:underline">About us</a>
-          <a href="/" className="hover:underline">Contact us</a>
+          <a href="/" className="hover:underline">
+            Home
+          </a>
+          <a href="/" className="hover:underline">
+            Meat-Product
+          </a>
+          <a href="/" className="hover:underline">
+            Recipe
+          </a>
+          <a href="/" className="hover:underline">
+            About us
+          </a>
+          <a href="/" className="hover:underline">
+            Contact us
+          </a>
         </div>
       </div>
 

@@ -20,15 +20,9 @@ import OrderConfirmed from "./pages/MobileDesign/OrderConfirmed";
 import ShoppingCart from "./pages/MobileDesign/ShoppingCart";
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import TermsContion from "./components/Terms-Contion";
+import usePushNotifications from "./hooks/usePushNotifications";
 function App() {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    handleResize(); // run once on mount
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  usePushNotifications();
 
   return (
     <Router>
@@ -46,7 +40,7 @@ function App() {
               <Route path="/collections/All" element={<Collections />} />
               <Route path="/products/:id" element={<PDPsec1 />} />
               <Route path="/checkout" element={<PaymentPage />} />
-              <Route path="/terms-conditions" element={<TermsContion/>} />
+              <Route path="/terms-conditions" element={<TermsContion />} />
               <Route
                 path="/order-confirmed"
                 element={<OrderConfirmed />}
@@ -57,7 +51,7 @@ function App() {
               <Route path="/forgot-password" element={<ResetPassword />} />
               <Route path="/create-account" element={<CreateAccount />} />
               <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy/>} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             </Routes>
           </ModalQuickProvider>
         </ModalProvider>
@@ -68,4 +62,3 @@ function App() {
 }
 
 export default App;
-

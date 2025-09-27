@@ -56,7 +56,7 @@ const MobileBanner = () => {
       <Swiper
         onSwiper={(swiper) => (swiperRef.current = swiper)}
         onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
-        modules={[Navigation, Pagination, Autoplay]}
+        modules={[Navigation, Autoplay]}
         spaceBetween={10}
         slidesPerView={1}
         loop={true}
@@ -97,35 +97,6 @@ const MobileBanner = () => {
               </div>
             </div>
 
-            {/* desktop overlay controls (hidden on mobile) — icons white on lg+ */}
-            <div className="hidden lg:flex absolute bottom-5 left-1/2 transform -translate-x-1/2 items-center gap-4 text-white px-3 py-1 rounded-full">
-              <FiChevronLeft
-                size={20}
-                className="cursor-pointer text-white"
-                onClick={() => swiperRef.current?.slidePrev()}
-              />
-              <div className="flex gap-2">
-                {images.map((_, dotIdx) => (
-                  <span
-                    key={dotIdx}
-                    onClick={() => swiperRef.current?.slideToLoop(dotIdx)}
-                    className={`w-3 h-3 rounded-full cursor-pointer ${activeIndex === dotIdx ? "bg-white" : "bg-transparent border border-white"
-                      }`}
-                  ></span>
-                ))}
-              </div>
-              <FiChevronRight
-                size={20}
-                className="cursor-pointer text-white"
-                onClick={() => swiperRef.current?.slideNext()}
-              />
-              {isPlaying ? (
-                <FiPause size={20} className="cursor-pointer text-white" onClick={toggleAutoplay} />
-              ) : (
-                <FiPlay size={20} className="cursor-pointer text-white" onClick={toggleAutoplay} />
-              )}
-            </div>
-
           </SwiperSlide>
         ))}
       </Swiper>
@@ -145,7 +116,7 @@ const MobileBanner = () => {
       </div>
 
       {/* mobile controls shown under the banner (visible only on mobile). icons black on mobile, white on lg+ */}
-      <div className="flex items-center gap-4 justify-center mt-4 lg:hidden">
+      {/* <div className="flex items-center gap-4 justify-center mt-4 lg:hidden">
         <FiChevronLeft
           size={20}
           className="cursor-pointer text-black lg:text-white"
@@ -181,7 +152,7 @@ const MobileBanner = () => {
             onClick={toggleAutoplay}
           />
         )}
-      </div>
+      </div> */}
 
     </div>
   );
