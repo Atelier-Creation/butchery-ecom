@@ -121,10 +121,10 @@ const MobileFooter = () => {
           <a href="/" className="hover:underline">
             Return & Refund policy
           </a>
-          <a href="/privacy-policy" className="hover:underline">Privacy Policy</a>
+          {/* <a href="/privacy-policy" className="hover:underline">Privacy Policy</a>
           <a href="/terms-conditions" className="hover:underline">Terms of Service</a>
           <a href="/" className="hover:underline">Shipping policy</a>
-          <a href="/" className="hover:underline">Return & Refund policy</a>
+          <a href="/" className="hover:underline">Return & Refund policy</a> */}
         </div>
 
         <div className="lg:flex flex-col gap-2 z-10">
