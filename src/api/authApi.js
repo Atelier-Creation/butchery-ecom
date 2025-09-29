@@ -30,7 +30,7 @@ export const resetPassword = async (email, otp, newPassword) => {
 }
 // ✅ update profile (phone/address/name/email)
 export const updateProfile = async (profileData, token) => {
-  const res = await API.put("/update-profile", profileData, {
+  const res = await API.put("/profile", profileData, {
     headers: {
       Authorization: `Bearer ${token}`, // send JWT token
     },

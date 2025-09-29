@@ -10,7 +10,10 @@ const OrderConfirmed = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const orderId = searchParams.get("order_id");
-
+  const paymentId = searchParams.get("paymentId");
+  const amount = searchParams.get("amount");
+  const currency = searchParams.get("currency");
+  const contact = searchParams.get("contact");
   const isSuccess = location.pathname === "/order-confirmed";
 
   const [loading, setLoading] = useState(true);
@@ -89,7 +92,7 @@ const OrderConfirmed = () => {
           </h2>
           <p className="text-gray-500 text-center mb-2">
             Thanks for your order! Your order Id:{" "}
-            <span className="text-blue-600 font-medium">{orderId}</span>. We
+            <span className="text-blue-600 font-medium">{orderId}</span>. and Your payment Id: {" "} <span className="text-blue-600 font-medium">{paymentId}</span> We
             will process your order within <strong>1hr</strong>.
           </p>
           <button
@@ -135,22 +138,6 @@ const OrderConfirmed = () => {
         <button
           className="border border-black text-black px-6 py-3 rounded-md hover:bg-gray-100 transition-colors"
           onClick={() => {
-            // Save retry data
-            localStorage.setItem(
-              "retryPaymentData",
-              JSON.stringify({
-                contactInfo: location.state?.contact || "",
-                mobileInfo: location.state?.mobile || "",
-                shippingFirstName: location.state?.firstName || "",
-                shippingLastName: location.state?.lastName || "",
-                shippingAddress: location.state?.address || "",
-                shippingCity: location.state?.city || "",
-                shippingState: location.state?.state || "Tamil Nadu",
-                shippingPinCode: location.state?.pincode || "",
-                total: location.state?.amount || 0,
-              })
-            );
-
             navigate("/checkout");
           }}
         >

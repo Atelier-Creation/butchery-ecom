@@ -4,7 +4,7 @@ import happyAnim from "../../assets/LottieJson/happy.json";
 import Lottie from "lottie-react";
 import MobileFooter from "./MobileFooter";
 import Navbar from "./Navbar";
-import { useNavigate,useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { getCartByUserId, removeFromCart as cartApi } from "../../api/cartApi";
 import { LocationPermissionModal } from "./LocationPermissionModal";
 import { createOrder, verifyPayment } from "../../api/paymentApi";
@@ -51,7 +51,8 @@ const indianStates = [
 
 function PaymentPage() {
   const navigate = useNavigate();
-  const locationState = useLocation();
+
+  // Form states
   const [deliveryOption, setDeliveryOption] = useState("ship");
   const [cartItems, setCartItems] = useState([]);
   const [total, setTotal] = useState(0);
@@ -64,18 +65,19 @@ function PaymentPage() {
   const [shippingPinCode, setShippingPinCode] = useState("");
   const [shippingState, setShippingState] = useState("Tamil Nadu");
   const [shippingCountry, setShippingCountry] = useState("India");
-
-  const [paymentload, setpaymentload] = useState(false);
-
-  const [showFields, setShowFields] = useState(false);
   const [gstNumber, setGstNumber] = useState("");
   const [companyName, setCompanyName] = useState("");
+
+  // UI states
+  const [paymentload, setpaymentload] = useState(false);
+  const [showFields, setShowFields] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [location, setLocation] = useState(null);
   const [mapUrl, setMapUrl] = useState("");
   const [errors, setErrors] = useState({});
   const [showLocationModal, setShowLocationModal] = useState(false);
 
+  // Fetch cart
   const fetchCart = async () => {
     try {
       const data = await getCartByUserId();
@@ -95,71 +97,54 @@ function PaymentPage() {
   useEffect(() => {
     fetchCart();
   }, []);
+
+  // Prefill form: retry data > user profile
   useEffect(() => {
-    // Get user from localStorage
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      try {
-        const user = JSON.parse(userData);
-        setContactInfo(user.email || ""); // Prefill email
-      } catch (err) {
-        console.error("Failed to parse user from localStorage:", err);
+    const retryData = localStorage.getItem("retryPaymentData");
+    if (retryData) {
+      const data = JSON.parse(retryData);
+      setContactInfo(data.contactInfo || "");
+      setMobileInfo(data.mobileInfo || "");
+      setShippingFirstName(data.shippingFirstName || "");
+      setShippingLastName(data.shippingLastName || "");
+      setShippingAddress(data.shippingAddress || "");
+      setShippingCity(data.shippingCity || "");
+      setShippingState(data.shippingState || "Tamil Nadu");
+      setShippingPinCode(data.shippingPinCode || "");
+      setTotal(data.total || 0);
+      localStorage.removeItem("retryPaymentData");
+    } else {
+      const userData = localStorage.getItem("user");
+      if (userData) {
+        try {
+          const user = JSON.parse(userData);
+          setContactInfo(user.email || "");
+          setMobileInfo(user.phone || "");
+
+          // Split full name if present
+          if (user.name) {
+            const [firstName, ...rest] = user.name.split(" ");
+            setShippingFirstName(firstName || "");
+            setShippingLastName(rest.join(" ") || "");
+          }
+
+          // Prefill default address
+          if (user.addresses && user.addresses.length > 0) {
+            const defaultAddress =
+              user.addresses.find((a) => a.isDefault) || user.addresses[0];
+            setShippingAddress(defaultAddress.street || "");
+            setShippingCity(defaultAddress.city || "");
+            setShippingState(defaultAddress.state || "Tamil Nadu");
+            setShippingPinCode(defaultAddress.pincode || "");
+          }
+        } catch (err) {
+          console.error("Failed to parse user from localStorage:", err);
+        }
       }
     }
   }, []);
 
-  const validatePaymentForm = () => {
-    const newErrors = {};
-
-    // Contact info
-    if (!contactInfo.trim())
-      newErrors.contactInfo = "Please enter your email address.";
-    if (!mobileInfo.trim())
-      newErrors.mobileInfo = "Please enter your mobile number.";
-
-    // Shipping address
-    if (deliveryOption === "ship") {
-      if (!shippingFirstName.trim())
-        newErrors.shippingFirstName = "First name is required.";
-      if (!shippingLastName.trim())
-        newErrors.shippingLastName = "Last name is required.";
-      if (!shippingAddress.trim())
-        newErrors.shippingAddress = "Address is required.";
-      if (!shippingCity.trim()) newErrors.shippingCity = "City is required.";
-      if (!shippingState.trim()) newErrors.shippingState = "State is required.";
-      if (!shippingPinCode.trim())
-        newErrors.shippingPinCode = "PinCode is required.";
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-  
- useEffect(() => {
-    if (locationState.state) {
-      const {
-        contactInfo,
-        mobileInfo,
-        shippingFirstName,
-        shippingLastName,
-        shippingAddress,
-        shippingCity,
-        shippingState,
-        shippingPinCode,
-        total,
-      } = locationState.state;
-
-      if (contactInfo) setContactInfo(contactInfo);
-      if (mobileInfo) setMobileInfo(mobileInfo);
-      if (shippingFirstName) setShippingFirstName(shippingFirstName);
-      if (shippingLastName) setShippingLastName(shippingLastName);
-      if (shippingAddress) setShippingAddress(shippingAddress);
-      if (shippingCity) setShippingCity(shippingCity);
-      if (shippingState) setShippingState(shippingState);
-      if (shippingPinCode) setShippingPinCode(shippingPinCode);
-      if (total) setTotal(total);
-    }
-  }, [locationState.state]);
-
+  // Fetch location
   useEffect(() => {
     const fetchUserLocation = async () => {
       if (navigator.geolocation) {
@@ -198,6 +183,7 @@ function PaymentPage() {
     fetchUserLocation();
   }, []);
 
+  // Razorpay script
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
@@ -205,113 +191,169 @@ function PaymentPage() {
     document.body.appendChild(script);
   }, []);
 
-const handlePayment = async () => {
-  console.log("handlePayment called");
-  setpaymentload(true);
+  // Validation
+  const validatePaymentForm = () => {
+    const newErrors = {};
+    if (!contactInfo.trim())
+      newErrors.contactInfo = "Please enter your email address.";
+    if (!mobileInfo.trim())
+      newErrors.mobileInfo = "Please enter your mobile number.";
 
-  if (!validatePaymentForm()) {
-    setpaymentload(false);
-    return;
-  }
+    if (deliveryOption === "ship") {
+      if (!shippingFirstName.trim())
+        newErrors.shippingFirstName = "First name is required.";
+      if (!shippingLastName.trim())
+        newErrors.shippingLastName = "Last name is required.";
+      if (!shippingAddress.trim())
+        newErrors.shippingAddress = "Address is required.";
+      if (!shippingCity.trim()) newErrors.shippingCity = "City is required.";
+      if (!shippingState.trim()) newErrors.shippingState = "State is required.";
+      if (!shippingPinCode.trim())
+        newErrors.shippingPinCode = "PinCode is required.";
+    }
 
-  try {
-    // 1️⃣ Create order via API
-    console.log("Step 1: Creating order");
-    const data = await createOrder({ amount: total * 100, currency: "INR" });
-    console.log("Order created:", data);
-    if (!data.success) throw new Error("Failed to create Razorpay order");
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-    const { id: order_id, amount, currency } = data.order;
+  // Payment handler
+  const handlePayment = async () => {
+    setpaymentload(true);
+    if (!validatePaymentForm()) {
+      setpaymentload(false);
+      return;
+    }
 
-    // 2️⃣ Razorpay Checkout Options
-    const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY_ID || "OJvGrVaiGKkTRa6fcCWCLWS4",
-      amount,
-      currency,
-      name: "Iraichi Kadai",
-      description: "Secure Order Payment",
-      image: "/logo.png",
-      order_id,
-      prefill: {
-        name: `${shippingFirstName} ${shippingLastName}`,
-        email: contactInfo,
-        contact: mobileInfo,
-      },
-      notes: {
-        address: `${shippingAddress}, ${shippingCity}, ${shippingState}, ${shippingPinCode}`,
-      },
-      theme: { color: "#e7000b" },
-      handler: async (response) => {
-        console.log("✅ Payment success:", response);
-        try {
-          // 2a️⃣ Verify payment server-side
-          await verifyPayment(response);
+    try {
+      const data = await createOrder({ amount: total * 100, currency: "INR" });
+      if (!data.success) throw new Error("Failed to create Razorpay order");
 
-          // 2b️⃣ Update user profile with phone & address
-          const user = JSON.parse(localStorage.getItem("user"));
-          if (user) {
-            const token = localStorage.getItem("token"); // your JWT
-            await updateProfile(
-              {
-                phone: mobileInfo,
-                addresses: {
-                  label: "Home",
-                  street: shippingAddress,
-                  city: shippingCity,
-                  state: shippingState,
-                  pincode: shippingPinCode,
-                  isDefault: true,
-                },
-              },
-              token
-            );
-          }
+      const { id: order_id, amount, currency } = data.order;
 
-          // 2c️⃣ Redirect to order confirmed
-          navigate("/order-confirmed", {
-            state: {
-              orderId: response.razorpay_order_id,
-              amount,
-              currency,
-              contact: contactInfo,
-            },
-          });
-        } catch (err) {
-          console.error("Payment verification / profile update failed:", err);
-
-          // Redirect to failed page
-          navigate("/payment-failed", {
-            state: {
-              orderId: order_id,
-              amount,
-              currency,
-              contact: contactInfo,
-              error: err.message,
-            },
-          });
-        }
-      },
-      modal: {
-        ondismiss: () => {
-          navigate("/payment-failed", {
-            state: { reason: "User cancelled the payment" },
-          });
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount,
+        currency,
+        name: "Iraichi Kadai",
+        order_id,
+        prefill: {
+          name: `${shippingFirstName} ${shippingLastName}`,
+          email: contactInfo,
+          contact: mobileInfo,
         },
-      },
-    };
+        notes: {
+          address: `${shippingAddress}, ${shippingCity}, ${shippingState}, ${shippingPinCode}`,
+        },
+        handler: async (response) => {
+          try {
+            await verifyPayment(response);
 
-    // 3️⃣ Open Razorpay Checkout
-    const rzp = new window.Razorpay(options);
-    rzp.open();
-  } catch (err) {
-    console.error("Payment failed:", err);
-    navigate("/payment-failed", { state: { error: err.message } });
-  } finally {
-    setpaymentload(false);
-  }
-};
+            const user = JSON.parse(localStorage.getItem("user"));
+            if (user) {
+              const token = localStorage.getItem("token");
+              const updatedUser = await updateProfile(
+                {
+                  phone: mobileInfo,
+                  addresses: [
+                    {
+                      label: "Home",
+                      street: shippingAddress,
+                      city: shippingCity,
+                      state: shippingState,
+                      pincode: shippingPinCode,
+                      isDefault: true,
+                    },
+                  ],
+                },
+                token
+              );
 
+              // Update localStorage with the latest user data
+              localStorage.setItem("user", JSON.stringify(updatedUser.user));
+            }
 
+            const queryParams = new URLSearchParams({
+              order_id: order_id,
+              paymentId: response.razorpay_payment_id,
+              amount: amount.toString(),
+              currency,
+              contact: contactInfo,
+            }).toString();
+
+            navigate(`/order-confirmed?${queryParams}`);
+          } catch (err) {
+            console.error(err);
+            localStorage.setItem(
+              "retryPaymentData",
+              JSON.stringify({
+                contactInfo,
+                mobileInfo,
+                shippingFirstName,
+                shippingLastName,
+                shippingAddress,
+                shippingCity,
+                shippingState,
+                shippingPinCode,
+                total,
+              })
+            );
+            navigate("/payment-failed", {
+              state: {
+                orderId: order_id,
+                amount,
+                currency,
+                contact: contactInfo,
+                error: err.message,
+              },
+            });
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            localStorage.setItem(
+              "retryPaymentData",
+              JSON.stringify({
+                contactInfo,
+                mobileInfo,
+                shippingFirstName,
+                shippingLastName,
+                shippingAddress,
+                shippingCity,
+                shippingState,
+                shippingPinCode,
+                total,
+              })
+            );
+            navigate("/payment-failed", {
+              state: { reason: "User cancelled the payment" },
+            });
+          },
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (err) {
+      console.error(err);
+      localStorage.setItem(
+        "retryPaymentData",
+        JSON.stringify({
+          contactInfo,
+          mobileInfo,
+          shippingFirstName,
+          shippingLastName,
+          shippingAddress,
+          shippingCity,
+          shippingState,
+          shippingPinCode,
+          total,
+        })
+      );
+      navigate("/payment-failed", { state: { error: err.message } });
+    } finally {
+      setpaymentload(false);
+    }
+  };
   return (
     <>
       {showSuccessPopup && (
