@@ -142,11 +142,12 @@ const MobileBestseller = ({
 
               {/* Content */}
               <div className="p-2">
-                <P
+                <p className="text-md h-[50px] font-medium line-clamp-2 transition-colors duration-300 group-hover:text-[#EE1c25]">{item.name}</p>
+                {/* <P
                   en={item.name}
                   ta={item.tamilName}
                   className="text-md h-[50px] font-medium line-clamp-2 transition-colors duration-300 group-hover:text-[#EE1c25]"
-                />
+                /> */}
                 <div className="mt-2 flex items-center gap-2">
                   <span className="text-[#EE1c25] font-semibold text-md">
                     ₹{item.weightOptions[0].price}

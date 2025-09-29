@@ -302,7 +302,7 @@ const Navbar = () => {
                   else navigate("/login");
                 }}
               >
-                My Account
+                My Accountx
               </button>
               <button
                 className="w-full text-left py-2"

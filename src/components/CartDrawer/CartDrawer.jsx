@@ -87,6 +87,21 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
       console.error("Failed to remove item", err);
     }
   };
+  const SkeletonItem = () => (
+    <div className="flex gap-3 my-3 animate-pulse">
+      <div className="w-[100px] h-[100px] bg-gray-300 rounded-md"></div>
+      <div className="flex flex-col gap-2 flex-grow">
+        <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+        <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+        <div className="h-4 bg-gray-300 rounded w-1/3"></div>
+        <div className="flex gap-2 mt-2">
+          <div className="h-6 w-6 bg-gray-200 rounded"></div>
+          <div className="h-6 w-6 bg-gray-200 rounded"></div>
+          <div className="h-6 w-6 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <>
@@ -106,7 +121,11 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
 
         <div className="cart-drawer-body px-3 py-2">
           {loading ? (
-            <p>Loading cart...</p>
+            <>
+              <SkeletonItem />
+              <SkeletonItem />
+              <SkeletonItem />
+            </>
           ) : cartItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-2 text-center mt-[50%]">
               <img
@@ -119,7 +138,7 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
               <button
                 className="btn btn-dark mt-3 bg-black text-white py-2 px-5 rounded-md"
                 onClick={() => {
-                  navigate('/collections/all');
+                  navigate("/collections/all");
                   toggleDrawer(false);
                 }}
               >
@@ -152,7 +171,7 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
                       ₹{item.price} X {item.quantity}
                     </span>
                     <button
-                      className="text-red-700 btn btn-link p-0"
+                      className="text-red-700 btn btn-link p-0 cursor-pointer"
                       onClick={() => handleRemove(item)}
                     >
                       Remove

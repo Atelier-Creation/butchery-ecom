@@ -35,7 +35,7 @@ function ProfilePageSidebar({ setActiveSection, activeSection }) {
     <div className="profile-page-sidebar-con">
       {/* Mobile menu toggle button */}
       <div
-        className="mobile-menu-toggle ms-2 bg-gray-200"
+        className="mobile-menu-toggle ms-2 bg-gray-200 rounded-sm"
         onClick={() => setMenuOpen(!menuOpen)}
       >
        <EllipsisVertical/>

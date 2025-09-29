@@ -75,6 +75,7 @@ export const QuickModal = ({ productId }) => {
     if (productId) fetchProduct();
   }, [productId]);
 
+
   // Set default weight option
   useEffect(() => {
     if (product?.weightOptions?.length) {

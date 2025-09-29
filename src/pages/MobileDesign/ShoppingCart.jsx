@@ -118,7 +118,7 @@ export default function ShoppingCart() {
                 <p className="text-sm text-gray-500">
                   Weight:{" "}
                   <span className="text-red-600">
-                    {item.product.weight || "N/A"}
+                    {item.weight || "N/A"}
                   </span>
                 </p>
                 {isMobile && (

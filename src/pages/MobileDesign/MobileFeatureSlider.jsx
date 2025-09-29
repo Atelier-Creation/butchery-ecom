@@ -46,11 +46,13 @@ const FeatureSlider = ({ features }) => {
                 alt={item.title.en}
                 className="w-28 h-28 object-contain mb-1 md:mb-4"
               />
-              <H3
+              <h3 className="text-lg font-semibold text-gray-800" >{item.title.en}</h3>
+              <p className="text-xs text-gray-500 max-w-50 mt-1 text-center">({item.title.ta})</p>
+              {/* <H3
                 className="text-lg font-semibold text-gray-800"
                 en={item.title.en}
-                ta={item.title.ta}
-              />
+                ta=
+              /> */}
             </div>
           </SwiperSlide>
         ))}

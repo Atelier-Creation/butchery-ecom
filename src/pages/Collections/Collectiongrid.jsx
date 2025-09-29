@@ -131,11 +131,13 @@ const Collectiongrid = () => {
               </div>
 
               <div className="p-3">
-                <P
+                {/* <P
                   en={item.title.en}
                   ta={item.title.ta}
                   className="text-sm font-medium line-clamp-2"
-                />
+                /> */}
+                <p className="text-sm font-medium line-clamp-2" >{item.title.en}</p>
+                <p className="text-[11px] text-gray-500 max-w-60 mt-1">{item.title.ta}</p>
                 <div className="mt-2 flex items-center gap-2">
                   <span className="text-red-800 font-semibold">{item.price}</span>
                   <span className="text-gray-400 line-through text-sm">{item.oldPrice}</span>

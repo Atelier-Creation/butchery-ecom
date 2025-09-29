@@ -51,11 +51,12 @@ export const PincodeModal = () => {
   const [pincode, setPincode] = useState("");
   const [availability, setAvailability] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showList, setShowList] = useState(false); // ✅ toggle list visibility
 
   const navigate = useNavigate();
   const { closeModal } = useModal();
 
-  // Allowed service areas
+  // ✅ Allowed service areas
   const allowedPincodes = {
     "641011": "Saibaba Colony",
     "641004": "Peelamedu",
@@ -76,17 +77,14 @@ export const PincodeModal = () => {
     }
 
     setLoading(true);
-
     setTimeout(() => {
       if (allowedPincodes[pincode]) {
-        setAvailability(
-          `Delivery available in ${allowedPincodes[pincode]} ✅`
-        );
+        setAvailability(`Delivery available in ${allowedPincodes[pincode]} ✅`);
       } else {
         setAvailability("Sorry, delivery not available ❌");
       }
       setLoading(false);
-    }, 800); // simulate a check delay
+    }, 800);
   };
 
   const handleCheckOut = () => {
@@ -109,7 +107,8 @@ export const PincodeModal = () => {
 
       <p className="mb-4 text-sm">Check delivery availability in your area</p>
 
-      <div className="flex gap-2 items-center w-full max-w-sm mb-3">
+      {/* ✅ Input + Check Button */}
+      <div className="flex gap-2 items-center w-full max-w-sm mb-2">
         <input
           type="text"
           value={pincode}
@@ -125,6 +124,37 @@ export const PincodeModal = () => {
         </button>
       </div>
 
+      {/* ✅ View available pincodes link */}
+      <button
+        onClick={() => setShowList((prev) => !prev)}
+        className="text-blue-600 text-sm underline mb-4 hover:text-blue-800"
+      >
+        {showList ? "Hide Available Pincodes" : "View Available Pincodes"}
+      </button>
+
+      {/* ✅ List of pincodes */}
+      {showList && (
+        <div className="w-full max-w-sm mb-4 border border-gray-400 rounded-md shadow-sm bg-gray-50 max-h-48 overflow-y-auto">
+          <table className="w-full text-sm text-left border-gray-300">
+            <thead className="bg-gray-100 sticky top-0">
+              <tr>
+                <th className="px-3 py-2 font-semibold text-gray-700">Pincode</th>
+                <th className="px-3 py-2 font-semibold text-gray-700">Area / City</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.entries(allowedPincodes).map(([code, area]) => (
+                <tr key={code} className="border-t border-gray-400">
+                  <td className="px-3 py-1 text-gray-700">{code}</td>
+                  <td className="px-3 py-1 text-gray-700">{area}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* ✅ Availability message */}
       {availability && (
         <p
           className={`text-sm mb-4 ${
@@ -135,6 +165,7 @@ export const PincodeModal = () => {
         </p>
       )}
 
+      {/* ✅ Checkout */}
       <button
         onClick={handleCheckOut}
         className="px-6 py-3 rounded-md bg-red-600 text-white w-full max-w-sm"

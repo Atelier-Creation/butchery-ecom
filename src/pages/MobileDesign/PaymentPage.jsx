@@ -4,12 +4,12 @@ import happyAnim from "../../assets/LottieJson/happy.json";
 import Lottie from "lottie-react";
 import MobileFooter from "./MobileFooter";
 import Navbar from "./Navbar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation } from "react-router-dom";
 import { getCartByUserId, removeFromCart as cartApi } from "../../api/cartApi";
 import { LocationPermissionModal } from "./LocationPermissionModal";
 import { createOrder, verifyPayment } from "../../api/paymentApi";
 import { PhoneNumberField } from "./PhoneNumberField";
-
+import { updateProfile } from "../../api/authApi";
 const indianStates = [
   "Andhra Pradesh",
   "Arunachal Pradesh",
@@ -51,12 +51,12 @@ const indianStates = [
 
 function PaymentPage() {
   const navigate = useNavigate();
+  const locationState = useLocation();
   const [deliveryOption, setDeliveryOption] = useState("ship");
   const [cartItems, setCartItems] = useState([]);
   const [total, setTotal] = useState(0);
   const [contactInfo, setContactInfo] = useState("");
   const [mobileInfo, setMobileInfo] = useState("");
-
   const [shippingFirstName, setShippingFirstName] = useState("");
   const [shippingLastName, setShippingLastName] = useState("");
   const [shippingAddress, setShippingAddress] = useState("");
@@ -65,13 +65,6 @@ function PaymentPage() {
   const [shippingState, setShippingState] = useState("Tamil Nadu");
   const [shippingCountry, setShippingCountry] = useState("India");
 
-  const [billingFirstName, setBillingFirstName] = useState("");
-  const [billingLastName, setBillingLastName] = useState("");
-  const [billingAddress, setBillingAddress] = useState("");
-  const [billingCity, setBillingCity] = useState("");
-  const [billingState, setBillingState] = useState("");
-  const [billingPinCode, setBillingPinCode] = useState("");
-  const [sameAsShipping, setSameAsShipping] = useState(false);
   const [paymentload, setpaymentload] = useState(false);
 
   const [showFields, setShowFields] = useState(false);
@@ -102,6 +95,18 @@ function PaymentPage() {
   useEffect(() => {
     fetchCart();
   }, []);
+  useEffect(() => {
+    // Get user from localStorage
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        setContactInfo(user.email || ""); // Prefill email
+      } catch (err) {
+        console.error("Failed to parse user from localStorage:", err);
+      }
+    }
+  }, []);
 
   const validatePaymentForm = () => {
     const newErrors = {};
@@ -128,6 +133,32 @@ function PaymentPage() {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  
+ useEffect(() => {
+    if (locationState.state) {
+      const {
+        contactInfo,
+        mobileInfo,
+        shippingFirstName,
+        shippingLastName,
+        shippingAddress,
+        shippingCity,
+        shippingState,
+        shippingPinCode,
+        total,
+      } = locationState.state;
+
+      if (contactInfo) setContactInfo(contactInfo);
+      if (mobileInfo) setMobileInfo(mobileInfo);
+      if (shippingFirstName) setShippingFirstName(shippingFirstName);
+      if (shippingLastName) setShippingLastName(shippingLastName);
+      if (shippingAddress) setShippingAddress(shippingAddress);
+      if (shippingCity) setShippingCity(shippingCity);
+      if (shippingState) setShippingState(shippingState);
+      if (shippingPinCode) setShippingPinCode(shippingPinCode);
+      if (total) setTotal(total);
+    }
+  }, [locationState.state]);
 
   useEffect(() => {
     const fetchUserLocation = async () => {
@@ -174,97 +205,112 @@ function PaymentPage() {
     document.body.appendChild(script);
   }, []);
 
-  const handlePayment = async () => {
-    console.log("handlePayment called");
-    setpaymentload(true);
-    if (!validatePaymentForm()) {
-      setpaymentload(false);
-      return;
-    }
+const handlePayment = async () => {
+  console.log("handlePayment called");
+  setpaymentload(true);
 
-    try {
-      // 1️⃣ Create order via API
-      console.log("Step 1: Creating order");
-      const data = await createOrder({ amount: total * 100, currency: "INR" });
-      console.log("Order created:", data);
-      if (!data.success) throw new Error("Failed to create Razorpay order");
+  if (!validatePaymentForm()) {
+    setpaymentload(false);
+    return;
+  }
 
-      const { id: order_id, amount, currency } = data.order;
+  try {
+    // 1️⃣ Create order via API
+    console.log("Step 1: Creating order");
+    const data = await createOrder({ amount: total * 100, currency: "INR" });
+    console.log("Order created:", data);
+    if (!data.success) throw new Error("Failed to create Razorpay order");
 
-      // 2️⃣ Razorpay Checkout Options
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "OJvGrVaiGKkTRa6fcCWCLWS4",
-        amount,
-        currency,
-        name: "Iraichi Kadai",
-        description: "Secure Order Payment",
-        image: "/logo.png",
-        order_id,
-        prefill: {
-          name: `${shippingFirstName} ${shippingLastName}`,
-          email: contactInfo,
-          contact: mobileInfo,
-        },
-        notes: {
-          address: `${shippingAddress}, ${shippingCity}, ${shippingState}, ${shippingPinCode}`,
-        },
-        theme: { color: "#121212" },
-        handler: async (response) => {
-          console.log("✅ Payment success:", response);
-          try {
-            await verifyPayment(response); // server-side verification
+    const { id: order_id, amount, currency } = data.order;
 
-            // Redirect on success with state
-            navigate("/order-confirmed", {
-              state: {
-                orderId: order_id,
-                amount,
-                currency,
-                contact: contactInfo,
+    // 2️⃣ Razorpay Checkout Options
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID || "OJvGrVaiGKkTRa6fcCWCLWS4",
+      amount,
+      currency,
+      name: "Iraichi Kadai",
+      description: "Secure Order Payment",
+      image: "/logo.png",
+      order_id,
+      prefill: {
+        name: `${shippingFirstName} ${shippingLastName}`,
+        email: contactInfo,
+        contact: mobileInfo,
+      },
+      notes: {
+        address: `${shippingAddress}, ${shippingCity}, ${shippingState}, ${shippingPinCode}`,
+      },
+      theme: { color: "#e7000b" },
+      handler: async (response) => {
+        console.log("✅ Payment success:", response);
+        try {
+          // 2a️⃣ Verify payment server-side
+          await verifyPayment(response);
+
+          // 2b️⃣ Update user profile with phone & address
+          const user = JSON.parse(localStorage.getItem("user"));
+          if (user) {
+            const token = localStorage.getItem("token"); // your JWT
+            await updateProfile(
+              {
+                phone: mobileInfo,
+                addresses: {
+                  label: "Home",
+                  street: shippingAddress,
+                  city: shippingCity,
+                  state: shippingState,
+                  pincode: shippingPinCode,
+                  isDefault: true,
+                },
               },
-            });
-          } catch (err) {
-            console.error("Payment verification failed:", err);
-
-            // Redirect to failed page with state
-            navigate("/payment-failed", {
-              state: {
-                orderId: order_id,
-                amount,
-                currency,
-                contact: contactInfo,
-              },
-            });
+              token
+            );
           }
-        },
-        modal: {
-          ondismiss: () => {
-            // Payment cancelled by user
-            navigate("/payment-failed", {
-              state: {
-                reason: "User cancelled the payment",
-              },
-            });
-          },
-        },
-      };
 
-      // 3️⃣ Open Razorpay Checkout
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    } catch (err) {
-      console.error("Payment failed:", err);
+          // 2c️⃣ Redirect to order confirmed
+          navigate("/order-confirmed", {
+            state: {
+              orderId: response.razorpay_order_id,
+              amount,
+              currency,
+              contact: contactInfo,
+            },
+          });
+        } catch (err) {
+          console.error("Payment verification / profile update failed:", err);
 
-      // Redirect to failed page if order creation itself fails
-      navigate("/payment-failed", {
-        state: {
-          error: err.message,
+          // Redirect to failed page
+          navigate("/payment-failed", {
+            state: {
+              orderId: order_id,
+              amount,
+              currency,
+              contact: contactInfo,
+              error: err.message,
+            },
+          });
+        }
+      },
+      modal: {
+        ondismiss: () => {
+          navigate("/payment-failed", {
+            state: { reason: "User cancelled the payment" },
+          });
         },
-      });
-    } finally {
-      setpaymentload(false);
-    }
-  };
+      },
+    };
+
+    // 3️⃣ Open Razorpay Checkout
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  } catch (err) {
+    console.error("Payment failed:", err);
+    navigate("/payment-failed", { state: { error: err.message } });
+  } finally {
+    setpaymentload(false);
+  }
+};
+
 
   return (
     <>

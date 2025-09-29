@@ -27,8 +27,17 @@ const OrderConfirmed = () => {
     if (!loading) return;
 
     const messages = isSuccess
-      ? ["Payment initiated...", "Processing your order...", "Placing your order...", "Finalizing..."]
-      : ["Verifying payment...", "Attempting to confirm payment...", "Oops, something went wrong..."];
+      ? [
+          "Payment initiated...",
+          "Processing your order...",
+          "Placing your order...",
+          "Finalizing...",
+        ]
+      : [
+          "Verifying payment...",
+          "Attempting to confirm payment...",
+          "Oops, something went wrong...",
+        ];
 
     let index = 0;
     const interval = setInterval(() => {
@@ -64,7 +73,12 @@ const OrderConfirmed = () => {
   if (isSuccess) {
     return (
       <>
-        <Confetti width={window.innerWidth} height={window.innerHeight} numberOfPieces={300} recycle={false} />
+        <Confetti
+          width={window.innerWidth}
+          height={window.innerHeight}
+          numberOfPieces={300}
+          recycle={false}
+        />
 
         <div className="flex flex-col justify-center items-center min-h-screen bg-white pt-4 pb-6 px-4">
           <div className="mb-2 w-72 h-72">
@@ -75,8 +89,8 @@ const OrderConfirmed = () => {
           </h2>
           <p className="text-gray-500 text-center mb-2">
             Thanks for your order! Your order Id:{" "}
-            <span className="text-blue-600 font-medium">{orderId}</span>. We will process your
-            order within <strong>1hr</strong>.
+            <span className="text-blue-600 font-medium">{orderId}</span>. We
+            will process your order within <strong>1hr</strong>.
           </p>
           <button
             className="bg-black text-white px-6 py-3 mt-4 rounded-md hover:bg-gray-900 transition-colors"
@@ -87,7 +101,10 @@ const OrderConfirmed = () => {
           <div className="mt-4">
             <p className="text-gray-400 text-center text-sm">
               Need help? Contact us at{" "}
-              <a href="mailto:ecom@Iraichikadai.store" className="text-blue-600 underline">
+              <a
+                href="mailto:ecom@Iraichikadai.store"
+                className="text-blue-600 underline"
+              >
                 ecom@Iraichikadai.store
               </a>
             </p>
@@ -117,7 +134,25 @@ const OrderConfirmed = () => {
         </button>
         <button
           className="border border-black text-black px-6 py-3 rounded-md hover:bg-gray-100 transition-colors"
-          onClick={() => navigate("/checkout")}
+          onClick={() => {
+            // Save retry data
+            localStorage.setItem(
+              "retryPaymentData",
+              JSON.stringify({
+                contactInfo: location.state?.contact || "",
+                mobileInfo: location.state?.mobile || "",
+                shippingFirstName: location.state?.firstName || "",
+                shippingLastName: location.state?.lastName || "",
+                shippingAddress: location.state?.address || "",
+                shippingCity: location.state?.city || "",
+                shippingState: location.state?.state || "Tamil Nadu",
+                shippingPinCode: location.state?.pincode || "",
+                total: location.state?.amount || 0,
+              })
+            );
+
+            navigate("/checkout");
+          }}
         >
           Try Again
         </button>
