@@ -76,7 +76,7 @@ const OrderConfirmed = () => {
           <p className="text-gray-500 text-center mb-2">
             Thanks for your order! Your order Id:{" "}
             <span className="text-blue-600 font-medium">{orderId}</span>. We will process your
-            order within <strong>24hr</strong>.
+            order within <strong>1hr</strong>.
           </p>
           <button
             className="bg-black text-white px-6 py-3 mt-4 rounded-md hover:bg-gray-900 transition-colors"

@@ -3,10 +3,12 @@ import Confetti from "react-confetti";
 import happyAnim from "../../assets/LottieJson/happy.json";
 import Lottie from "lottie-react";
 import MobileFooter from "./MobileFooter";
-import MobileNavbar from "./MobileNavbar";
 import Navbar from "./Navbar";
 import { useNavigate } from "react-router-dom";
-import { getCartByUserId, removeFromCart as removeFromCartAPI } from "../../api/cartApi";
+import { getCartByUserId, removeFromCart as cartApi } from "../../api/cartApi";
+import { LocationPermissionModal } from "./LocationPermissionModal";
+import { createOrder, verifyPayment } from "../../api/paymentApi";
+import { PhoneNumberField } from "./PhoneNumberField";
 
 const indianStates = [
   "Andhra Pradesh",
@@ -70,6 +72,7 @@ function PaymentPage() {
   const [billingState, setBillingState] = useState("");
   const [billingPinCode, setBillingPinCode] = useState("");
   const [sameAsShipping, setSameAsShipping] = useState(false);
+  const [paymentload, setpaymentload] = useState(false);
 
   const [showFields, setShowFields] = useState(false);
   const [gstNumber, setGstNumber] = useState("");
@@ -78,6 +81,7 @@ function PaymentPage() {
   const [location, setLocation] = useState(null);
   const [mapUrl, setMapUrl] = useState("");
   const [errors, setErrors] = useState({});
+  const [showLocationModal, setShowLocationModal] = useState(false);
 
   const fetchCart = async () => {
     try {
@@ -99,45 +103,6 @@ function PaymentPage() {
     fetchCart();
   }, []);
 
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const loc = {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          };
-          setLocation(loc);
-          setMapUrl(
-            `https://www.google.com/maps?q=${loc.latitude},${loc.longitude}`
-          );
-        },
-        (error) => console.error("Error getting location:", error)
-      );
-    }
-  }, []);
-
-  const handleSameAsShippingChange = (e) => {
-    const checked = e.target.checked;
-    setSameAsShipping(checked);
-
-    if (checked) {
-      setBillingFirstName(shippingFirstName);
-      setBillingLastName(shippingLastName);
-      setBillingAddress(shippingAddress);
-      setBillingCity(shippingCity);
-      setBillingState(shippingState);
-      setBillingPinCode(shippingPinCode);
-    } else {
-      setBillingFirstName("");
-      setBillingLastName("");
-      setBillingAddress("");
-      setBillingCity("");
-      setBillingState("");
-      setBillingPinCode("");
-    }
-  };
-
   const validatePaymentForm = () => {
     const newErrors = {};
 
@@ -157,59 +122,149 @@ function PaymentPage() {
         newErrors.shippingAddress = "Address is required.";
       if (!shippingCity.trim()) newErrors.shippingCity = "City is required.";
       if (!shippingState.trim()) newErrors.shippingState = "State is required.";
-      if (!shippingPinCode.trim()) newErrors.shippingPinCode = "PinCode is required.";
+      if (!shippingPinCode.trim())
+        newErrors.shippingPinCode = "PinCode is required.";
     }
-
-    // Billing address
-    if (!sameAsShipping) {
-      if (!billingFirstName.trim())
-        newErrors.billingFirstName = "First name is required.";
-      if (!billingLastName.trim())
-        newErrors.billingLastName = "Last name is required.";
-      if (!billingAddress.trim())
-        newErrors.billingAddress = "Address is required.";
-      if (!billingCity.trim()) newErrors.billingCity = "City is required.";
-      if (!billingState.trim()) newErrors.billingState = "State is required.";
-      if (!billingPinCode.trim()) newErrors.billingPinCode = "PinCode is required.";
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-
   useEffect(() => {
-    const fetchLocation = async () => {
-      try {
-        const res = await fetch("https://ipapi.co/json/");
-        const data = await res.json();
-        setShippingCity(data.city);
-        setShippingState(data.region);
-        setShippingCountry("India");
-      } catch (err) {
-        console.error("Error fetching location:", err);
+    const fetchUserLocation = async () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const loc = {
+              latitude: pos.coords.latitude,
+              longitude: pos.coords.longitude,
+            };
+            setLocation(loc);
+            setMapUrl(
+              `https://www.google.com/maps?q=${loc.latitude},${loc.longitude}`
+            );
+            setShowLocationModal(false);
+          },
+          async (err) => {
+            console.error("Geolocation error:", err);
+            if (err.code === err.PERMISSION_DENIED) {
+              try {
+                const res = await fetch("https://ipapi.co/json/");
+                const data = await res.json();
+                setShippingCity(data.city);
+                setShippingState(data.region);
+                setShippingCountry("India");
+              } catch (err) {
+                console.error("Fallback location failed:", err);
+              }
+              setShowLocationModal(true);
+            }
+          }
+        );
+      } else {
+        setShowLocationModal(true);
       }
     };
-    fetchLocation();
+    fetchUserLocation();
   }, []);
 
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const loc = {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          };
-          setLocation(loc);
-          setMapUrl(
-            `https://www.google.com/maps?q=${loc.latitude},${loc.longitude}`
-          );
-        },
-        (error) => console.error("Error getting location:", error)
-      );
-    }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.body.appendChild(script);
   }, []);
+
+  const handlePayment = async () => {
+    console.log("handlePayment called");
+    setpaymentload(true);
+    if (!validatePaymentForm()) {
+      setpaymentload(false);
+      return;
+    }
+
+    try {
+      // 1️⃣ Create order via API
+      console.log("Step 1: Creating order");
+      const data = await createOrder({ amount: total * 100, currency: "INR" });
+      console.log("Order created:", data);
+      if (!data.success) throw new Error("Failed to create Razorpay order");
+
+      const { id: order_id, amount, currency } = data.order;
+
+      // 2️⃣ Razorpay Checkout Options
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "OJvGrVaiGKkTRa6fcCWCLWS4",
+        amount,
+        currency,
+        name: "Iraichi Kadai",
+        description: "Secure Order Payment",
+        image: "/logo.png",
+        order_id,
+        prefill: {
+          name: `${shippingFirstName} ${shippingLastName}`,
+          email: contactInfo,
+          contact: mobileInfo,
+        },
+        notes: {
+          address: `${shippingAddress}, ${shippingCity}, ${shippingState}, ${shippingPinCode}`,
+        },
+        theme: { color: "#121212" },
+        handler: async (response) => {
+          console.log("✅ Payment success:", response);
+          try {
+            await verifyPayment(response); // server-side verification
+
+            // Redirect on success with state
+            navigate("/order-confirmed", {
+              state: {
+                orderId: order_id,
+                amount,
+                currency,
+                contact: contactInfo,
+              },
+            });
+          } catch (err) {
+            console.error("Payment verification failed:", err);
+
+            // Redirect to failed page with state
+            navigate("/payment-failed", {
+              state: {
+                orderId: order_id,
+                amount,
+                currency,
+                contact: contactInfo,
+              },
+            });
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            // Payment cancelled by user
+            navigate("/payment-failed", {
+              state: {
+                reason: "User cancelled the payment",
+              },
+            });
+          },
+        },
+      };
+
+      // 3️⃣ Open Razorpay Checkout
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (err) {
+      console.error("Payment failed:", err);
+
+      // Redirect to failed page if order creation itself fails
+      navigate("/payment-failed", {
+        state: {
+          error: err.message,
+        },
+      });
+    } finally {
+      setpaymentload(false);
+    }
+  };
 
   return (
     <>
@@ -240,7 +295,7 @@ function PaymentPage() {
         </div>
       )}
 
-       <Navbar />
+      <Navbar />
 
       <div className="flex gap-12 justify-center mt-20 mb-52 px-4 flex-col-reverse lg:flex-row">
         <div className="lg:w-1/2 w-full space-y-8">
@@ -257,17 +312,11 @@ function PaymentPage() {
             {errors.contactInfo && (
               <p className="text-red-500 text-sm mt-1">{errors.contactInfo}</p>
             )}
-
-            <input
-              type="text"
-              placeholder="Mobile Phone Number"
-              value={mobileInfo}
-              onChange={(e) => setMobileInfo(e.target.value)}
-              className="w-full h-[52px] border border-gray-300 rounded px-4"
+            <PhoneNumberField
+              mobileInfo={mobileInfo}
+              setMobileInfo={setMobileInfo}
+              errors={errors}
             />
-            {errors.mobileInfo && (
-              <p className="text-red-500 text-sm mt-1">{errors.mobileInfo}</p>
-            )}
 
             <label className="flex items-center gap-2 text-sm text-gray-700">
               <input
@@ -543,18 +592,17 @@ function PaymentPage() {
           {/* ACTION */}
           <div className="mt-8">
             <button
-              className="w-full bg-black text-white h-[52px] rounded"
-              onClick={() => {
-                if (validatePaymentForm()) navigate("/order-confirmed");
-              }}
+              type="button"
+              className="w-full bg-black text-white h-[52px] rounded cursor-pointer"
+              onClick={handlePayment}
             >
-              Proceed to Pay
+              {paymentload ? "Redirecting to payment page" : " Proceed to Pay"}
             </button>
           </div>
         </div>
 
         {/* RIGHT SIDE */}
-         {/* RIGHT SIDE: Order Summary */}
+        {/* RIGHT SIDE: Order Summary */}
         <div className="lg:w-2/5 w-full bg-gray-100 p-6 lg:sticky top-0 lg:h-screen">
           <h5 className="text-xl font-semibold mb-4">Order Summary</h5>
           <div className="space-y-4 overflow-y-auto max-h-[70vh] pr-2 cart-items-wrapper">
@@ -573,7 +621,9 @@ function PaymentPage() {
                       className="w-[100px] h-[100px] rounded"
                     />
                     <div>
-                      <h3 className="text-base font-semibold">{item.product.name}</h3>
+                      <h3 className="text-base font-semibold">
+                        {item.product.name}
+                      </h3>
                       <p className="text-sm text-gray-500">
                         {item.quantity} x ₹{item.price}
                       </p>
@@ -595,11 +645,41 @@ function PaymentPage() {
             )}
             <div className="flex justify-between mt-4">
               <h6 className="text-lg font-bold">Total</h6>
-              <span className="text-lg font-medium">₹{total.toLocaleString()}</span>
+              <span className="text-lg font-medium">
+                ₹{total.toLocaleString()}
+              </span>
             </div>
           </div>
         </div>
       </div>
+      {showLocationModal && (
+        <LocationPermissionModal
+          onRetry={() => {
+            setShowLocationModal(false);
+            // Retry geolocation request
+            if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(
+                (position) => {
+                  const loc = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                  };
+                  setLocation(loc);
+                  setMapUrl(
+                    `https://www.google.com/maps?q=${loc.latitude},${loc.longitude}`
+                  );
+                },
+                (error) => {
+                  console.error("Retry failed:", error);
+                  if (error.code === error.PERMISSION_DENIED) {
+                    setShowLocationModal(true);
+                  }
+                }
+              );
+            }
+          }}
+        />
+      )}
 
       <MobileFooter />
     </>
