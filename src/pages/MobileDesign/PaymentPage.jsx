@@ -10,6 +10,7 @@ import { LocationPermissionModal } from "./LocationPermissionModal";
 import { createOrder, verifyPayment } from "../../api/paymentApi";
 import { PhoneNumberField } from "./PhoneNumberField";
 import { updateProfile } from "../../api/authApi";
+import { createOrderData } from "../../api/orderApi";
 const indianStates = [
   "Andhra Pradesh",
   "Arunachal Pradesh",
@@ -67,7 +68,7 @@ function PaymentPage() {
   const [shippingCountry, setShippingCountry] = useState("India");
   const [gstNumber, setGstNumber] = useState("");
   const [companyName, setCompanyName] = useState("");
-
+  console.log("cartitems", cartItems);
   // UI states
   const [paymentload, setpaymentload] = useState(false);
   const [showFields, setShowFields] = useState(false);
@@ -103,8 +104,11 @@ function PaymentPage() {
     const retryData = localStorage.getItem("retryPaymentData");
     if (retryData) {
       const data = JSON.parse(retryData);
+      console.log("retryPaymentData from localStorage:", data);
       setContactInfo(data.contactInfo || "");
-      setMobileInfo(data.mobileInfo || "");
+      console.log("data.mobileInfo", data.mobileInfo);
+      setMobileInfo(data.mobileInfo + "" || "");
+      console.log(mobileInfo);
       setShippingFirstName(data.shippingFirstName || "");
       setShippingLastName(data.shippingLastName || "");
       setShippingAddress(data.shippingAddress || "");
@@ -118,6 +122,7 @@ function PaymentPage() {
       if (userData) {
         try {
           const user = JSON.parse(userData);
+          console.log("user from localStorage:", user);
           setContactInfo(user.email || "");
           setMobileInfo(user.phone || "");
 
@@ -247,8 +252,47 @@ function PaymentPage() {
         handler: async (response) => {
           try {
             await verifyPayment(response);
-
             const user = JSON.parse(localStorage.getItem("user"));
+            let pingLocation = null;
+
+            if (location?.latitude != null && location?.longitude != null) {
+              pingLocation = {
+                type: "Point",
+                coordinates: [location.longitude, location.latitude],
+              };
+            } else {
+              // fallback to 0,0 or omit entirely
+              pingLocation = {
+                type: "Point",
+                coordinates: [0, 0],
+              };
+            }
+            console.log(pingLocation);
+            await createOrderData({
+              buyer: user._id,
+              buyerDetails: {
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+              },
+              shippingAddress,
+              location: mapUrl,
+              pingLocation,
+              paymentMethod: "online",
+              paymentStatus: "paid",
+              paymentVerifiedAt: new Date(),
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+              products: cartItems.map((p) => ({
+                productId: p.product._id, // <— real Product ObjectId
+                name: p.product.name,
+                price: p.price, // you can choose discountPrice if needed
+                quantity: p.quantity,
+                weight: p.weight,
+              })),
+              total,
+            });
             if (user) {
               const token = localStorage.getItem("token");
               const updatedUser = await updateProfile(
@@ -354,6 +398,7 @@ function PaymentPage() {
       setpaymentload(false);
     }
   };
+
   return (
     <>
       {showSuccessPopup && (

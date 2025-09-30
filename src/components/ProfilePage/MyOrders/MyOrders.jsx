@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
-import "./MyOrders.css";
-import image from '../../../assets/images/user-icon-trendy-flat-style-600nw-1697898655-removebg-preview.png';
+import image from "../../../assets/images/user-icon-trendy-flat-style-600nw-1697898655-removebg-preview.png";
 import { getOrdersByUserId } from "../../../api/orderApi";
+import { format } from "date-fns";
+import { FiClipboard } from "react-icons/fi";
+import { CopyIcon } from "lucide-react";
 
 function MyOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [expandedOrderId, setExpandedOrderId] = useState(null);
 
-  // ✅ Get userId from localStorage
-  const userId = JSON.parse(localStorage.getItem("user"))?.id;
+  const userId = JSON.parse(localStorage.getItem("user"))?._id;
 
   useEffect(() => {
     if (!userId) return;
@@ -17,8 +19,7 @@ function MyOrders() {
       setLoading(true);
       try {
         const res = await getOrdersByUserId(userId);
-        let fetchedOrders = res?.data || [];
-        setOrders(fetchedOrders); // ✅ only set once
+        setOrders(res?.data || []);
       } catch (err) {
         console.error("Error fetching orders:", err);
       } finally {
@@ -27,38 +28,116 @@ function MyOrders() {
     };
 
     fetchOrders();
-  }, [userId]); // ✅ remove page & hasMore dependencies
+  }, [userId]);
 
-  if (orders.length === 0 && !loading) return <p>No orders found.</p>;
-
+  if (orders.length === 0 && !loading)
+    return <p className="text-center mt-5">No orders found.</p>;
+const statusColor = {
+  pending: "text-yellow-500",
+  claimed: "text-blue-500",
+  "Reached Pickup Point": "text-indigo-500",
+  "Picked Up": "text-orange-500",
+  Delivered: "text-green-500",
+  cancelled: "text-red-500",
+};
   return (
-    <div className="my-orders">
-      <h2 className="mb-3 mt-0">My Orders</h2>
-      {orders.map((order) =>
-        order.products.map((item) => (
-          <div key={item._id} className="my-order-new-con">
-            <img src={item.productId?.images?.[0] || image} alt="product" />
-            <div className="my-order-new-content-div">
-              {item.productId?.brand?.length > 0 && (
-                <p>Brand : {item.productId.brand}</p>
-              )}
-              <h5>
-                {item.productId?.name
-                  ?.split(" ")
-                  .slice(0, 10)
-                  .join(" ") || "Unnamed Product"}
-              </h5>
-              {item.productId?.color?.length > 0 && (
-                <p>Color : {item.productId.color}</p>
-              )}
+    <div className="p-5 max-w-4xl mx-auto">
+      <h2 className="text-2xl font-semibold mb-6">My Orders</h2>
+
+      {orders.map((order) => {
+        const isExpanded = expandedOrderId === order._id;
+        const productCount = order.products.length;
+        const totalPayment = order.finalAmount;
+
+        return (
+          <div
+            key={order._id}
+            className="border border-gray-200 rounded-lg mb-4 shadow-sm"
+          >
+            {/* Order summary */}
+            <div
+              onClick={() => setExpandedOrderId(isExpanded ? null : order._id)}
+              className="flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100"
+            >
+              <div>
+                <p className="text-gray-500 text-sm">
+                  {format(new Date(order.createdAt), "dd MMM yyyy, hh:mm a")}
+                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-lg font-medium">
+                    OrderID: {order.orderId}
+                  </p>
+                  <CopyIcon
+                    size={14}
+                    className="text-gray-500 hover:text-gray-700 cursor-pointer"
+                    onClick={() => {
+                      navigator.clipboard.writeText(order.orderId);
+                      alert("OrderID copied to clipboard!");
+                    }}
+                  />
+                </div>
+                <p className="text-lg font-medium">
+                  Order Status: <span className={`${statusColor[order.status] || "text-gray-500"} capitalize`}>{order.status}</span> 
+                </p>
+                <p className="text-lg font-medium">Products: {productCount}</p>
+              </div>
+              <div className="flex gap-5 items-center justify-between">
+                <div className="text-center">
+                  <p className="text-lg font-semibold">₹{totalPayment}</p>
+                  <p className="text-sm text-gray-500 capitalize">
+                    {order.paymentStatus + " " + order.paymentMethod}
+                  </p>
+                </div>
+                <button className="ml-auto bg-black cursor-pointer text-white px-6 py-2 rounded hover:bg-gray-800">
+                  TRACK ORDER
+                </button>
+              </div>
             </div>
-            <button className="my-order-new-content-button">
-              TRACK ORDER
-            </button>
+
+            {/* Expanded products */}
+            {isExpanded && (
+              <div className="p-4 border-t border-gray-200 bg-white space-y-4">
+                {order.products.map((item) => (
+                  <div key={item._id} className="flex items-center gap-4">
+                    <img
+                      src={item.productId?.images?.[0] || image}
+                      alt={item.productId?.name || "Product"}
+                      className="h-20 w-20 object-cover rounded"
+                    />
+                    <div className="flex flex-col gap-1">
+                      <h5 className="font-medium">
+                        {item.productId?.name
+                          ?.split(" ")
+                          .slice(0, 10)
+                          .join(" ") || "Unnamed Product"}
+                      </h5>
+                      {item.productId?.brand && (
+                        <p className="text-gray-500 text-sm">
+                          Brand: {item.productId.brand}
+                        </p>
+                      )}
+                      <div className="flex gap-3">
+                        <p className="text-gray-500 text-sm">
+                        weight: <strong className="text-red-600"> {item.weight}</strong>
+                      </p>
+                      <p className="text-gray-500 text-sm">
+                        Qty: <strong className="text-red-600">{item.quantity}</strong>
+                      </p>
+                      </div>
+                      
+                      <p className="text-gray-500 text-sm">
+                        Price:  <strong className="text-red-800">₹{item.price}</strong>
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-        ))
-      )}
-      {loading && <p>Loading orders...</p>}
+        );
+      })}
+
+      {loading && <p className="text-center mt-5">Loading orders...</p>}
     </div>
   );
 }

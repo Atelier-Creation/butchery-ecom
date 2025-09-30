@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { useNavigate } from "react-router-dom";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import { FiPause, FiChevronLeft, FiChevronRight, FiPlay } from "react-icons/fi";
 import "swiper/css";
@@ -38,6 +39,7 @@ const MobileBanner = () => {
   ];
 
   const swiperRef = useRef(null);
+  const navigate = useNavigate()
   const [isPlaying, setIsPlaying] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
   const toggleAutoplay = () => {
@@ -82,18 +84,21 @@ const MobileBanner = () => {
               {/* keep the overlay buttons only on lg and up */}
               <div className="hidden lg:flex flex-row gap-2 lg:mt-3">
                 {/* Get Started button */}
-                <Button
+                {/* <Button
                   ta={"Order Now"}
                   en={"Order Now"}
-                  className="lg:py-2 lg:px-5 py-2 px-5 border rounded border-[#EE1c25] bg-[#EE1c25] text-white transition duration-300 hover:bg-transparent hover:text-[#EE1c25]"
-                />
+                  className="lg:py-2 lg:px-5 cursor-pointer py-2 px-5 border rounded border-[#EE1c25] bg-[#EE1c25] text-white transition duration-300 hover:bg-transparent hover:text-[#EE1c25]"
+                /> */}
+                <button
+                  onClick = {()=> navigate('/collections/all')}
+                  className="lg:py-2 lg:px-5 cursor-pointer py-2 px-5 border rounded border-[#EE1c25] bg-[#EE1c25] text-white transition duration-300 hover:bg-transparent hover:text-[#EE1c25]"
+                >Order Now </button>
 
                 {/* View Products button */}
-                <Button
-                  ta={"View all"}
-                  en={"View all"}
-                  className="lg:py-2 lg:px-5 py-2 px-5 border bg-transparent rounded border-white text-white transition duration-300 hover:bg-[#EE1c25] hover:text-white hover:border-[#EE1c25]"
-                />
+                <button
+                  onClick = {()=> navigate('/collections/all')}
+                  className="lg:py-2 lg:px-5 cursor-pointer py-2 px-5 border bg-transparent rounded border-white text-white transition duration-300 hover:bg-[#EE1c25] hover:text-white hover:border-[#EE1c25]"
+                >View all </button>
               </div>
             </div>
 
@@ -111,7 +116,8 @@ const MobileBanner = () => {
         <Button
           ta={"View all"}
           en={"View all"}
-          className="py-2 px-5 border bg-transparent rounded border-white text-white transition duration-300 hover:bg-[#EE1c25] hover:text-white hover:border-[#EE1c25]"
+          onClick = {()=> navigate('/collections/all')}
+          className="py-2 px-5 border  bg-transparent rounded border-white text-white transition duration-300 hover:bg-[#EE1c25] hover:text-white hover:border-[#EE1c25]"
         />
       </div>
 

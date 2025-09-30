@@ -58,16 +58,16 @@ export const PincodeModal = () => {
 
   // ✅ Allowed service areas
   const allowedPincodes = {
-    "641011": "Saibaba Colony",
-    "641004": "Peelamedu",
-    "641012": "Gandhipuram",
-    "641002": "R.S. Puram",
-    "641035": "Saravanampatti",
-    "641018": "Race Course",
-    "641005": "Singanallur",
-    "641014": "Coimbatore Civil Aerodrome",
-    "641015": "Uppilipalayam",
-    "641016": "Ondipudur",
+    641011: "Saibaba Colony",
+    641004: "Peelamedu",
+    641012: "Gandhipuram",
+    641002: "R.S. Puram",
+    641035: "Saravanampatti",
+    641018: "Race Course",
+    641005: "Singanallur",
+    641014: "Coimbatore Civil Aerodrome",
+    641015: "Uppilipalayam",
+    641016: "Ondipudur",
   };
 
   const handleCheck = () => {
@@ -127,7 +127,7 @@ export const PincodeModal = () => {
       {/* ✅ View available pincodes link */}
       <button
         onClick={() => setShowList((prev) => !prev)}
-        className="text-blue-600 text-sm underline mb-4 hover:text-blue-800"
+        className="text-red-600 text-sm underline mb-4 hover:text-red-800 cursor-pointer"
       >
         {showList ? "Hide Available Pincodes" : "View Available Pincodes"}
       </button>
@@ -138,13 +138,25 @@ export const PincodeModal = () => {
           <table className="w-full text-sm text-left border-gray-300">
             <thead className="bg-gray-100 sticky top-0">
               <tr>
-                <th className="px-3 py-2 font-semibold text-gray-700">Pincode</th>
-                <th className="px-3 py-2 font-semibold text-gray-700">Area / City</th>
+                <th className="px-3 py-2 font-semibold text-gray-700">
+                  Pincode
+                </th>
+                <th className="px-3 py-2 font-semibold text-gray-700">
+                  Area / City
+                </th>
               </tr>
             </thead>
             <tbody>
               {Object.entries(allowedPincodes).map(([code, area]) => (
-                <tr key={code} className="border-t border-gray-400">
+                <tr
+                  key={code}
+                  className="border-t border-gray-400 cursor-pointer hover:bg-gray-200"
+                  onClick={() => {
+                    setPincode(code); // ✅ Fill input
+                    setShowList(false); // ✅ Hide table
+                    handleCheck()
+                  }}
+                >
                   <td className="px-3 py-1 text-gray-700">{code}</td>
                   <td className="px-3 py-1 text-gray-700">{area}</td>
                 </tr>
@@ -168,7 +180,7 @@ export const PincodeModal = () => {
       {/* ✅ Checkout */}
       <button
         onClick={handleCheckOut}
-        className="px-6 py-3 rounded-md bg-red-600 text-white w-full max-w-sm"
+        className="px-6 py-3 rounded-md bg-red-600 text-white w-full max-w-sm cursor-pointer hover:bg-red-700 transition"
       >
         Check Out
       </button>
