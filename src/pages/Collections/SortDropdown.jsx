@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 
-const SortDropdown = () => {
+const SortDropdown = ({ onSortChange }) => {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState("Best selling");
   const dropdownRef = useRef(null);
@@ -13,7 +13,7 @@ const SortDropdown = () => {
     "Newest First",
   ];
 
-  // Close on outside click
+  // ✅ Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -23,6 +23,13 @@ const SortDropdown = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // ✅ Handle select + notify parent
+  const handleSelect = (option) => {
+    setSelected(option);
+    setOpen(false);
+    onSortChange?.(option);
+  };
 
   return (
     <div className="relative w-full text-sm" ref={dropdownRef}>
@@ -46,10 +53,7 @@ const SortDropdown = () => {
           {options.map((option) => (
             <li
               key={option}
-              onClick={() => {
-                setSelected(option);
-                setOpen(false);
-              }}
+              onClick={() => handleSelect(option)}
               className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${
                 selected === option ? "bg-gray-50 font-medium" : ""
               }`}

@@ -1,73 +1,96 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
-const SidebarFilters = () => {
+const SidebarFilters = ({
+  type = "category", // "category" | "cut"
+  options = [],
+  onFilterChange,
+}) => {
   const [openSections, setOpenSections] = useState({
     productType: true,
     price: false,
   });
 
-  const toggleSection = (section) => {
-    setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
-  };
-
-  const [filters, setFilters] = useState({
-    chicken: false,
-    countryChicken: false,
+  const [selectedValues, setSelectedValues] = useState([]);
+  const [priceRange, setPriceRange] = useState({
     minPrice: "",
     maxPrice: "",
   });
 
-  return (
-    <aside className="w-full  rounded-md md:bg-transparent md:shadow-none p-4 md:p-0">
-      <h3 className="font-semibold mb-4 border-b border-gray-200 pb-2 text-gray-800 text-base md:text-lg">
-        Filter
-      </h3>
+  const toggleSection = (section) =>
+    setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
 
-      {/* Product Type Filter */}
+  const handleCheckboxChange = (value) => {
+    setSelectedValues((prev) =>
+      prev.includes(value)
+        ? prev.filter((v) => v !== value)
+        : [...prev, value]
+    );
+  };
+
+  const handlePriceChange = (e) => {
+    const { name, value } = e.target;
+    setPriceRange((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // 🔁 Trigger parent callback whenever filters change
+  useEffect(() => {
+    onFilterChange?.({
+      type,
+      values: selectedValues,
+      price: priceRange,
+    });
+  }, [selectedValues, priceRange]);
+
+  const handleClear = () => {
+    setSelectedValues([]);
+    setPriceRange({ minPrice: "", maxPrice: "" });
+    onFilterChange?.({ type, values: [], price: { minPrice: "", maxPrice: "" } });
+  };
+
+  return (
+    <aside className="w-full rounded-md p-4 md:p-0">
+      <div className="flex justify-between items-center mb-4 border-b border-gray-200 pb-2">
+        <h3 className="font-semibold text-gray-800 text-base md:text-lg">
+          Filters
+        </h3>
+        <button
+          onClick={handleClear}
+          className="text-xs text-gray-500 hover:text-gray-700"
+        >
+          Clear All
+        </button>
+      </div>
+
+      {/* Dynamic Filter */}
       <div className="mb-5 border-b border-gray-200 pb-3">
         <button
           className="flex justify-between items-center w-full cursor-pointer text-left font-medium text-gray-800 text-sm md:text-base"
           onClick={() => toggleSection("productType")}
         >
-          Product type
-          {openSections.productType ? (
-            <ChevronUp size={18} />
-          ) : (
-            <ChevronDown size={18} />
-          )}
+          {type === "category" ? "Category" : "Cut Type"}
+          {openSections.productType ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
         </button>
 
         <div
-          className={`transition-all duration-300 ease-in-out overflow-hidden ${
-            openSections.productType ? "max-h-40 mt-3" : "max-h-0"
+          className={`transition-all duration-300 overflow-hidden ${
+            openSections.productType ? "max-h-60 mt-3" : "max-h-0"
           }`}
         >
-          <label className="flex items-center gap-2 mb-2 text-gray-700 text-sm">
-            <input
-              type="checkbox"
-              checked={filters.chicken}
-              onChange={() =>
-                setFilters({ ...filters, chicken: !filters.chicken })
-              }
-              className="w-4 h-4 accent-red-800"
-            />
-            Chicken <span className="text-gray-500">(6)</span>
-          </label>
-          <label className="flex items-center gap-2 text-gray-700 text-sm">
-            <input
-              type="checkbox"
-              checked={filters.countryChicken}
-              onChange={() =>
-                setFilters({
-                  ...filters,
-                  countryChicken: !filters.countryChicken,
-                })
-              }
-              className="w-4 h-4 accent-red-800"
-            />
-            Country Chicken <span className="text-gray-500">(3)</span>
-          </label>
+          {options.map((opt) => (
+            <label
+              key={opt.value}
+              className="flex items-center gap-2 mb-2 text-gray-700 text-sm"
+            >
+              <input
+                type="checkbox"
+                checked={selectedValues.includes(opt.value)}
+                onChange={() => handleCheckboxChange(opt.value)}
+                className="w-4 h-4 accent-red-800"
+              />
+              {opt.label}
+            </label>
+          ))}
         </div>
       </div>
 
@@ -78,11 +101,7 @@ const SidebarFilters = () => {
           onClick={() => toggleSection("price")}
         >
           Price
-          {openSections.price ? (
-            <ChevronUp size={18} />
-          ) : (
-            <ChevronDown size={18} />
-          )}
+          {openSections.price ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
         </button>
 
         <div
@@ -90,32 +109,27 @@ const SidebarFilters = () => {
             openSections.price ? "max-h-40 mt-3" : "max-h-0"
           }`}
         >
-          <p className="mb-2 text-xs md:text-sm text-gray-600">
-            The highest price is <span className="font-semibold">₹3,950.00</span>
-          </p>
           <div className="flex items-center gap-2">
             <div className="flex items-center border rounded-md px-2 py-1 flex-1">
               ₹
               <input
                 type="number"
+                name="minPrice"
                 placeholder="From"
                 className="ml-1 w-full h-8 border-none outline-none bg-transparent text-sm"
-                value={filters.minPrice}
-                onChange={(e) =>
-                  setFilters({ ...filters, minPrice: e.target.value })
-                }
+                value={priceRange.minPrice}
+                onChange={handlePriceChange}
               />
             </div>
             <div className="flex items-center border rounded-md px-2 py-1 flex-1">
               ₹
               <input
                 type="number"
+                name="maxPrice"
                 placeholder="To"
                 className="ml-1 w-full h-8 border-none outline-none bg-transparent text-sm"
-                value={filters.maxPrice}
-                onChange={(e) =>
-                  setFilters({ ...filters, maxPrice: e.target.value })
-                }
+                value={priceRange.maxPrice}
+                onChange={handlePriceChange}
               />
             </div>
           </div>
