@@ -253,6 +253,7 @@ function PaymentPage() {
           try {
             await verifyPayment(response);
             const user = JSON.parse(localStorage.getItem("user"));
+            console.log(user._id)
             let pingLocation = null;
 
             if (location?.latitude != null && location?.longitude != null) {
@@ -269,7 +270,7 @@ function PaymentPage() {
             }
             console.log(pingLocation);
             await createOrderData({
-              buyer: user._id,
+              buyer: user.id,
               buyerDetails: {
                 name: user.name,
                 email: user.email,
