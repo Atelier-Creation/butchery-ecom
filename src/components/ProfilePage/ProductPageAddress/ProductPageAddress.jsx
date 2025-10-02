@@ -7,7 +7,7 @@ function ProductPageAddress() {
   const [message, setMessage] = useState("");
   const [isAddingNew, setIsAddingNew] = useState(false);
     useEffect(() => {
-      const storedUser = localStorage.getItem("authUser");
+      const storedUser = localStorage.getItem("user");
       if (!storedUser) return;
   
       const parsedUser = JSON.parse(storedUser);

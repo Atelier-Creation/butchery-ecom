@@ -10,7 +10,7 @@ function MyOrders() {
   const [loading, setLoading] = useState(false);
   const [expandedOrderId, setExpandedOrderId] = useState(null);
 
-  const userId = JSON.parse(localStorage.getItem("user"))?._id;
+  const userId = JSON.parse(localStorage.getItem("user"))?.id;
 
   useEffect(() => {
     if (!userId) return;

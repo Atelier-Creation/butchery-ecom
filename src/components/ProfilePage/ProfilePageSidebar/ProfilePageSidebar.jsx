@@ -15,18 +15,18 @@ function ProfilePageSidebar({ setActiveSection, activeSection }) {
     email: "",
   });
   useEffect(() => {
-    localStorage.getItem("authUser") &&
+    localStorage.getItem("user") &&
       console.log(localStorage.getItem("authUser"));
-    setProfileData(JSON.parse(localStorage.getItem("authUser")));
+    setProfileData(JSON.parse(localStorage.getItem("user")));
   }, [setProfileData]);
 
   const navigate = useNavigate();
 
   const handleSignOut = () => {
-    localStorage.removeItem("authUser"); // or clear all: localStorage.clear();
-    localStorage.removeItem("authToken");
-    clearWishlist(); // clear wishlist
-    clearCart(); // Clear cart items
+    localStorage.removeItem("user"); // or clear all: localStorage.clear();
+    localStorage.removeItem("token");
+    // clearWishlist(); 
+    // clearCart(); 
     alert("Signed out successfully"); // Optional
     navigate("/"); // Redirect to login page or home
   };
@@ -51,7 +51,7 @@ function ProfilePageSidebar({ setActiveSection, activeSection }) {
               setMenuOpen(false);
             }}
           >
-            <i className="bi bi-person"></i>
+            <i className="bi bi-person"></i>  
             <h5>Account Overview</h5>
           </div>
 

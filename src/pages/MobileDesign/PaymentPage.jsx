@@ -248,6 +248,8 @@ function PaymentPage() {
         },
         notes: {
           address: `${shippingAddress}, ${shippingCity}, ${shippingState}, ${shippingPinCode}`,
+          name: `${shippingFirstName} ${shippingLastName}`,
+          contact: mobileInfo,
         },
         handler: async (response) => {
           try {
