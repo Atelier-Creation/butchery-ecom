@@ -220,6 +220,21 @@ function PaymentPage() {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  const handleRemoveItem = async (itemId) => {
+    try {
+      const response = await cartApi(itemId); // your removeFromCart API
+      if (response.success) {
+        setCartItems((prev) => prev.filter((item) => item._id !== itemId));
+        const newTotal = cartItems
+          .filter((item) => item._id !== itemId)
+          .reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0);
+        setTotal(newTotal);
+      }
+    } catch (err) {
+      console.error("Failed to remove item from cart:", err);
+    }
+  };
+
 
   // Payment handler
   const handlePayment = async () => {
@@ -486,11 +501,10 @@ function PaymentPage() {
           <div className="space-y-4">
             <h3 className="text-2xl font-bold">DELIVERY</h3>
             <label
-              className={`flex items-center justify-between h-[52px] border rounded px-4 cursor-pointer ${
-                deliveryOption === "ship"
+              className={`flex items-center justify-between h-[52px] border rounded px-4 cursor-pointer ${deliveryOption === "ship"
                   ? "border-blue-600 bg-blue-50"
                   : "border-gray-300"
-              }`}
+                }`}
               onClick={() => setDeliveryOption("ship")}
             >
               <span className="flex items-center gap-2">

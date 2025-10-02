@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import image from "../../../assets/images/user-icon-trendy-flat-style-600nw-1697898655-removebg-preview.png";
 import { getOrdersByUserId } from "../../../api/orderApi";
 import { format } from "date-fns";
-import { FiClipboard } from "react-icons/fi";
 import { CopyIcon } from "lucide-react";
 
 function MyOrders() {
@@ -32,17 +31,21 @@ function MyOrders() {
 
   if (orders.length === 0 && !loading)
     return <p className="text-center mt-5">No orders found.</p>;
-const statusColor = {
-  pending: "text-yellow-500",
-  claimed: "text-blue-500",
-  "Reached Pickup Point": "text-indigo-500",
-  "Picked Up": "text-orange-500",
-  Delivered: "text-green-500",
-  cancelled: "text-red-500",
-};
+
+  const statusColor = {
+    pending: "text-yellow-500",
+    claimed: "text-blue-500",
+    "Reached Pickup Point": "text-indigo-500",
+    "Picked Up": "text-orange-500",
+    Delivered: "text-green-500",
+    cancelled: "text-red-500",
+  };
+
   return (
-    <div className="p-5 max-w-4xl mx-auto">
-      <h2 className="text-2xl font-semibold mb-6">My Orders</h2>
+    <div className="p-3 sm:p-5 max-w-5xl mx-auto">
+      <h2 className="text-xl sm:text-2xl font-semibold mb-6 text-center sm:text-left">
+        My Orders
+      </h2>
 
       {orders.map((order) => {
         const isExpanded = expandedOrderId === order._id;
@@ -57,14 +60,14 @@ const statusColor = {
             {/* Order summary */}
             <div
               onClick={() => setExpandedOrderId(isExpanded ? null : order._id)}
-              className="flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100"
+              className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0 items-start sm:items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100"
             >
-              <div>
+              <div className="space-y-1">
                 <p className="text-gray-500 text-sm">
                   {format(new Date(order.createdAt), "dd MMM yyyy, hh:mm a")}
                 </p>
-                <div className="flex items-center gap-2">
-                  <p className="text-lg font-medium">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="text-base sm:text-lg font-medium">
                     OrderID: {order.orderId}
                   </p>
                   <CopyIcon
@@ -76,19 +79,29 @@ const statusColor = {
                     }}
                   />
                 </div>
-                <p className="text-lg font-medium">
-                  Order Status: <span className={`${statusColor[order.status] || "text-gray-500"} capitalize`}>{order.status}</span> 
+                <p className="text-base sm:text-lg font-medium">
+                  Order Status:{" "}
+                  <span
+                    className={`${
+                      statusColor[order.status] || "text-gray-500"
+                    } capitalize`}
+                  >
+                    {order.status}
+                  </span>
                 </p>
-                <p className="text-lg font-medium">Products: {productCount}</p>
+                <p className="text-base sm:text-lg font-medium">
+                  Products: {productCount}
+                </p>
               </div>
-              <div className="flex gap-5 items-center justify-between">
-                <div className="text-center">
+
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-5 items-start sm:items-center w-full sm:w-auto">
+                <div className="text-left sm:text-center">
                   <p className="text-lg font-semibold">₹{totalPayment}</p>
                   <p className="text-sm text-gray-500 capitalize">
                     {order.paymentStatus + " " + order.paymentMethod}
                   </p>
                 </div>
-                <button className="ml-auto bg-black cursor-pointer text-white px-6 py-2 rounded hover:bg-gray-800">
+                <button className="w-full sm:w-auto bg-black cursor-pointer text-white px-4 py-2 rounded hover:bg-gray-800">
                   TRACK ORDER
                 </button>
               </div>
@@ -98,7 +111,10 @@ const statusColor = {
             {isExpanded && (
               <div className="p-4 border-t border-gray-200 bg-white space-y-4">
                 {order.products.map((item) => (
-                  <div key={item._id} className="flex items-center gap-4">
+                  <div
+                    key={item._id}
+                    className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4"
+                  >
                     <img
                       src={item.productId?.images?.[0] || image}
                       alt={item.productId?.name || "Product"}
@@ -116,17 +132,23 @@ const statusColor = {
                           Brand: {item.productId.brand}
                         </p>
                       )}
-                      <div className="flex gap-3">
-                        <p className="text-gray-500 text-sm">
-                        weight: <strong className="text-red-600"> {item.weight}</strong>
-                      </p>
-                      <p className="text-gray-500 text-sm">
-                        Qty: <strong className="text-red-600">{item.quantity}</strong>
-                      </p>
+                      <div className="flex gap-5 text-sm">
+                        <p className="text-gray-500">
+                          Weight:{" "}
+                          <strong className="text-red-600">
+                            {item.weight}
+                          </strong>
+                        </p>
+                        <p className="text-gray-500">
+                          Qty:{" "}
+                          <strong className="text-red-600">
+                            {item.quantity}
+                          </strong>
+                        </p>
                       </div>
-                      
                       <p className="text-gray-500 text-sm">
-                        Price:  <strong className="text-red-800">₹{item.price}</strong>
+                        Price:{" "}
+                        <strong className="text-red-800">₹{item.price}</strong>
                       </p>
                     </div>
                   </div>
