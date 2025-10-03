@@ -216,9 +216,9 @@ function ProfilePageInfo() {
   }
   
   return (
-    <div className="profile-page-info-con">
+    <div className="profile-page-info-con z-[-1]">
       {/* ✅ Show messages */}
-      <div className="user-info-con">
+      <div className="user-info-con z-[-1]">
         <div className="profile-image-wrapper">
           <img
             src={user?.profileUrl || profileImage || previewUrl}

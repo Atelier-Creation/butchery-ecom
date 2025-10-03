@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import RecommendedSlider from "./cart-drawer-recommend";
 import "./CartDrawer.css";
-import { NotebookPen, TruckIcon, X } from "lucide-react";
+import { NotebookPen, TruckIcon, X, Trash2 } from "lucide-react"; // <-- added Trash2
 import { useNavigate } from "react-router-dom";
-import { H6 } from "../TextComponents";
 import { useCart } from "./CartContext";
 import {
   getCartByUserId,
@@ -24,6 +23,34 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
     0
   );
 
+  // Safe getter for product image
+  const getImageSrc = (item) => {
+    if (!item) return "/fallback.png";
+    if (item.product) {
+      if (Array.isArray(item.product.images) && item.product.images.length > 0) {
+        return item.product.images[0];
+      }
+      if (typeof item.product.images === "string" && item.product.images) {
+        return item.product.images;
+      }
+      if (item.product.image) return item.product.image;
+    }
+    if (item.image) return item.image;
+    return "/fallback.png";
+  };
+
+  // Safe getter for display name
+  const getDisplayName = (item) => {
+    if (!item) return "Untitled";
+    if (item.product && (item.product.name || item.product.title)) {
+      return item.product.name || (item.product.title && item.product.title.en) || "Untitled";
+    }
+    if (item.name) return item.name;
+    if (item.title && typeof item.title === "object" && item.title.en) return item.title.en;
+    if (item.title && typeof item.title === "string") return item.title;
+    return "Untitled";
+  };
+
   // Fetch cart from backend on drawer open
   useEffect(() => {
     const fetchCart = async () => {
@@ -35,7 +62,7 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
           setLoading(false);
         }
 
-        const data = await getCartByUserId(); // backend gets user from token
+        const data = await getCartByUserId();
         if (data?.data?.items) {
           setCartItems(data.data.items);
           localStorage.setItem("user_cart", JSON.stringify(data.data.items));
@@ -54,9 +81,8 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
   const handleUpdateQuantity = async (item, delta) => {
     try {
       const newQuantity = (item.quantity || 0) + delta;
-      if (newQuantity < 1) return; // prevent quantity < 1
+      if (newQuantity < 1) return;
       await updateCartItemAPI(item._id, { quantity: newQuantity });
-      // update local state
       setCartItems((prev) => {
         const updated = prev.map((i) =>
           i._id === item._id ? { ...i, quantity: newQuantity } : i
@@ -77,7 +103,6 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
       } else {
         await removeFromCartAPI(item._id);
       }
-      // Remove locally
       setCartItems((prev) => {
         const updated = prev.filter((i) => i._id !== item._id);
         localStorage.setItem("user_cart", JSON.stringify(updated));
@@ -87,6 +112,7 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
       console.error("Failed to remove item", err);
     }
   };
+
   const SkeletonItem = () => (
     <div className="flex gap-3 my-3 animate-pulse">
       <div className="w-[100px] h-[100px] bg-gray-300 rounded-md"></div>
@@ -149,8 +175,8 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
             cartItems.map((item) => (
               <div key={item._id} className="d-flex my-3 flex gap-3">
                 <img
-                  src={item.product.images || "/fallback.png"}
-                  alt={item.product.name}
+                  src={getImageSrc(item)}
+                  alt={getDisplayName(item)}
                   className="me-3"
                   style={{
                     width: "100px",
@@ -159,24 +185,25 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
                   }}
                 />
                 <div className="flex-grow-1 flex flex-col gap-1">
-                  <H6
-                    en={item.product.name}
-                    className="text-base font-semibold"
-                  />
-                  {item.weight && (
-                    <p className="text-muted mb-1">{item.weight} g</p>
-                  )}
+                  <div className="text-base font-semibold">{getDisplayName(item)}</div>
+
+                  {item.weight && <p className="text-muted mb-1">{item.weight} g</p>}
+
                   <div className="flex items-center justify-between">
                     <span className="fw-semibold text-[#EE1c25]">
                       ₹{item.price} X {item.quantity}
                     </span>
+                    {/* Replace Remove text with Trash icon */}
                     <button
-                      className="text-red-700 btn btn-link p-0 cursor-pointer"
+                      className="p-1 rounded hover:bg-gray-100"
                       onClick={() => handleRemove(item)}
+                      aria-label={`Remove ${getDisplayName(item)} from cart`}
+                      title="Remove"
                     >
-                      Remove
+                      <Trash2 size={18} className="text-red-600" />
                     </button>
                   </div>
+
                   <div className="quantity-box-cart-drawer">
                     <button
                       onClick={() => handleUpdateQuantity(item, -1)}
@@ -185,9 +212,7 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
                       -
                     </button>
                     <span>{item.quantity}</span>
-                    <button onClick={() => handleUpdateQuantity(item, 1)}>
-                      +
-                    </button>
+                    <button onClick={() => handleUpdateQuantity(item, 1)}>+</button>
                   </div>
                 </div>
               </div>
@@ -203,9 +228,7 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
             </div>
 
             <div
-              className={`cart-drawer-footer p-3 ${
-                drawerOpen ? "" : "mobile-footer-hidden"
-              }`}
+              className={`cart-drawer-footer p-3 ${drawerOpen ? "" : "mobile-footer-hidden"}`}
             >
               <button
                 className="border py-3 rounded-2xl w-full border-[#EE1c25]"

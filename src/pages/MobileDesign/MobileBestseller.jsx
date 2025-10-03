@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Eye } from "lucide-react";
-import { Button, P } from "../../components/TextComponents";
+import { Button } from "../../components/TextComponents";
 import { useNavigate } from "react-router-dom";
 import { QuickModal, useQuickModal } from "../../context/QuickContext";
 import Aos from "aos";
@@ -14,24 +14,26 @@ import "swiper/css/pagination";
 const MobileBestseller = ({
   title = "Best Sellers",
   subtitle = "Most popular product near you!",
-  onViewAll,
 }) => {
   const { openModal } = useQuickModal();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
+
   const handleBuyNow = (productId) => {
     openModal(<QuickModal productId={productId} />);
+  };
+
+  const handleViewAll = () => {
+    navigate("/collections/all");
   };
 
   useEffect(() => {
     Aos.init({ duration: 1000, easing: "ease-in-out", once: true });
 
-    // ✅ Fetch products
     const fetchProducts = async () => {
       try {
         const response = await getProducts();
-        console.log("Fetched products:", response.data); // ✅ Log products
-        setProducts(response.data); // ✅ Store in state
+        setProducts(response.data);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
@@ -46,63 +48,48 @@ const MobileBestseller = ({
       <div className="lg:flex lg:justify-between">
         <div>
           {subtitle && (
-            <p className="text-xs text-gray-600 mb-1 lg:text-base">
-              {subtitle}
-            </p>
+            <p className="text-xs text-gray-600 mb-1 lg:text-base">{subtitle}</p>
           )}
-          <h2 className="text-xl font-bold mb-4 md:mb-8 lg:mb-8 lg:text-4xl lg:font-bold">
+          <h2 className="text-xl font-bold mb-4 lg:mb-8 lg:text-4xl">
             {title}
           </h2>
         </div>
-        {onViewAll && (
-          <div className="hidden lg:block mt-6 text-center">
-            <button
-              onClick={onViewAll}
-              className="relative cursor-pointer overflow-hidden bg-black text-white px-6 py-2 rounded-md font-medium group transition-all duration-700 hover:-translate-y-2 hover:shadow-xl"
-            >
-              {/* Text */}
-              <span className="relative z-10">View all</span>
-
-              {/* Shine overlay */}
-              <span
-                className="absolute top-0 left-[-75%] w-[50%] h-full 
-        bg-gradient-to-r from-transparent via-white/40 to-transparent 
-        transform skew-x-[-20deg] 
-        transition-all duration-700 ease-in-out 
-        group-hover:left-[125%]"
-              />
-            </button>
-          </div>
-        )}
+        <div className="hidden lg:block mt-6 text-center">
+          <button
+            onClick={handleViewAll}
+            className="relative cursor-pointer overflow-hidden bg-black text-white px-6 py-2 rounded-md font-medium group transition-all duration-700 hover:-translate-y-2 hover:shadow-xl"
+          >
+            <span className="relative z-10">View all</span>
+            <span
+              className="absolute top-0 left-[-75%] w-[50%] h-full 
+              bg-gradient-to-r from-transparent via-white/40 to-transparent 
+              transform skew-x-[-20deg] 
+              transition-all duration-700 ease-in-out 
+              group-hover:left-[125%]"
+            />
+          </button>
+        </div>
       </div>
 
-      {/* ✅ Swiper instead of grid */}
+      {/* Swiper */}
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         spaceBetween={16}
-        // navigation
-        autoplay={{
-          delay: 1500,
-          disableOnInteraction: false,
-        }}
+        autoplay={{ delay: 4500, disableOnInteraction: false }}
         pagination={{ clickable: true }}
         breakpoints={{
-          320: { slidesPerView: 2 }, // mobile
-          768: { slidesPerView: 2 }, // tablet
-          1024: { slidesPerView: 5 }, // large screens
+          320: { slidesPerView: 2 },
+          768: { slidesPerView: 2 },
+          1024: { slidesPerView: 5 },
         }}
         className="pb-20 bestseller"
       >
         {products.map((item, idx) => (
-          <SwiperSlide key={item.id}>
+          <SwiperSlide key={item._id}>
             <div
-              className="group rounded-xl cursor-pointer shadow-md overflow-hidden relative  
-                 transition-all duration-300 ease-out 
-                 hover:shadow-xl hover:-translate-y-1"
+              className="group rounded-xl cursor-pointer shadow-md overflow-hidden relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
               onClick={() =>
-                navigate(`/products/${item._id}`, {
-                  state: { product: item },
-                })
+                navigate(`/products/${item._id}`, { state: { product: item } })
               }
               data-aos="fade-up"
               data-aos-delay={idx * 200}
@@ -115,39 +102,34 @@ const MobileBestseller = ({
                   </span>
                 )}
 
-                {/* Product Image */}
+                {/* Image */}
                 <div className="overflow-hidden rounded-xl">
                   <img
                     src={item.images[0]}
                     alt={item.name}
-                    className="w-full aspect-square object-cover 
-                       transform transition-transform duration-500 
-                       group-hover:scale-105"
+                    className="w-full aspect-square object-cover transform transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
 
-                {/* Eye Icon */}
+                {/* Eye Icon (opens modal) */}
                 <span
                   onClick={(e) => {
-                    e.stopPropagation(); // ✅ prevent navigation
+                    e.stopPropagation();
                     handleBuyNow(item._id);
                   }}
-                  className="absolute bottom-2 right-2 cursor-pointer bg-[#EE1c25] text-white text-xs px-2.5 py-2 rounded-md
-                     opacity-0 translate-y-2 transition-all duration-300
-                     group-hover:opacity-100 group-hover:translate-y-0"
+                  className="hidden md:flex absolute bottom-2 right-2 cursor-pointer bg-[#EE1c25] text-white text-xs px-2.5 py-2 rounded-md
+             opacity-0 translate-y-2 transition-all duration-300
+             group-hover:opacity-100 group-hover:translate-y-0"
                 >
                   <Eye size={18} />
                 </span>
               </div>
 
-              {/* Content */}
+              {/* Info */}
               <div className="p-2">
-                <p className="text-md h-[50px] font-medium line-clamp-2 transition-colors duration-300 group-hover:text-[#EE1c25]">{item.name}</p>
-                {/* <P
-                  en={item.name}
-                  ta={item.tamilName}
-                  className="text-md h-[50px] font-medium line-clamp-2 transition-colors duration-300 group-hover:text-[#EE1c25]"
-                /> */}
+                <p className="text-md h-[50px] font-medium line-clamp-2 group-hover:text-[#EE1c25] transition-colors">
+                  {item.name}
+                </p>
                 <div className="mt-2 flex items-center gap-2">
                   <span className="text-[#EE1c25] font-semibold text-md">
                     ₹{item.weightOptions[0].price}
@@ -164,17 +146,15 @@ const MobileBestseller = ({
         ))}
       </Swiper>
 
-      {/* View All Button for Mobile */}
-      {onViewAll && (
-        <div className="mt-6 text-center lg:hidden">
-          <Button
-            onClick={onViewAll}
-            ta={"View all"}
-            en={"View all"}
-            className="bg-black text-white px-20 py-2 w-full rounded-md font-medium"
-          />
-        </div>
-      )}
+      {/* Mobile View All */}
+      <div className="mt-6 text-center lg:hidden">
+        <Button
+          onClick={handleViewAll}
+          en="View all"
+          ta="View all"
+          className="bg-black text-white px-20 py-2 w-full rounded-md font-medium"
+        />
+      </div>
     </div>
   );
 };

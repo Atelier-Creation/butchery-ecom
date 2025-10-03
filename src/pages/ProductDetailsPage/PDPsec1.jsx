@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FaBook,
   FaChevronDown,
-  FaMinus,
   FaChevronUp,
+  FaMinus,
   FaPlus,
 } from "react-icons/fa";
 import PDPsec2 from "./PDPsec2";
@@ -12,20 +12,10 @@ import MobileFooter from "../MobileDesign/MobileFooter";
 import { useCart } from "../../components/CartDrawer/CartContext";
 import "./PDPsec.css";
 import { useModal, PincodeModal } from "../../context/GlobalModal";
-import MobileNavbar from "../MobileDesign/MobileNavbar";
-import IconMenu from "../MobileDesign/MobileIconMenu";
 import Navbar from "../MobileDesign/Navbar";
 import { useNavigate, useParams } from "react-router-dom";
-import MeatCutDropdown from "../MobileDesign/MeatCutDropdown";
 import { getProductById } from "../../api/productApi";
 import { addToCartAPI } from "../../api/cartApi";
-
-const menuItems = [
-  { label: "Chicken", link: "/collections/chicken", icon: "//lenaturelmeat.com/cdn/shop/files/turkey-chicken-svgrepo-com_32x32.svg?v=1752237020" },
-  { label: "Mutton", link: "/collections/mutton", icon: "//lenaturelmeat.com/cdn/shop/files/meat-cut-svgrepo-com_1_32x32.svg?v=1752237274" },
-  { label: "Egg", link: "/collections/eggs", icon: "//lenaturelmeat.com/cdn/shop/files/eggs-in-basket-svgrepo-com_32x32.svg?v=1752237467" },
-  { label: "Fish", link: "/collections/fish", icon: "//lenaturelmeat.com/cdn/shop/files/fish-svgrepo-com_32x32.svg?v=1753957578" },
-];
 
 function PDPsec1() {
   const navigate = useNavigate();
@@ -72,63 +62,192 @@ function PDPsec1() {
   }, [product]);
 
   const increase = () => {
-    if (quantity < 10) setQuantity(quantity + 1);
+    if (quantity < 10) setQuantity((q) => q + 1);
   };
   const decrease = () => {
-    if (quantity > 1) setQuantity(quantity - 1);
+    if (quantity > 1) setQuantity((q) => q - 1);
   };
 
+  // ----- Guest cart helpers -----
+  const getGuestCart = () => {
+    try {
+      const raw = localStorage.getItem("guest_cart");
+      return raw ? JSON.parse(raw) : [];
+    } catch (err) {
+      console.error("Error parsing guest_cart:", err);
+      return [];
+    }
+  };
+
+  const saveGuestCart = (cart) => {
+    try {
+      localStorage.setItem("guest_cart", JSON.stringify(cart));
+    } catch (err) {
+      console.error("Failed to save guest_cart:", err);
+    }
+  };
+
+  const mergeGuestCartItem = (newItem) => {
+    const cart = getGuestCart();
+    // merge if same product id + size + cutType exists
+    const idx = cart.findIndex(
+      (c) =>
+        c.id === newItem.id &&
+        c.size === newItem.size &&
+        (c.cutType || "") === (newItem.cutType || "")
+    );
+
+    if (idx > -1) {
+      cart[idx].quantity = Math.min(10, (cart[idx].quantity || 0) + newItem.quantity);
+    } else {
+      cart.push(newItem);
+    }
+    saveGuestCart(cart);
+  };
+
+  // ----- Add to cart handler -----
   const handleAddToCart = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
+    // validation
+    if (!selected && product?.weightOptions?.length) {
+      alert("Please select a size");
       return;
     }
-
     if (!selectedDrop && product?.cutType?.length) {
       alert("Please select a cut type");
       return;
     }
 
-    if (!selected) {
-      alert("Please select a size");
-      return;
-    }
+    const token = localStorage.getItem("token");
 
-    try {
-      await addToCartAPI(product._id, quantity, selected.price, selected._id);
+    const cartItem = {
+      ...product,
+      quantity,
+      size: `${selected?.weight ?? ""} g`,
+      cutType: selectedDrop || "",
+      price: selected?.price ?? selected?.price,
+      discountPrice: selected?.discountPrice ?? selected?.discountPrice,
+      id: product?._id,
+      title: { en: product?.name, ta: product?.tamilName },
+      image: product?.images?.[0],
+      weightOptionId: selected?._id,
+    };
 
+    if (token) {
+      // logged-in flow: call API and also update client cart
+      try {
+        await addToCartAPI(product._id, quantity, selected.price, selected._id);
+      } catch (err) {
+        console.warn("addToCartAPI failed (continuing with local UI update):", err);
+        // don't stop the UI experience — continue to update client cart
+      }
+
+      // update UI/cart context
       addToCart({
-        ...product,
-        quantity,
-        size: `${selected.weight} g`,
-        cutType: selectedDrop || "",
-        price: selected.price,
-        discountPrice: selected.discountPrice,
+        ...cartItem,
         id: product._id,
-        title: { en: product.name, ta: product.tamilName },
-        image: product.images?.[0],
+      });
+      // open drawer so user sees cart
+      toggleDrawer(true);
+    } else {
+      // guest flow: store in localStorage guest_cart and update UI
+      mergeGuestCartItem({
+        ...cartItem,
+        id: product._id,
+      });
+
+      // update UI/cart context so site behaves same as logged-in
+      addToCart({
+        ...cartItem,
+        id: product._id,
       });
       toggleDrawer(true);
-    } catch (err) {
-      console.error("Add to cart failed:", err);
-      alert("Failed to add item to cart. Please try again.");
     }
   };
 
-  const handleBuyNow = () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-    openModal(<PincodeModal />);
+  // ----- Buy now handler -----
+  // ----- Buy now handler (redirect straight to checkout) -----
+// ----- Buy now handler (redirect straight to checkout, WITHOUT opening cart drawer) -----
+const handleBuyNow = async () => {
+  const token = localStorage.getItem("token");
+
+  // validate selections similar to Add to Cart
+  if (!selected && product?.weightOptions?.length) {
+    alert("Please select a size");
+    return;
+  }
+  if (!selectedDrop && product?.cutType?.length) {
+    alert("Please select a cut type");
+    return;
+  }
+
+  const purchaseItem = {
+    id: product._id,
+    product,
+    quantity,
+    size: `${selected?.weight ?? ""}`,
+    unit: selected?.unit,
+    cutType: selectedDrop || "",
+    price: selected?.price,
+    discountPrice: selected?.discountPrice,
+    image: product?.images?.[0],
+    weightOptionId: selected?._id,
+    title: { en: product?.name, ta: product?.tamilName },
   };
+
+  // Save a snapshot so checkout can prefill (optional but helpful)
+  try {
+    localStorage.setItem(
+      "pendingCheckout",
+      JSON.stringify({
+        contactInfo: "",
+        mobileInfo: "",
+        shippingFirstName: "",
+        shippingLastName: "",
+        shippingAddress: "",
+        shippingCity: "",
+        shippingState: "",
+        shippingPinCode: "",
+        total: (selected?.price || 0) * quantity,
+        cartItems: [purchaseItem],
+        buyNow: true, // flag to indicate direct buy-now flow
+      })
+    );
+  } catch (e) {
+    console.warn("Could not save pending checkout:", e);
+  }
+
+  if (token) {
+    // Logged-in: attempt to add to server cart (fire-and-forget), but DO NOT update client cart UI
+    try {
+      await addToCartAPI(product._id, quantity, selected?.price, selected?._id);
+    } catch (err) {
+      console.warn("addToCartAPI failed for BuyNow (continuing):", err);
+    }
+
+    // Do NOT call addToCart(...) or toggleDrawer(true) here — that opens the drawer.
+    navigate("/checkout");
+  } else {
+    // Guest: merge into guest_cart (localStorage) but do NOT call addToCart or open drawer
+    try {
+      mergeGuestCartItem({
+        ...purchaseItem,
+        id: product._id,
+      });
+    } catch (err) {
+      console.warn("Failed to merge guest cart for BuyNow:", err);
+    }
+
+    // Do NOT call addToCart(...) or toggleDrawer(true) here — that opens the drawer.
+    navigate("/checkout");
+  }
+};
+
+
 
   return (
     <>
       <Navbar />
-      
+
       <div className="flex flex-col md:flex-row lg:flex-row justify-evenly gap-3 mt-5 lg:p-10 md:p-10 p-3">
         <div className="lg:w-3/4 md:w-3/4 lg:px-10 flex flex-col gap-8 w-full">
           {/* Main Image */}
@@ -192,7 +311,7 @@ function PDPsec1() {
                         : "bg-transparent text-black border-gray-400"
                     }`}
                   >
-                    {opt.weight} g
+                    {opt.weight} {opt.unit}
                   </button>
                 ))}
               </div>
@@ -269,11 +388,7 @@ function PDPsec1() {
                   <FaBook />
                   <p className="text-base font-semibold">Description</p>
                 </div>
-                {openDescription ? (
-                  <FaChevronUp size={15} />
-                ) : (
-                  <FaChevronDown size={15} />
-                )}
+                {openDescription ? <FaChevronUp size={15} /> : <FaChevronDown size={15} />}
               </div>
               {openDescription && (
                 <ul className="mt-2 ml-8 list-disc text-gray-600">

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Phone,
   Mail,
@@ -22,48 +22,75 @@ const Navbar = () => {
   const { toggleDrawer } = useCart();
   const [cartCount, setCartCount] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [userInitial, setUserInitial] = useState(null);
 
-  const clearAuthFromStorage = () => {
-    // remove auth-related keys
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    // reset any UI that depends on auth
-    setCartCount(0);
-  };
+  // ---------- Guest cart helpers ----------
+  const getGuestCart = useCallback(() => {
+    try {
+      const raw = localStorage.getItem("guest_cart");
+      return raw ? JSON.parse(raw) : [];
+    } catch (err) {
+      console.error("Error parsing guest_cart:", err);
+      return [];
+    }
+  }, []);
 
-  const handleInvalidToken = (msg) => {
-    // you can log msg or show a toast here if you want
-    clearAuthFromStorage();
-  };
+  const getGuestCartCount = useCallback(() => {
+    const cart = getGuestCart();
+    return Array.isArray(cart) ? cart.length : 0;
+  }, [getGuestCart]);
 
-  const fetchCart = async () => {
+  const updateGuestCartCount = useCallback(() => {
+    setCartCount(getGuestCartCount());
+  }, [getGuestCartCount]);
+
+  // ---------- User initial helpers ----------
+  const updateUserInitialFromStorage = useCallback(() => {
+    const userStr = localStorage.getItem("user");
+    if (!userStr) {
+      setUserInitial(null);
+      return;
+    }
+    try {
+      const user = JSON.parse(userStr);
+      const name = user?.name || user?.fullName || user?.username;
+      if (name && typeof name === "string" && name.length > 0) {
+        setUserInitial(name.charAt(0).toUpperCase());
+      } else {
+        setUserInitial(null);
+      }
+    } catch (err) {
+      setUserInitial(null);
+    }
+  }, []);
+
+  // ---------- Server cart fetch ----------
+  const fetchCart = useCallback(async () => {
     try {
       const res = await getCartByUserId();
 
-      // Handle various possible server shapes:
-      // 1) { message: "Invalid or expired token" }
-      // 2) { success: false, message: "Invalid or expired token" }
-      // 3) axios error caught in catch() (handled below)
+      // Normalize message
       const message =
         res?.message ?? res?.data?.message ?? (res?.data && res.data.message);
 
       if (
         message &&
+        typeof message === "string" &&
         message.toLowerCase().includes("invalid") &&
         message.toLowerCase().includes("expired")
       ) {
-        handleInvalidToken(message);
+        // token invalid/expired -> clear auth and fallback to guest cart
+        clearAuthFromStorage();
         return;
       }
 
+      // Prefer structured response: res.data.items or res.data
       if (res?.success) {
         setCartCount(res.data?.items?.length || 0);
       } else {
-        // If API didn't return success but didn't say invalid token, fallback:
-        setCartCount(res?.data?.items?.length || 0);
+        setCartCount(res?.data?.items?.length ?? res?.data?.length ?? 0);
       }
     } catch (err) {
-      // If using axios / fetch, server could return error response with message
       const errMsg =
         (err?.response && (err.response.data?.message || err.response.data?.error)) ||
         err?.message ||
@@ -74,18 +101,88 @@ const Navbar = () => {
         errMsg.toLowerCase().includes("invalid") &&
         errMsg.toLowerCase().includes("expired")
       ) {
-        handleInvalidToken(errMsg);
+        clearAuthFromStorage();
         return;
       }
 
       console.error("Failed to fetch cart:", err);
+      // On network error, fallback to guest cart if no token
+      const token = localStorage.getItem("token");
+      if (!token) {
+        updateGuestCartCount();
+      }
     }
-  };
+  }, [updateGuestCartCount]);
 
-  useEffect(() => {
+  // ---------- clear auth ----------
+  const clearAuthFromStorage = useCallback(() => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    // After clearing auth show guest cart count
+    updateGuestCartCount();
+    setUserInitial(null);
+    // notify same-tab listeners
+    try {
+      window.dispatchEvent(new Event("authChanged"));
+    } catch (e) {
+      /* ignore */
+    }
+  }, [updateGuestCartCount]);
+
+  // ---------- update cart count depending on auth ----------
+  const updateCartCountBasedOnAuth = useCallback(() => {
     const token = localStorage.getItem("token");
-    if (token) fetchCart();
-  }, []);
+    if (token) {
+      // logged-in => fetch server cart
+      fetchCart();
+    } else {
+      // guest => read guest_cart from localStorage
+      updateGuestCartCount();
+    }
+  }, [fetchCart, updateGuestCartCount]);
+
+  // ---------- initial setup & listeners ----------
+  useEffect(() => {
+    // initialize user initial and cart count
+    updateUserInitialFromStorage();
+    updateCartCountBasedOnAuth();
+
+    // storage event (other tabs)
+    const onStorage = (e) => {
+      // if guest_cart changed in another tab, update guest cart count
+      if (!e) {
+        // fallback - refresh both
+        updateUserInitialFromStorage();
+        updateCartCountBasedOnAuth();
+        return;
+      }
+
+      if (e.key === "guest_cart") {
+        updateGuestCartCount();
+      } else if (e.key === "user" || e.key === "token") {
+        updateUserInitialFromStorage();
+        updateCartCountBasedOnAuth();
+      }
+    };
+
+    // custom event for same-tab auth changes
+    const onAuthChanged = () => {
+      updateUserInitialFromStorage();
+      updateCartCountBasedOnAuth();
+    };
+
+    window.addEventListener("storage", onStorage);
+    window.addEventListener("authChanged", onAuthChanged);
+
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("authChanged", onAuthChanged);
+    };
+  }, [
+    updateUserInitialFromStorage,
+    updateCartCountBasedOnAuth,
+    updateGuestCartCount,
+  ]);
 
   return (
     <header className="w-full">
@@ -101,7 +198,7 @@ const Navbar = () => {
             <span className="text-gray-600">customercare@iraichikadai.com</span>
           </div>
         </div>
-        <div className="flex-1 flex justify-end">
+        <div className="flex-1 flex justify-end mr-1">
           <LocationDropdown />
         </div>
       </div>
@@ -176,7 +273,14 @@ const Navbar = () => {
             className="p-2 bg-[#BC141B91] border border-[#FFFFFF30] rounded-full"
             aria-label="Account"
           >
-            <User size={18} />
+            {/* show initial if logged in, else default icon */}
+            {userInitial ? (
+              <div className="w-5 h-5 flex items-center justify-center rounded-full text-[#ffffff] font-bold">
+                {userInitial}
+              </div>
+            ) : (
+              <User size={18} />
+            )}
           </button>
         </div>
 
@@ -244,9 +348,16 @@ const Navbar = () => {
                   navigate("/login");
                 }
               }}
-              className="p-2 bg-[#BC141B91] border border-[#FFFFFF30] rounded-full"
+              className="p-2 bg-[#BC141B91] border border-[#FFFFFF30] rounded-full cursor-pointer"
             >
-              <User className="cursor-pointer " size={18} />
+              {/* show initial if logged in, else default icon */}
+              {userInitial ? (
+                <div className="w-5 h-5 flex items-center justify-center rounded-full  text-[#ffffff] font-bold">
+                  {userInitial}
+                </div>
+              ) : (
+                <User className="cursor-pointer " size={18} />
+              )}
             </div>
 
             <CartDrawer />

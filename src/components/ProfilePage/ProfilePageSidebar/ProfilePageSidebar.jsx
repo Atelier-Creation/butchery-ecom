@@ -1,34 +1,40 @@
 import "./ProfilePageSidebar.css";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Toast } from "react-bootstrap";
 import { EllipsisVertical } from "lucide-react";
 
 function ProfilePageSidebar({ setActiveSection, activeSection }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
   const isActive = (section) =>
     section === activeSection
       ? "profile-page-sidebar-icon-text active"
       : "profile-page-sidebar-icon-text";
+
   const [profiledata, setProfileData] = useState({
     name: "",
     email: "",
   });
+
   useEffect(() => {
     localStorage.getItem("user") &&
       console.log(localStorage.getItem("authUser"));
     setProfileData(JSON.parse(localStorage.getItem("user")));
-  }, [setProfileData]);
+  }, []);
 
   const navigate = useNavigate();
 
   const handleSignOut = () => {
-    localStorage.removeItem("user"); // or clear all: localStorage.clear();
+    localStorage.removeItem("user");
     localStorage.removeItem("token");
-    // clearWishlist(); 
-    // clearCart(); 
-    alert("Signed out successfully"); // Optional
-    navigate("/"); // Redirect to login page or home
+    localStorage.removeItem("user_cart");
+    setShowLogoutModal(true); // show modal instead of alert
+  };
+
+  const handleCloseModal = () => {
+    setShowLogoutModal(false);
+    navigate("/"); // redirect after modal closes
   };
 
   return (
@@ -38,7 +44,7 @@ function ProfilePageSidebar({ setActiveSection, activeSection }) {
         className="mobile-menu-toggle ms-2 bg-gray-200 rounded-sm"
         onClick={() => setMenuOpen(!menuOpen)}
       >
-       <EllipsisVertical/>
+        <EllipsisVertical />
       </div>
 
       {/* Sidebar items for mobile */}
@@ -51,7 +57,7 @@ function ProfilePageSidebar({ setActiveSection, activeSection }) {
               setMenuOpen(false);
             }}
           >
-            <i className="bi bi-person"></i>  
+            <i className="bi bi-person"></i>
             <h5>Account Overview</h5>
           </div>
 
@@ -107,45 +113,8 @@ function ProfilePageSidebar({ setActiveSection, activeSection }) {
           </div>
         </div>
       )}
-      {/* <div className="profile-page-sidebar-image">
-  <label htmlFor="profile-upload" style={{ cursor: "pointer" }}>
-    {profiledata?.profileUrl ? (
-      <img
-        src={profiledata.profileUrl || profileImage}
-        alt="Profile"
-        style={{ width: 100, height: 100, borderRadius: "10px" }}
-      />
-    ) : (
-      <div
-        style={{
-          width: 100,
-          height: 100,
-          borderRadius: "10px",
-          backgroundColor: getBackgroundColor(profiledata?.name),
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: "40px",
-          fontWeight: "bold",
-          color: "#888",
-        }}
-      >
-        {profiledata?.name?.[0]?.toUpperCase() || "U"}
-      </div>
-    )}
-  </label>
 
-  <input
-    type="file"
-    id="profile-upload"
-    accept="image/*"
-    style={{ display: "none" }}
-    onChange={handleImageChange}
-  />
-
-  <h4>{profiledata?.name}</h4>
-  <p>{profiledata?.email || profiledata?.phone}</p>
-</div> */}
+      {/* Desktop sidebar */}
       <div className="desktop-sidebar">
         <div className="profile-page-sidebar-individual-sec">
           <div
@@ -155,10 +124,11 @@ function ProfilePageSidebar({ setActiveSection, activeSection }) {
               setMenuOpen(false);
             }}
           >
-            <i class="bi bi-person"></i>
+            <i className="bi bi-person"></i>
             <h5>Account Overview</h5>
           </div>
         </div>
+
         <div className="profile-page-sidebar-individual-sec">
           <div
             className={isActive("orders")}
@@ -167,10 +137,11 @@ function ProfilePageSidebar({ setActiveSection, activeSection }) {
               setMenuOpen(false);
             }}
           >
-            <i class="bi bi-journal-text"></i>
+            <i className="bi bi-journal-text"></i>
             <h5>My Orders</h5>
           </div>
         </div>
+
         <div className="profile-page-sidebar-individual-sec">
           <div
             className={isActive("address")}
@@ -179,10 +150,11 @@ function ProfilePageSidebar({ setActiveSection, activeSection }) {
               setMenuOpen(false);
             }}
           >
-            <i class="bi bi-geo-alt"></i>
+            <i className="bi bi-geo-alt"></i>
             <h5>Saved Addresses</h5>
           </div>
         </div>
+
         <div className="profile-page-sidebar-individual-sec">
           <div
             className={isActive("wishlist")}
@@ -195,10 +167,7 @@ function ProfilePageSidebar({ setActiveSection, activeSection }) {
             <h5>My Wishlist</h5>
           </div>
         </div>
-        <div className="profile-page-sidebar-individual-sec">
-          <div>
-          </div>
-        </div>
+
         <div className="profile-page-sidebar-individual-sec">
           <div
             className={isActive("help")}
@@ -211,10 +180,7 @@ function ProfilePageSidebar({ setActiveSection, activeSection }) {
             <h5>Need Help</h5>
           </div>
         </div>
-        <div className="profile-page-sidebar-individual-sec">
-          <div>
-          </div>
-        </div>
+
         <div
           className="profile-page-sidebar-individual-sec"
           onClick={handleSignOut}
@@ -226,6 +192,27 @@ function ProfilePageSidebar({ setActiveSection, activeSection }) {
           </div>
         </div>
       </div>
+
+      {/* Logout Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-1000">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-80">
+            <h2 className="text-lg font-semibold text-gray-800">Signed Out</h2>
+            <p className="text-gray-600 mt-2">
+              You have been logged out successfully.
+            </p>
+
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={handleCloseModal}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

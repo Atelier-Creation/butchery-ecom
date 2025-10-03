@@ -123,40 +123,41 @@ const Collectiongrid = () => {
     startIndex,
     startIndex + ITEMS_PER_PAGE
   );
-const handleSortChange = (option) => {
-  let sorted = [...(filteredProducts.length ? filteredProducts : products)];
 
-  switch (option) {
-    case "Price: Low to High":
-      sorted.sort(
-        (a, b) =>
-          (a.fullData.weightOptions?.[0]?.price || 0) -
-          (b.fullData.weightOptions?.[0]?.price || 0)
-      );
-      break;
+  const handleSortChange = (option) => {
+    let sorted = [...(filteredProducts.length ? filteredProducts : products)];
 
-    case "Price: High to Low":
-      sorted.sort(
-        (a, b) =>
-          (b.fullData.weightOptions?.[0]?.price || 0) -
-          (a.fullData.weightOptions?.[0]?.price || 0)
-      );
-      break;
+    switch (option) {
+      case "Price: Low to High":
+        sorted.sort(
+          (a, b) =>
+            (a.fullData.weightOptions?.[0]?.price || 0) -
+            (b.fullData.weightOptions?.[0]?.price || 0)
+        );
+        break;
 
-    case "Newest First":
-      sorted.sort(
-        (a, b) =>
-          new Date(b.fullData.createdAt) - new Date(a.fullData.createdAt)
-      );
-      break;
+      case "Price: High to Low":
+        sorted.sort(
+          (a, b) =>
+            (b.fullData.weightOptions?.[0]?.price || 0) -
+            (a.fullData.weightOptions?.[0]?.price || 0)
+        );
+        break;
 
-    default:
-      // "Best selling" or default - no sorting or custom logic later
-      break;
-  }
+      case "Newest First":
+        sorted.sort(
+          (a, b) =>
+            new Date(b.fullData.createdAt) - new Date(a.fullData.createdAt)
+        );
+        break;
 
-  setFilteredProducts(sorted);
-};
+      default:
+        // "Best selling" or default - no sorting or custom logic later
+        break;
+    }
+
+    setFilteredProducts(sorted);
+  };
 
   // ✅ Quick Shop modal
   const handleBuyNow = (productId) => {
@@ -219,15 +220,18 @@ const handleSortChange = (option) => {
                   className="rounded-lg shadow hover:shadow-md transition overflow-hidden relative group cursor-pointer bg-white"
                 >
                   <div className="relative w-full aspect-square overflow-hidden">
+                    {/* Hidden on mobile (<= md) */}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         handleBuyNow(item.id);
                       }}
-                      className="absolute inset-x-4 bottom-4 bg-red-800 text-white text-sm py-2 rounded-md opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-1 z-20"
+                      className="hidden md:inline-flex absolute inset-x-4 bottom-4 bg-red-800 text-white text-sm py-2 rounded-md opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-1 z-20"
+                      aria-hidden="false"
                     >
                       Quick Shop <Eye size={14} />
                     </button>
+
                     <img
                       src={item.img}
                       alt={item.title.en}
