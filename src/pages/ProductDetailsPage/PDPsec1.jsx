@@ -55,10 +55,18 @@ function PDPsec1() {
   useEffect(() => {
     if (product?.weightOptions?.length) {
       setSelected(product.weightOptions[0]);
+    } else {
+      setSelected(null);
     }
+
     if (product?.images?.length) {
       setMainImage(product.images[0]);
+    } else {
+      setMainImage("");
     }
+
+    // Reset cut selection when product changes (avoid stale value)
+    setSelectedDrop("");
   }, [product]);
 
   const increase = () => {
@@ -120,22 +128,30 @@ function PDPsec1() {
     const token = localStorage.getItem("token");
 
     const cartItem = {
-      ...product,
+      // keep minimal snapshot data needed by UI rather than full product where possible
+      productId: product?._id,
       quantity,
-      size: `${selected?.weight ?? ""} g`,
+      size: `${selected?.weight ?? ""}${selected?.unit ? ` ${selected.unit}` : ""}`,
+      unit: selected?.unit ?? "",
       cutType: selectedDrop || "",
-      price: selected?.price ?? selected?.price,
-      discountPrice: selected?.discountPrice ?? selected?.discountPrice,
-      id: product?._id,
+      price: selected?.price ?? 0,
+      discountPrice: selected?.discountPrice ?? 0,
       title: { en: product?.name, ta: product?.tamilName },
-      image: product?.images?.[0],
-      weightOptionId: selected?._id,
+      image: product?.images?.[0] || "",
+      weightOptionId: selected?._id || null,
     };
 
     if (token) {
       // logged-in flow: call API and also update client cart
       try {
-        await addToCartAPI(product._id, quantity, selected.price, selected._id);
+        // addToCartAPI signature: (productId, quantity, price, weightOptionId, unit)
+        await addToCartAPI(
+          product._id,
+          quantity,
+          selected?.price ?? 0,
+          selected?._id ?? null,
+          selected?.unit ?? null
+        );
       } catch (err) {
         console.warn("addToCartAPI failed (continuing with local UI update):", err);
         // don't stop the UI experience — continue to update client cart
@@ -164,85 +180,86 @@ function PDPsec1() {
     }
   };
 
-  // ----- Buy now handler -----
-  // ----- Buy now handler (redirect straight to checkout) -----
-// ----- Buy now handler (redirect straight to checkout, WITHOUT opening cart drawer) -----
-const handleBuyNow = async () => {
-  const token = localStorage.getItem("token");
+  // ----- Buy now handler (redirect to checkout) -----
+  const handleBuyNow = async () => {
+    const token = localStorage.getItem("token");
 
-  // validate selections similar to Add to Cart
-  if (!selected && product?.weightOptions?.length) {
-    alert("Please select a size");
-    return;
-  }
-  if (!selectedDrop && product?.cutType?.length) {
-    alert("Please select a cut type");
-    return;
-  }
+    // validate selections similar to Add to Cart
+    if (!selected && product?.weightOptions?.length) {
+      alert("Please select a size");
+      return;
+    }
+    if (!selectedDrop && product?.cutType?.length) {
+      alert("Please select a cut type");
+      return;
+    }
 
-  const purchaseItem = {
-    id: product._id,
-    product,
-    quantity,
-    size: `${selected?.weight ?? ""}`,
-    unit: selected?.unit,
-    cutType: selectedDrop || "",
-    price: selected?.price,
-    discountPrice: selected?.discountPrice,
-    image: product?.images?.[0],
-    weightOptionId: selected?._id,
-    title: { en: product?.name, ta: product?.tamilName },
+    const purchaseItem = {
+      id: product._id,
+      product, // optional full product snapshot
+      quantity,
+      size: `${selected?.weight ?? ""}${selected?.unit ? ` ${selected.unit}` : ""}`,
+      unit: selected?.unit ?? "",
+      cutType: selectedDrop || "",
+      price: selected?.price ?? 0,
+      discountPrice: selected?.discountPrice ?? 0,
+      image: product?.images?.[0] || "",
+      weightOptionId: selected?._id || null,
+      title: { en: product?.name, ta: product?.tamilName },
+    };
+
+    // Save a snapshot so checkout can prefill (optional but helpful)
+    try {
+      localStorage.setItem(
+        "pendingCheckout",
+        JSON.stringify({
+          contactInfo: "",
+          mobileInfo: "",
+          shippingFirstName: "",
+          shippingLastName: "",
+          shippingAddress: "",
+          shippingCity: "",
+          shippingState: "",
+          shippingPinCode: "",
+          total: (selected?.price || 0) * quantity,
+          cartItems: [purchaseItem],
+          buyNow: true, // flag to indicate direct buy-now flow
+        })
+      );
+    } catch (e) {
+      console.warn("Could not save pending checkout:", e);
+    }
+
+    if (token) {
+      // Logged-in: attempt to add to server cart (fire-and-forget), but DO NOT update client cart UI
+      try {
+        await addToCartAPI(
+          product._id,
+          quantity,
+          selected?.price ?? 0,
+          selected?._id ?? null,
+          selected?.unit ?? null
+        );
+      } catch (err) {
+        console.warn("addToCartAPI failed for BuyNow (continuing):", err);
+      }
+
+      // redirect to checkout without opening drawer
+      navigate("/checkout");
+    } else {
+      // Guest: merge into guest_cart (localStorage) but do NOT call addToCart or open drawer
+      try {
+        mergeGuestCartItem({
+          ...purchaseItem,
+          id: product._id,
+        });
+      } catch (err) {
+        console.warn("Failed to merge guest cart for BuyNow:", err);
+      }
+
+      navigate("/checkout");
+    }
   };
-
-  // Save a snapshot so checkout can prefill (optional but helpful)
-  try {
-    localStorage.setItem(
-      "pendingCheckout",
-      JSON.stringify({
-        contactInfo: "",
-        mobileInfo: "",
-        shippingFirstName: "",
-        shippingLastName: "",
-        shippingAddress: "",
-        shippingCity: "",
-        shippingState: "",
-        shippingPinCode: "",
-        total: (selected?.price || 0) * quantity,
-        cartItems: [purchaseItem],
-        buyNow: true, // flag to indicate direct buy-now flow
-      })
-    );
-  } catch (e) {
-    console.warn("Could not save pending checkout:", e);
-  }
-
-  if (token) {
-    // Logged-in: attempt to add to server cart (fire-and-forget), but DO NOT update client cart UI
-    try {
-      await addToCartAPI(product._id, quantity, selected?.price, selected?._id);
-    } catch (err) {
-      console.warn("addToCartAPI failed for BuyNow (continuing):", err);
-    }
-
-    // Do NOT call addToCart(...) or toggleDrawer(true) here — that opens the drawer.
-    navigate("/checkout");
-  } else {
-    // Guest: merge into guest_cart (localStorage) but do NOT call addToCart or open drawer
-    try {
-      mergeGuestCartItem({
-        ...purchaseItem,
-        id: product._id,
-      });
-    } catch (err) {
-      console.warn("Failed to merge guest cart for BuyNow:", err);
-    }
-
-    // Do NOT call addToCart(...) or toggleDrawer(true) here — that opens the drawer.
-    navigate("/checkout");
-  }
-};
-
-
 
   return (
     <>
@@ -286,12 +303,13 @@ const handleBuyNow = async () => {
             {/* Dynamic Price */}
             <div className="flex flex-row gap-2 items-center">
               <p className="text-lg font-semibold">
-                Rs. {selected?.price ?? product?.weightOptions?.[0]?.price}
+                Rs. {selected?.price ?? product?.weightOptions?.[0]?.price ?? "0.00"}
               </p>
               <p className="text-gray-500 line-through">
                 Rs.{" "}
                 {selected?.discountPrice ??
-                  product?.weightOptions?.[0]?.discountPrice}
+                  product?.weightOptions?.[0]?.discountPrice ??
+                  ""}
               </p>
               <button className="bg-[#EE1c25] text-white text-base px-5 py-0.5 rounded-md">
                 sale
@@ -317,21 +335,24 @@ const handleBuyNow = async () => {
               </div>
             </div>
 
-            <div className="flex flex-col gap-2 w-50">
-              <label className="font-medium text-gray-700">Type of Cut</label>
-              <select
-                value={selectedDrop}
-                onChange={(e) => setSelectedDrop(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 bg-white text-gray-800"
-              >
-                <option value="">Please select</option>
-                {product?.cutType?.map((cut) => (
-                  <option key={cut} value={cut}>
-                    {cut}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {/* Render Type of Cut only when cutType exists */}
+            {product?.cutType?.length > 0 && (
+              <div className="flex flex-col gap-2 w-50">
+                <label className="font-medium text-gray-700">Type of Cut</label>
+                <select
+                  value={selectedDrop}
+                  onChange={(e) => setSelectedDrop(e.target.value)}
+                  className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 bg-white text-gray-800"
+                >
+                  <option value="">Please select</option>
+                  {product.cutType.map((cut) => (
+                    <option key={cut} value={cut}>
+                      {cut}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             <div>
               <p className="text-base">Quantity</p>

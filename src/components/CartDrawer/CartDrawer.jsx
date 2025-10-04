@@ -187,7 +187,7 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
                 <div className="flex-grow-1 flex flex-col gap-1">
                   <div className="text-base font-semibold">{getDisplayName(item)}</div>
 
-                  {item.weight && <p className="text-muted mb-1">{item.weight} g</p>}
+                  {item.weight && <p className="text-muted mb-1">{item.weight} {item.unit}</p>}
 
                   <div className="flex items-center justify-between">
                     <span className="fw-semibold text-[#EE1c25]">

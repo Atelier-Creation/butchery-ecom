@@ -437,6 +437,7 @@ function PaymentPage() {
             name: p.product?.name || p.name,
             price: p.price,
             quantity: p.quantity,
+            unit: p.unit || "",
             weight: p.weight,
           }));
 

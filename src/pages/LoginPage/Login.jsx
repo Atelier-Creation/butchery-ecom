@@ -4,9 +4,7 @@ import MobileFooter from "../MobileDesign/MobileFooter";
 import Navbar from "../MobileDesign/Navbar";
 import { loginUser } from "../../api/authApi";
 import { addToCartAPI } from "../../api/cartApi";
-import { getProducts } from "../../api/productApi"; // used to resolve SKUs -> _id
-
-// ✅ Import Lucide icons
+import { getProducts } from "../../api/productApi";
 import { Eye, EyeClosed } from "lucide-react";
 
 function Login() {
@@ -16,13 +14,14 @@ function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // 👁️ toggle state
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // cache of products for resolution
   const [productsCache, setProductsCache] = useState(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
+  // Detect mobile
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     handleResize();
@@ -30,31 +29,26 @@ function Login() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Parse postLoginRedirect from query params (preferred) or fallback to localStorage (legacy)
+  // Handle redirect after login
   const query = React.useMemo(() => new URLSearchParams(location.search), [location.search]);
   const paramRedirect = query.get("postLoginRedirect");
-  // keep this in state so subsequent code can access it
   const [postLoginRedirect] = useState(paramRedirect || localStorage.getItem("postLoginRedirect") || null);
 
-  // load product catalog once and cache — used to resolve SKUs/id->ObjectId
-  const loadProductsCache = useCallback(
-    async () => {
-      if (productsCache) return productsCache;
-      try {
-        const res = await getProducts();
-        const products = (res && (res.data || res)) || [];
-        setProductsCache(products);
-        return products;
-      } catch (err) {
-        console.warn("Failed to fetch products for SKU resolution:", err);
-        setProductsCache([]);
-        return [];
-      }
-    },
-    [productsCache]
-  );
+  // Load products for SKU -> _id resolution
+  const loadProductsCache = useCallback(async () => {
+    if (productsCache) return productsCache;
+    try {
+      const res = await getProducts();
+      const products = (res && (res.data || res)) || [];
+      setProductsCache(products);
+      return products;
+    } catch (err) {
+      console.warn("Failed to fetch products for SKU resolution:", err);
+      setProductsCache([]);
+      return [];
+    }
+  }, [productsCache]);
 
-  // Helper: read guest cart from localStorage
   const getGuestCart = useCallback(() => {
     try {
       const raw = localStorage.getItem("guest_cart");
@@ -65,10 +59,8 @@ function Login() {
     }
   }, []);
 
-  // Helper: quick ObjectId check
   const isObjectId = (id) => typeof id === "string" && /^[a-fA-F0-9]{24}$/.test(id);
 
-  // Try to resolve many possible product identifier fields to a real product._id
   const resolveProductObjectId = async (identifier) => {
     if (!identifier) return null;
     if (isObjectId(identifier)) return identifier;
@@ -79,22 +71,21 @@ function Login() {
 
     const found = products.find((p) => {
       if (!p) return false;
-      if (isObjectId(p._id) && p._id === identifier) return true;
-      if (p.productId && norm(p.productId) === idLower) return true;
-      if (p.id && norm(p.id) === idLower) return true;
-      if (p.SKU && norm(p.SKU) === idLower) return true;
-      if (p.sku && norm(p.sku) === idLower) return true;
-      if (p.name && norm(p.name) === idLower) return true;
-      if (p.tamilName && norm(p.tamilName) === idLower) return true;
-      if (p.slug && norm(p.slug) === idLower) return true;
-      return false;
+      return (
+        (isObjectId(p._id) && p._id === identifier) ||
+        (p.productId && norm(p.productId) === idLower) ||
+        (p.id && norm(p.id) === idLower) ||
+        (p.SKU && norm(p.SKU) === idLower) ||
+        (p.sku && norm(p.sku) === idLower) ||
+        (p.name && norm(p.name) === idLower) ||
+        (p.tamilName && norm(p.tamilName) === idLower) ||
+        (p.slug && norm(p.slug) === idLower)
+      );
     });
 
-    if (found && found._id) return found._id;
-    return null;
+    return found?._id || null;
   };
 
-  // Map a guest-cart item into addToCartAPI args (with resolution)
   const mapGuestItemToAddArgsWithResolve = async (item) => {
     const rawPid =
       item?.product?._id ||
@@ -119,7 +110,6 @@ function Login() {
     return { productId: resolvedPid, quantity, price, weightOptionId, rawPid };
   };
 
-  // Merge guest cart into server cart (resolving product ids when needed)
   const mergeGuestCartToServer = async () => {
     const guestCart = getGuestCart();
     if (!guestCart || guestCart.length === 0) return { successCount: 0, failCount: 0, errors: [] };
@@ -135,11 +125,7 @@ function Login() {
 
         if (!productId) {
           failCount++;
-          errors.push({
-            item,
-            reason: `Could not resolve product id for identifier "${rawPid ?? "unknown"}"`,
-          });
-          console.warn("Skipping guest cart item (unresolved):", item, { rawPid });
+          errors.push({ item, reason: `Could not resolve product id for "${rawPid ?? "unknown"}"` });
           continue;
         }
 
@@ -148,7 +134,6 @@ function Login() {
       } catch (err) {
         failCount++;
         errors.push({ item, err: err?.message || err });
-        console.warn("Failed to merge guest cart item", { item, err });
       }
     }
 
@@ -167,52 +152,27 @@ function Login() {
       const response = await loginUser({ email, password });
 
       if (response?.token) {
-        // store token + user first so merge API calls can use token if reading from localStorage
         localStorage.setItem("token", response.token);
         localStorage.setItem("user", JSON.stringify(response.user));
 
-        // If guest cart exists, attempt merge
         const guestCart = getGuestCart();
         if (guestCart && guestCart.length > 0) {
           try {
-            const result = await mergeGuestCartToServer();
-            console.info(
-              `Guest cart merge completed: ${result.successCount} succeeded, ${result.failCount} failed.`,
-              result.errors.length ? result.errors : ""
-            );
-            // After attempt, remove guest_cart
+            await mergeGuestCartToServer();
             localStorage.removeItem("guest_cart");
-            try {
-              window.dispatchEvent(new Event("guestCartChanged"));
-            } catch (e) {}
-          } catch (mergeErr) {
-            console.warn("Guest cart merge encountered errors", mergeErr);
+            window.dispatchEvent(new Event("guestCartChanged"));
+          } catch {
             localStorage.removeItem("guest_cart");
-            try {
-              window.dispatchEvent(new Event("guestCartChanged"));
-            } catch (e) {}
+            window.dispatchEvent(new Event("guestCartChanged"));
           }
         }
 
-        // Redirect handling:
-        // Prefer query param value (postLoginRedirect) provided to login page.
-        if (postLoginRedirect) {
-          // clear legacy storage key if present to avoid confusion later
-          try {
-            localStorage.removeItem("postLoginRedirect");
-          } catch (e) {}
-          // navigate to provided path
-          navigate(postLoginRedirect);
-        } else {
-          // legacy fallback: localStorage may have stored redirect earlier (old behavior)
-          const legacy = localStorage.getItem("postLoginRedirect");
-          if (legacy) {
-            localStorage.removeItem("postLoginRedirect");
-            navigate(legacy);
-          } else {
-            navigate("/");
-          }
-        }
+        // Show login modal
+        setShowLoginModal(true);
+        setTimeout(() => {
+          setShowLoginModal(false);
+          navigate(postLoginRedirect || "/");
+        }, 2000);
       } else {
         setError("Invalid login response");
       }
@@ -224,7 +184,6 @@ function Login() {
     }
   };
 
-  // Build create-account link with current query string preserved so postLoginRedirect flows through
   const createAccountHref = `/create-account${location.search || ""}`;
 
   return (
@@ -245,7 +204,6 @@ function Login() {
           className="py-3 w-full pl-2 border border-gray-200 focus:border-gray-200 rounded-md"
         />
 
-        {/* 👁️ Password field with eye icon */}
         <div className="relative w-full">
           <input
             type={showPassword ? "text" : "password"}
@@ -273,7 +231,6 @@ function Login() {
           </div>
 
           <div className="text-end text-[#EE1c25] w-full">
-            {/* preserve query params when navigating to create-account so postLoginRedirect is not lost */}
             <a href={createAccountHref} className="border-b text-end cursor-pointer">
               Create account
             </a>
@@ -292,6 +249,51 @@ function Login() {
       </div>
 
       <MobileFooter />
+
+      {/* Bright Login Modal */}
+      {showLoginModal && (
+        <div className="bright-modal-root fixed inset-0 flex items-center justify-center z-50" aria-live="polite">
+          <div className="bright-modal-backdrop" />
+          <div className="bright-modal-card">
+            <div className="bright-top">
+              <div className="bright-badge">
+                <svg width="44" height="44" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="12" fill="rgba(255,255,255,0.06)" />
+                  <path
+                    d="M20 6L9 17l-5-5"
+                    stroke="white"
+                    strokeWidth="2.4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+            </div>
+            <div className="bright-body">
+              <h3 className="bright-title">Signed in</h3>
+              <p className="bright-desc">
+                You have successfully logged in. Redirecting...
+                <span className="bright-dots"> • • •</span>
+              </p>
+            </div>
+          </div>
+
+          <style>{`
+            :root { --accent1: #00ff0dff; --accent2: #75ff66ff; }
+            .bright-modal-root { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+            .bright-modal-backdrop { position: absolute; inset:0; background: radial-gradient(circle at 10% 10%, rgba(255,95,109,0.06), transparent 18%), radial-gradient(circle at 90% 90%, rgba(255,217,102,0.04), transparent 22%), rgba(4,6,12,0.62); backdrop-filter: blur(6px) saturate(1.12); }
+            .bright-modal-card { position: relative; z-index: 12; width: 360px; max-width: calc(100% - 36px); background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border-radius: 16px; padding: 18px; display:flex; align-items:center; gap:14px; box-shadow:0 18px 40px rgba(20,28,40,0.6), 0 4px 18px rgba(255,149,97,0.06); border:1px solid rgba(255,255,255,0.04); animation: brightPop 260ms cubic-bezier(.2,.95,.2,1); }
+            @keyframes brightPop { from { opacity:0; transform:translateY(-12px) scale(.98) } to { opacity:1; transform:translateY(0) scale(1) } }
+            .bright-top { display:flex; flex-direction: column; align-items:center; gap:12px; }
+            .bright-badge { width:74px; height:74px; border-radius:999px; display:grid; place-items:center; background:linear-gradient(180deg,var(--accent1),var(--accent2)); box-shadow:0 10px 28px rgba(255,121,97,0.18),0 0 30px rgba(255,153,102,0.12),inset 0 -6px 18px rgba(255,255,255,0.06); border:2px solid rgba(255,255,255,0.08); }
+            .bright-body { flex:1; padding-left:8px; }
+            .bright-title { margin:0; font-size:19px; font-weight:700; color:white; text-shadow:0 6px 18px rgba(0,0,0,0.45); letter-spacing:0.2px; }
+            .bright-desc { margin:6px 0 0; font-size:13px; color:rgba(255,255,255,0.92); opacity:0.95; }
+            .bright-dots { margin-left:8px; color: rgba(255,255,255,0.9); animation:dotsBright 2s steps(3,end) infinite; }
+            @keyframes dotsBright { 0% { content:'•'} 33% { content:'• •'} 66% { content:'• • •'} 100% { content:'•'} }
+          `}</style>
+        </div>
+      )}
     </div>
   );
 }

@@ -51,7 +51,7 @@ const MobileCategorySlider = () => {
         Categories
       </p>
       <p className="py-1 mb-6 text-xl font-bold lg:text-3xl">
-        Enjoy Fresh Meals With The Best Quality
+        Enjoy Fresh Meat With The Best Quality
       </p>
 
       {/* Mobile View */}
