@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import RecommendedSlider from "./cart-drawer-recommend";
 import "./CartDrawer.css";
-import { NotebookPen, TruckIcon, X, Trash2 } from "lucide-react"; // <-- added Trash2
+import { NotebookPen, TruckIcon, X, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "./CartContext";
 import {
@@ -16,6 +16,9 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
 
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  // ✅ check if user logged in
+  const isLoggedIn = !!localStorage.getItem("token") || !!localStorage.getItem("user_id");
 
   // Calculate total
   const total = cartItems.reduce(
@@ -51,21 +54,26 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
     return "Untitled";
   };
 
-  // Fetch cart from backend on drawer open
+  // ✅ Fetch cart depending on login state
   useEffect(() => {
     const fetchCart = async () => {
       setLoading(true);
       try {
-        const localData = localStorage.getItem("user_cart");
-        if (localData) {
-          setCartItems(JSON.parse(localData));
-          setLoading(false);
-        }
-
-        const data = await getCartByUserId();
-        if (data?.data?.items) {
-          setCartItems(data.data.items);
-          localStorage.setItem("user_cart", JSON.stringify(data.data.items));
+        if (!isLoggedIn) {
+          // Guest user → localStorage cart
+          const localData = localStorage.getItem("guest_cart");
+          if (localData) {
+            setCartItems(JSON.parse(localData));
+          } else {
+            setCartItems([]);
+          }
+        } else {
+          // Logged-in user → backend cart
+          const data = await getCartByUserId();
+          if (data?.data?.items) {
+            setCartItems(data.data.items);
+            localStorage.setItem("user_cart", JSON.stringify(data.data.items));
+          }
         }
       } catch (err) {
         console.error("Failed to fetch cart", err);
@@ -75,19 +83,25 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
     };
 
     if (drawerOpen) fetchCart();
-  }, [drawerOpen]);
+  }, [drawerOpen, isLoggedIn]);
 
-  // Update cart item quantity via API
+  // ✅ Update quantity (handles guest + logged-in)
   const handleUpdateQuantity = async (item, delta) => {
     try {
       const newQuantity = (item.quantity || 0) + delta;
       if (newQuantity < 1) return;
-      await updateCartItemAPI(item._id, { quantity: newQuantity });
+
+      if (isLoggedIn) {
+        await updateCartItemAPI(item._id, { quantity: newQuantity });
+      }
+
       setCartItems((prev) => {
         const updated = prev.map((i) =>
           i._id === item._id ? { ...i, quantity: newQuantity } : i
         );
-        localStorage.setItem("user_cart", JSON.stringify(updated));
+
+        // store in correct localStorage
+        localStorage.setItem(isLoggedIn ? "user_cart" : "guest_cart", JSON.stringify(updated));
         return updated;
       });
     } catch (err) {
@@ -95,18 +109,20 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
     }
   };
 
-  // Remove item from cart
+  // ✅ Remove item (handles guest + logged-in)
   const handleRemove = async (item) => {
     try {
-      if (typeof onRemove === "function") {
-        await onRemove(item);
-      } else {
-        await removeFromCartAPI(item._id);
+      if (isLoggedIn) {
+        if (typeof onRemove === "function") {
+          await onRemove(item);
+        } else {
+          await removeFromCartAPI(item._id);
+        }
       }
+
       setCartItems((prev) => {
         const updated = prev.filter((i) => i._id !== item._id);
-        localStorage.setItem("user_cart", JSON.stringify(updated));
-        // Notify parent (Navbar) to refresh header/cart count
+        localStorage.setItem(isLoggedIn ? "user_cart" : "guest_cart", JSON.stringify(updated));
         if (typeof onCartChange === "function") onCartChange();
         return updated;
       });
@@ -114,7 +130,6 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
       console.error("Failed to remove item", err);
     }
   };
-
 
   const SkeletonItem = () => (
     <div className="flex gap-3 my-3 animate-pulse">
@@ -142,15 +157,17 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
         }}
       ></div>
 
-      <div className={`cart-drawer ${drawerOpen ? "open" : ""} text-gray-700 `}>
+      <div className={`cart-drawer ${drawerOpen ? "open" : ""} text-gray-700`}>
         <div className="py-5 border-b border-gray-400 flex justify-between items-center px-3">
           <h5 className="mb-0 text-lg font-medium text-gray-600">
             {cartItems.length ? "Item Added to Your Cart" : "Shopping Cart"}
           </h5>
-          <button onClick={() => {
-            toggleDrawer(false);
-            if (typeof onCartChange === "function") onCartChange();
-          }}>
+          <button
+            onClick={() => {
+              toggleDrawer(false);
+              if (typeof onCartChange === "function") onCartChange();
+            }}
+          >
             <X className="text-gray-400" />
           </button>
         </div>
@@ -183,7 +200,7 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
             </div>
           ) : (
             cartItems.map((item) => (
-              <div key={item._id} className="d-flex my-3 flex gap-3">
+              <div key={item._id || item.id} className="d-flex my-3 flex gap-3">
                 <img
                   src={getImageSrc(item)}
                   alt={getDisplayName(item)}
@@ -203,7 +220,6 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
                     <span className="fw-semibold text-[#EE1c25]">
                       ₹{item.price} X {item.quantity}
                     </span>
-                    {/* Replace Remove text with Trash icon */}
                     <button
                       className="p-1 rounded hover:bg-gray-100"
                       onClick={() => handleRemove(item)}
@@ -237,9 +253,7 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
               <span className="text-2xl">₹{total.toLocaleString()}</span>
             </div>
 
-            <div
-              className={`cart-drawer-footer p-3 ${drawerOpen ? "" : "mobile-footer-hidden"}`}
-            >
+            <div className="cart-drawer-footer p-3">
               <button
                 className="border py-3 rounded-2xl w-full border-[#EE1c25]"
                 onClick={() => {
