@@ -47,7 +47,7 @@ const MobileCategorySlider = () => {
 
   return (
     <div className="w-full px-5 lg:px-12 mb-6 lg:mt-6">
-      <p className="text-[#4a5565] pt-6 text-xl lg:text-2xl font-semibold">
+      <p className="text-[#4a5565] pt-6 text-xl lg:text-xl font-semibold">
         Categories
       </p>
       <p className="py-1 mb-6 text-xl font-bold lg:text-3xl">

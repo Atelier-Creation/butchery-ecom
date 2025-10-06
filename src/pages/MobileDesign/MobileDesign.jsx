@@ -194,7 +194,7 @@ const MobileDesign = () => {
       <div data-aos="fade-right" data-aos-delay="100">
         <MobileBestseller
           title="We Produce The Best Selected Meats For You"
-          subtitle="Most popular product near you!"
+          subtitle="Trending Now"
           onViewAll={() => console.log("View all clicked")}
         />
       </div>

@@ -53,7 +53,7 @@ const MobileBestseller = ({
       <div className="lg:flex lg:justify-between">
         <div>
           {subtitle && (
-            <p className="text-xs text-gray-600 mb-1 lg:text-base">{subtitle}</p>
+            <p className="text-[#4a5565] pt-6 text-lg lg:text-xl font-semibold">{subtitle}</p>
           )}
           <h2 className="text-xl font-bold mb-4 lg:mb-8 lg:text-4xl">
             {title}
