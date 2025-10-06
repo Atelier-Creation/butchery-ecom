@@ -17,6 +17,9 @@ export default function ShoppingCart() {
   const [isMobile, setIsMobile] = useState(false);
   const [cartItems, setCartItems] = useState([]);
 
+  // New state to track clicked item for color flash
+  const [activeItem, setActiveItem] = useState(null);
+
   // Handle mobile view
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -46,19 +49,36 @@ export default function ShoppingCart() {
     fetchCart();
   }, [navigate]);
 
-  // Handle quantity change
+  // Handle quantity change (optimistic UI)
   const handleQuantityChange = async (itemId, newQty) => {
     if (newQty < 1) return;
+
+    // Flash background
+    setActiveItem(itemId);
+    setTimeout(() => setActiveItem(null), 200);
+
+    // Update state immediately
+    setCartItems((prev) =>
+      prev.map((item) =>
+        item._id === itemId ? { ...item, quantity: newQty } : item
+      )
+    );
+
+    // Call API
     try {
       const token = localStorage.getItem("token");
       await updateCartItemAPI(itemId, newQty, token);
-      setCartItems((prev) =>
-        prev.map((item) =>
-          item._id === itemId ? { ...item, quantity: newQty } : item
-        )
-      );
     } catch (err) {
       console.error("Failed to update quantity:", err);
+
+      // Rollback if API fails
+      setCartItems((prev) =>
+        prev.map((item) =>
+          item._id === itemId
+            ? { ...item, quantity: item.quantity }
+            : item
+        )
+      );
     }
   };
 
@@ -87,7 +107,6 @@ export default function ShoppingCart() {
           YOUR SHOPPING CART
         </h2>
 
-        {/* Table Head - Hide on Mobile */}
         {!isMobile && (
           <div className="grid grid-cols-3 text-gray-500 text-sm font-medium border-b border-gray-200 pb-3">
             <p>PRODUCT</p>
@@ -96,17 +115,14 @@ export default function ShoppingCart() {
           </div>
         )}
 
-        {/* Cart Items */}
         {cartItems.map((item) => (
           <div
             key={item._id}
-            className={`${
-              isMobile
+            className={`${isMobile
                 ? "flex flex-col gap-4 border-b border-gray-200 py-4"
                 : "grid grid-cols-3 items-center py-6 border-b border-gray-200"
-            }`}
+              }`}
           >
-            {/* Product Info */}
             <div className="flex gap-4 items-center">
               <img
                 src={item.product.images[0]}
@@ -129,40 +145,40 @@ export default function ShoppingCart() {
               </div>
             </div>
 
-            {/* Quantity Selector */}
             <div
-              className={`flex items-center ${
-                isMobile ? "justify-between mt-2" : "justify-center"
-              }`}
+              className={`flex items-center ${isMobile ? "justify-between mt-2" : "justify-center"
+                }`}
             >
               <div className="flex border border-gray-700 rounded-full overflow-hidden">
                 <button
-                  onClick={() =>
-                    handleQuantityChange(item._id, item.quantity - 1)
-                  }
-                  className="px-3 py-1 text-lg font-medium border-r border-gray-700"
+                  onClick={() => handleQuantityChange(item._id, item.quantity - 1)}
+                  className={`px-3 py-1 text-lg font-medium border-r border-gray-700 transition ${
+                    activeItem === item._id ? "bg-green-200" : "bg-gray-100 hover:bg-gray-200"
+                  }`}
                 >
                   -
                 </button>
-                <span className="px-6 py-1 text-base">{item.quantity}</span>
+
+                <span
+                  onClick={() => handleQuantityChange(item._id, item.quantity + 1)}
+                  className={`px-6 py-1 text-base cursor-pointer transition ${
+                    activeItem === item._id ? "bg-green-200" : "bg-gray-50 hover:bg-gray-200"
+                  }`}
+                >
+                  {item.quantity}
+                </span>
+
                 <button
-                  onClick={() =>
-                    handleQuantityChange(item._id, item.quantity + 1)
-                  }
-                  className="px-3 py-1 text-lg font-medium border-l border-gray-700"
+                  onClick={() => handleQuantityChange(item._id, item.quantity + 1)}
+                  className={`px-3 py-1 text-lg font-medium border-l border-gray-700 transition ${
+                    activeItem === item._id ? "bg-green-200" : "bg-gray-100 hover:bg-gray-200"
+                  }`}
                 >
                   +
                 </button>
               </div>
-              <button
-                className="ml-4 text-gray-500 hover:text-red-500"
-                onClick={() => handleRemove(item._id)}
-              >
-                <Trash2 size={18} />
-              </button>
             </div>
 
-            {/* Price (Hide on Mobile) */}
             {!isMobile && (
               <div className="text-right font-medium text-base">
                 ₹{(item.price * item.quantity).toFixed(2)}
@@ -171,7 +187,6 @@ export default function ShoppingCart() {
           </div>
         ))}
 
-        {/* Continue Shopping */}
         <div className="mt-6">
           <button
             className="bg-black text-white w-[100%] lg:w-auto px-6 py-3 lg:py-2 rounded-xs font-medium text-sm"
@@ -181,13 +196,10 @@ export default function ShoppingCart() {
           </button>
         </div>
 
-        {/* Extra Inputs Section */}
         <div
-          className={`grid ${
-            isMobile ? "grid-cols-1 gap-6" : "grid-cols-3 gap-6"
-          } mt-10 border-t border-gray-700 pt-8`}
+          className={`grid ${isMobile ? "grid-cols-1 gap-6" : "grid-cols-3 gap-6"
+            } mt-10 border-t border-gray-700 pt-8`}
         >
-          {/* Instructions */}
           <div className="col-span-1">
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
               <span className="text-gray-500">✎</span> Order Special Instruction
@@ -199,7 +211,6 @@ export default function ShoppingCart() {
             ></textarea>
           </div>
 
-          {/* Shipping */}
           <div className="col-span-1">
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
               <span className="text-gray-500">🚚</span> Estimate Shipping Rates
@@ -216,11 +227,9 @@ export default function ShoppingCart() {
             />
           </div>
 
-          {/* Summary */}
           <div
-            className={`col-span-1 flex flex-col ${
-              isMobile ? "items-start" : "items-end"
-            } justify-start`}
+            className={`col-span-1 flex flex-col ${isMobile ? "items-start" : "items-end"
+              } justify-start`}
           >
             <p className="text-lg font-semibold">Subtotal ₹ {subtotal}</p>
             <p className="text-sm text-gray-500 mt-1 mb-4">

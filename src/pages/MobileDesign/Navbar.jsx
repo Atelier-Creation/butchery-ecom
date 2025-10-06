@@ -360,7 +360,7 @@ const Navbar = () => {
               )}
             </div>
 
-            <CartDrawer />
+            <CartDrawer onCartChange={updateCartCountBasedOnAuth}/>
           </div>
         </div>
       </div>
@@ -433,7 +433,7 @@ const Navbar = () => {
       )}
 
       {/* Ensure CartDrawer is available on all viewports */}
-      <CartDrawer />
+      <CartDrawer onCartChange={updateCartCountBasedOnAuth}/>
     </header>
   );
 };

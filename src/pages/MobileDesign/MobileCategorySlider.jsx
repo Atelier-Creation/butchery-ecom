@@ -24,7 +24,7 @@ const MobileCategorySlider = () => {
             nameParts.length > 1 ? nameParts.slice(1).join(" ") : nameParts[0];
 
           return {
-            id: item._id, // save category ID
+            id: item._id,
             title: { en: titleEn, ta: item.tamilName },
             subtitles: subtitles,
             img: item.image,
@@ -47,71 +47,53 @@ const MobileCategorySlider = () => {
 
   return (
     <div className="w-full px-5 lg:px-12 mb-6 lg:mt-6">
-      <p className="text-[#4a5565] pt-6">
+      <p className="text-[#4a5565] pt-6 text-xl lg:text-2xl font-semibold">
         Categories
       </p>
       <p className="py-1 mb-6 text-xl font-bold lg:text-3xl">
         Enjoy Fresh Meat With The Best Quality
       </p>
 
-      {/* Mobile View */}
-      <div className="block md:hidden category">
-        <Swiper
-          modules={[Pagination, Autoplay]}
-          spaceBetween={16}
-          slidesPerView={1}
-          pagination={{ clickable: true }}
-          autoplay={{ delay: 3000, disableOnInteraction: false }}
-          className="py-20 overflow-visible"
-        >
-          {collections.map((item, idx) => (
-            <SwiperSlide key={idx}>
-              <div
-                onClick={() => navigate(`/collections/${item.id}`)} // use ID here
-                style={{ backgroundColor: item.bg }}
-                className="relative group z-50 cursor-pointer shadow-2xl rounded-xl h-[360px] sm:h-[300px] md:h-[340px] overflow-visible transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-1"
-                data-aos="fade-up"
-                data-aos-delay={idx * 200}
-              >
-                <img
-                  src={item.img}
-                  alt={item.title.en}
-                  className="w-[66%] left-[34%] absolute -top-[9%] h-fit object-contain z-100 shadow-2xl rounded-[50%] transition-transform duration-500 ease-in-out group-hover:scale-110"
-                />
-                <div className="p-4 absolute bottom-0 text-left flex flex-col gap-1 h-auto">
-                  <div>
-                    <span className="text-2xl inline-block text-gray-200" style={{ marginBottom: "-3px" }}>
-                      {item.subtitles}
-                    </span>
-                    <h3 className="text-3xl font-semibold mb-2 text-gray-50">
-                      {item.title.en} <span className="text-xl block">{item.title.ta}</span>
-                    </h3>
-                  </div>
-                  <p className="text-gray-100 text-sm opacity-90 mb-3">
-                    {item.desc.en + " "}
-                    <span className="text-gray-100 text-xs opacity-90">({item.desc.ta})</span>
-                  </p>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); navigate(`/collections/${item.id}`); }}
-                    className="mt-auto text-center w-1/2 inline-block bg-black text-white px-4 py-2 rounded-full text-sm 
-                      transition-all duration-300 ease-in-out 
-                      hover:bg-[#4e210b] hover:scale-105 hover:shadow-lg active:scale-95"
-                  >
-                    ORDER NOW
-                  </button>
-                </div>
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </div>
+      {/* ✅ Mobile View: 2 items per row, full image, text under image */}
+      <div className="block md:hidden category grid grid-cols-2 gap-4 justify-items-center">
+  {collections.map((item, idx) => (
+    <div
+      key={idx}
+      onClick={() => navigate(`/collections/${item.id}`)}
+      className="relative w-28 cursor-pointer rounded-xl overflow-hidden transition-all duration-300 justify-self-center"
+      data-aos="fade-up"
+      data-aos-delay={idx * 100}
+    >
+      {/* Full width image */}
+      <img
+        src={item.img}
+        alt={item.title.en}
+        className="w-full h-28 object-cover rounded-t-xl"
+      />
 
-      {/* Desktop View */}
+      {/* Text under image */}
+      <div className="p-2 text-center bg-white rounded-b-xl">
+        <h3 className="text-base text-sm  font-semibold text-black">
+          {item.title.en}
+        </h3>
+        {/* <span className="block text-[10px] text-black mt-1">
+          {item.title.ta}
+        </span> */}
+      </div>
+    </div>
+  ))}
+</div>
+
+
+
+
+
+      {/* 🖥️ Desktop View (Full Detail + Slider logic untouched) */}
       <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-6 mt-[5%]">
         {collections.map((item, idx) => (
           <div
             key={idx}
-            onClick={() => navigate(`/collections/${item.id}`)} // use ID
+            onClick={() => navigate(`/collections/${item.id}`)}
             style={{ backgroundColor: item.bg }}
             className="relative group cursor-pointer shadow-2xl rounded-xl h-[300px] overflow-visible transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-1"
             data-aos="fade-up"
@@ -124,19 +106,25 @@ const MobileCategorySlider = () => {
             />
             <div className="p-4 absolute bottom-0 text-left flex flex-col gap-1 h-auto">
               <div>
-                <span className="text-lg font-medium inline-block text-gray-100" style={{ marginBottom: "-3px" }}>
+                <span className="text-lg font-medium inline-block text-gray-100">
                   {item.subtitles}
                 </span>
                 <h3 className="text-4xl font-semibold mb-1 text-gray-50">
-                  {item.title.en} <span className="block text-xs">( {item.title.ta} )</span>
+                  {item.title.en}{" "}
+                  <span className="block text-xs">( {item.title.ta} )</span>
                 </h3>
               </div>
               <p className="text-gray-100 text-sm opacity-90 mb-3">
                 {item.desc.en + " "}
-                <span className="text-gray-100 text-xs opacity-90">({item.desc.ta})</span>
+                <span className="text-gray-100 text-xs opacity-90">
+                  ({item.desc.ta})
+                </span>
               </p>
               <button
-                onClick={(e) => { e.stopPropagation(); navigate(`/collections/${item.id}`); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/collections/${item.id}`);
+                }}
                 className="relative overflow-hidden group/button mt-auto text-center w-1/2 inline-block shadow-lg
                   bg-black text-white px-4 py-2 rounded-full text-sm 
                   transition-all duration-300 ease-in-out 

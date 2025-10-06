@@ -1,13 +1,15 @@
+import React, { forwardRef } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
-export const PhoneNumberField = ({ mobileInfo, setMobileInfo, errors }) => {
+export const PhoneNumberField = forwardRef(({ mobileInfo, setMobileInfo, errors }, ref) => {
   return (
     <div className="flex flex-col">
       <PhoneInput
         country={"in"} // 🇮🇳 Default country
         value={mobileInfo}
         onChange={(phone) => setMobileInfo(phone)}
+        inputProps={{ ref }} // Forward the ref to the underlying input
         inputClass="!w-full !h-[52px] !border !border-gray-300 !rounded !pl-[50px]" // Tailwind override
         buttonClass="!border !border-gray-300 !rounded-l"
         containerClass="!w-full"
@@ -19,4 +21,4 @@ export const PhoneNumberField = ({ mobileInfo, setMobileInfo, errors }) => {
       )}
     </div>
   );
-};
+});

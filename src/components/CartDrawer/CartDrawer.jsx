@@ -10,7 +10,7 @@ import {
   updateCartItemAPI,
 } from "../../api/cartApi";
 
-const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
+const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
   const navigate = useNavigate();
   const { drawerOpen, toggleDrawer } = useCart();
 
@@ -106,12 +106,15 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
       setCartItems((prev) => {
         const updated = prev.filter((i) => i._id !== item._id);
         localStorage.setItem("user_cart", JSON.stringify(updated));
+        // Notify parent (Navbar) to refresh header/cart count
+        if (typeof onCartChange === "function") onCartChange();
         return updated;
       });
     } catch (err) {
       console.error("Failed to remove item", err);
     }
   };
+
 
   const SkeletonItem = () => (
     <div className="flex gap-3 my-3 animate-pulse">
@@ -133,14 +136,21 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart }) => {
     <>
       <div
         className={`cart-backdrop ${drawerOpen ? "show" : ""}`}
-        onClick={() => toggleDrawer(false)}
+        onClick={() => {
+          toggleDrawer(false);
+          if (typeof onCartChange === "function") onCartChange();
+        }}
       ></div>
+
       <div className={`cart-drawer ${drawerOpen ? "open" : ""} text-gray-700 `}>
         <div className="py-5 border-b border-gray-400 flex justify-between items-center px-3">
           <h5 className="mb-0 text-lg font-medium text-gray-600">
             {cartItems.length ? "Item Added to Your Cart" : "Shopping Cart"}
           </h5>
-          <button onClick={() => toggleDrawer(false)}>
+          <button onClick={() => {
+            toggleDrawer(false);
+            if (typeof onCartChange === "function") onCartChange();
+          }}>
             <X className="text-gray-400" />
           </button>
         </div>

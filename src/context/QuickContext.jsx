@@ -28,7 +28,6 @@ export const ModalQuickProvider = ({ children }) => {
       {isOpen && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs">
           <div className="absolute top-5 right-0 bg-white p-6 rounded-xl w-100 shadow-lg max-h-[95vh] overflow-y-auto">
-
             {/* Close button at top-right */}
             <button
               onClick={closeModal}
@@ -41,8 +40,6 @@ export const ModalQuickProvider = ({ children }) => {
           </div>
         </div>
       )}
-
-
     </QuickContext.Provider>
   );
 };
@@ -75,11 +72,12 @@ export const QuickModal = ({ productId }) => {
     if (productId) fetchProduct();
   }, [productId]);
 
-
   // Set default weight option
   useEffect(() => {
     if (product?.weightOptions?.length) {
       setSelected(product.weightOptions[0]);
+    } else {
+      setSelected(null);
     }
   }, [product]);
 
@@ -89,10 +87,11 @@ export const QuickModal = ({ productId }) => {
   const handleAddToCart = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      closeModal()      
+      closeModal();
       navigate("/login");
       return;
     }
+
     if (!selectedDrop && product?.cutType?.length) {
       alert("Please select a cut type");
       return;
@@ -103,11 +102,15 @@ export const QuickModal = ({ productId }) => {
     }
 
     try {
+      // add to server cart
       await addToCartAPI(product._id, quantity, selected.price, selected._id);
+
+      // add to local/cart context (this intentionally opens drawer for "Add to cart" action)
       addToCart({
         ...product,
         quantity,
-        size: `${selected.weight} g`,
+        size: `${selected.weight}`,
+        unit: selected.unit,
         cutType: selectedDrop || "",
         price: selected.price,
         discountPrice: selected.discountPrice,
@@ -115,6 +118,8 @@ export const QuickModal = ({ productId }) => {
         title: { en: product.name, ta: product.tamilName },
         image: product.images?.[0],
       });
+
+      // show drawer after adding
       toggleDrawer(true);
       closeModal();
     } catch (err) {
@@ -123,32 +128,64 @@ export const QuickModal = ({ productId }) => {
     }
   };
 
-  const handleBuyNow = () => {
+  // Buy Now — add item to cart and go straight to /checkout WITHOUT opening the drawer
+  const handleBuyNow = async () => {
     const token = localStorage.getItem("token");
+
+    // If not logged in, redirect to login first
     if (!token) {
+      closeModal();
       navigate("/login");
       return;
     }
 
-    openModal(
-      <PincodeModal
-        onCheckSuccess={() => {
-          addToCart({
-            ...product,
-            quantity,
-            size: `${selected.weight} g`,
-            cutType: selectedDrop || "",
-            price: selected.price,
-            discountPrice: selected.discountPrice,
-            id: product._id,
-            title: { en: product.name, ta: product.tamilName },
-            image: product.images?.[0],
-          });
-          window.location.href = "/checkout";
-        }}
-      />
-    );
-    closeModal();
+    // Validate selection
+    if (!selected) {
+      alert("Please select a size");
+      return;
+    }
+    if (!selectedDrop && product?.cutType?.length) {
+      alert("Please select a cut type");
+      return;
+    }
+
+    try {
+      // Add to server-side cart
+      await addToCartAPI(product._id, quantity, selected.price, selected._id);
+
+      // Update local cart context so UI and header count reflect the new item.
+      // NOTE: addToCart may open the drawer in your context implementation.
+      // To ensure the drawer is NOT open on checkout, we:
+      // 1) call addToCart (to update context/local state)
+      // 2) immediately close the drawer (toggleDrawer(false))
+      // 3) then navigate to /checkout
+      addToCart({
+        ...product,
+        quantity,
+        size: `${selected.weight}`,
+        unit: selected.unit,
+        cutType: selectedDrop || "",
+        price: selected.price,
+        discountPrice: selected.discountPrice,
+        id: product._id,
+        title: { en: product.name, ta: product.tamilName },
+        image: product.images?.[0],
+      });
+
+      // Ensure drawer is closed (in case addToCart triggered it)
+      try {
+        toggleDrawer(false);
+      } catch (e) {
+        // ignore if toggleDrawer not available or throws
+      }
+
+      closeModal();
+      // navigate to checkout page
+      navigate("/checkout");
+    } catch (err) {
+      console.error("Buy Now failed:", err);
+      alert("Failed to proceed to checkout. Please try again.");
+    }
   };
 
   if (!product)
@@ -208,27 +245,30 @@ export const QuickModal = ({ productId }) => {
                 className={`lg:px-5 lg:py-2 px-3 py-2 rounded-md text-base border transition duration-300 ${selected?._id === opt._id ? "bg-[#EE1c25] text-white border-[#EE1c25]" : "bg-transparent text-black border-gray-400"
                   }`}
               >
-                {opt.weight} g
+                {opt.weight} {opt.unit}
               </button>
             ))}
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 w-50">
-          <label className="font-medium text-gray-700">Type of Cut</label>
-          <select
-            value={selectedDrop}
-            onChange={(e) => setSelectedDrop(e.target.value)}
-            className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 bg-white text-gray-800"
-          >
-            <option value="">Please select</option>
-            {product.cutType?.map((cut) => (
-              <option key={cut} value={cut}>
-                {cut}
-              </option>
-            ))}
-          </select>
-        </div>
+        {product.cutType?.length > 0 && (
+          <div className="flex flex-col gap-2 w-50">
+            <label className="font-medium text-gray-700">Type of Cut</label>
+            <select
+              value={selectedDrop}
+              onChange={(e) => setSelectedDrop(e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 bg-white text-gray-800"
+            >
+              <option value="">Please select</option>
+              {product.cutType.map((cut) => (
+                <option key={cut} value={cut}>
+                  {cut}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
 
         <div className="flex items-center border border-gray-400 py-2 px-2 w-fit rounded-md lg:my-3 my-2">
           <button onClick={decrease} className="px-3 py-1 cursor-pointer"><FaMinus size={15} /></button>

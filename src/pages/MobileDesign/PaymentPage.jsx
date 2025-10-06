@@ -1,16 +1,17 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import Confetti from "react-confetti";
 import happyAnim from "../../assets/LottieJson/happy.json";
 import Lottie from "lottie-react";
 import MobileFooter from "./MobileFooter";
+import { Trash2 } from "lucide-react";
 import Navbar from "./Navbar";
 import { useNavigate } from "react-router-dom";
 import { getCartByUserId, removeFromCart as cartApi } from "../../api/cartApi";
 import { LocationPermissionModal } from "./LocationPermissionModal";
 import { createOrder, verifyPayment } from "../../api/paymentApi";
-import { PhoneNumberField } from "./PhoneNumberField";
 import { updateProfile } from "../../api/authApi";
 import { createOrderData } from "../../api/orderApi";
+import { PhoneNumberField } from "./PhoneNumberField"; // Import the updated PhoneNumberField
 
 const indianStates = [
   "Andhra Pradesh",
@@ -53,6 +54,14 @@ const indianStates = [
 
 function PaymentPage() {
   const navigate = useNavigate();
+  const emailRef = useRef(null);
+  const phoneRef = useRef(null);
+  const firstNameRef = useRef(null);
+  const lastNameRef = useRef(null);
+  const addressRef = useRef(null);
+  const cityRef = useRef(null);
+  const stateRef = useRef(null);
+  const pinCodeRef = useRef(null);
 
   // Form states
   const [deliveryOption, setDeliveryOption] = useState("ship");
@@ -106,52 +115,33 @@ function PaymentPage() {
   // ------------------ Load cart ------------------
   const fetchCart = useCallback(async () => {
     const token = localStorage.getItem("token");
+    let items = [];
+
     if (token) {
-      // logged-in: fetch from server
       try {
         const data = await getCartByUserId();
         if (data && data.success && data.data && Array.isArray(data.data.items)) {
-          setCartItems(data.data.items);
-          const subtotal = data.data.items.reduce(
-            (sum, item) => sum + (item.price || 0) * (item.quantity || 0),
-            0
-          );
-          setTotal(subtotal);
+          items = data.data.items;
         } else {
-          // fallback if server returns a different shape
-          const items =
-            (data && data.data && data.data.items) ||
-            (data && data.items) ||
-            [];
-          setCartItems(items);
-          const subtotal = items.reduce(
-            (sum, item) => sum + (item.price || 0) * (item.quantity || 0),
-            0
-          );
-          setTotal(subtotal);
+          items = (data && data.data && data.data.items) || (data && data.items) || [];
         }
       } catch (err) {
         console.error("Failed to fetch cart from server", err);
-        // fallback to guest cart if server unreachable
-        const guest = getGuestCart();
-        setCartItems(guest);
-        const subtotal = guest.reduce(
-          (sum, item) => sum + (item.price || 0) * (item.quantity || 0),
-          0
-        );
-        setTotal(subtotal);
+        items = getGuestCart();
       }
     } else {
-      // guest: read from localStorage
-      const guest = getGuestCart();
-      setCartItems(guest);
-      const subtotal = guest.reduce(
-        (sum, item) => sum + (item.price || 0) * (item.quantity || 0),
-        0
-      );
-      setTotal(subtotal);
+      items = getGuestCart();
     }
-  }, [getGuestCart]);
+
+    setCartItems(items);
+    const subtotal = items.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0);
+    setTotal(subtotal);
+
+    // Redirect if cart is empty after fetching
+    if (!items || items.length === 0) {
+      navigate("/collections/all");
+    }
+  }, [getGuestCart, navigate]);
 
   // recompute total whenever cartItems changes
   useEffect(() => {
@@ -199,7 +189,7 @@ function PaymentPage() {
     return () => {
       window.removeEventListener("storage", onStorage);
       window.removeEventListener("guestCartChanged", onGuestCartChanged);
-      window.removeEventListener("authChanged", onAuthChanged);
+      // window.removeEventListener("authChanged", onAuthChanged);
     };
   }, [fetchCart, getGuestCart]);
 
@@ -315,315 +305,333 @@ function PaymentPage() {
   const handleRemoveItem = async (itemId) => {
     const token = localStorage.getItem("token");
     if (token) {
-      // logged-in: call API
       try {
-        const response = await cartApi(itemId);
-        if (response && response.success) {
-          setCartItems((prev) => prev.filter((item) => item._id !== itemId));
+        // Call API to remove item, pass itemId
+        const response = await cartApi(itemId); // cartApi should accept itemId
+        if (response?.success) {
+          setCartItems(prev => prev.filter(item => item._id !== itemId));
         } else {
-          // fallback: remove locally if API didn't remove
-          setCartItems((prev) => prev.filter((item) => item._id !== itemId));
+          console.warn("Server did not remove item, fallback locally");
+          setCartItems(prev => prev.filter(item => item._id !== itemId));
         }
       } catch (err) {
-        console.error("Failed to remove item from server cart:", err);
-        // fallback: remove locally
-        setCartItems((prev) => prev.filter((item) => item._id !== itemId));
+        console.error("Failed to remove from server cart:", err);
+        setCartItems(prev => prev.filter(item => item._id !== itemId));
       }
     } else {
-      // guest: remove from localStorage guest_cart
-      try {
-        const guest = getGuestCart();
-        const newGuest = guest.filter((it) => it._id !== itemId && it.id !== itemId);
-        saveGuestCart(newGuest);
-        setCartItems(newGuest);
-      } catch (err) {
-        console.error("Failed to remove item from guest cart:", err);
-      }
+      // guest fallback
+      const guest = getGuestCart();
+      const newGuest = guest.filter(it => it._id !== itemId && it.id !== itemId);
+      saveGuestCart(newGuest);
+      setCartItems(newGuest);
     }
   };
 
   // ------------------ Payment handler ------------------
   const handlePayment = async () => {
-  setpaymentload(true);
+    setpaymentload(true);
 
-  // validate first
-  if (!validatePaymentForm()) {
-    setpaymentload(false);
-    return;
-  }
+    // validate first
+    if (!validatePaymentForm()) {
+      // Scroll to first error
+      if (errors.contactInfo && emailRef.current) {
+        emailRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+        emailRef.current.focus();
+      } else if (errors.mobileInfo && phoneRef.current) {
+        phoneRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+        phoneRef.current.focus();
+      } else if (errors.shippingFirstName && firstNameRef.current) {
+        firstNameRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+        firstNameRef.current.focus();
+      } else if (errors.shippingLastName && lastNameRef.current) {
+        lastNameRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+        lastNameRef.current.focus();
+      } else if (errors.shippingAddress && addressRef.current) {
+        addressRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+        addressRef.current.focus();
+      } else if (errors.shippingCity && cityRef.current) {
+        cityRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+        cityRef.current.focus();
+      } else if (errors.shippingState && stateRef.current) {
+        stateRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+        stateRef.current.focus();
+      } else if (errors.shippingPinCode && pinCodeRef.current) {
+        pinCodeRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+        pinCodeRef.current.focus();
+      }
+      setpaymentload(false);
+      return;
+    }
 
-  // If no logged-in user in localStorage, save state and redirect to login
-  const storedUser = localStorage.getItem("user");
-  if (!storedUser) {
+    // If no logged-in user in localStorage, save state and redirect to login
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) {
+      try {
+        // Save current checkout state so we can restore after login
+        const pending = {
+          contactInfo,
+          mobileInfo,
+          shippingFirstName,
+          shippingLastName,
+          shippingAddress,
+          shippingCity,
+          shippingState,
+          shippingPinCode,
+          total,
+          cartItems, // store cart snapshot (guest_cart or server-cart snapshot)
+        };
+        localStorage.setItem("pendingCheckout", JSON.stringify(pending));
+
+        // navigate to login page, passing postLoginRedirect as a query param instead of storing in localStorage
+        const redirectPath = "/checkout";
+        const search = new URLSearchParams({ postLoginRedirect: redirectPath }).toString();
+        navigate(`/login?${search}`);
+      } catch (err) {
+        console.error("Failed to save pending checkout state:", err);
+        // still include redirect param as a fallback
+        navigate(`/login?postLoginRedirect=${encodeURIComponent("/checkout")}`);
+      } finally {
+        setpaymentload(false);
+      }
+      return; // stop further processing
+    }
+
+    // If code reaches here, user exists — proceed with Razorpay flow
     try {
-      // Save current checkout state so we can restore after login
-      const pending = {
-        contactInfo,
-        mobileInfo,
-        shippingFirstName,
-        shippingLastName,
-        shippingAddress,
-        shippingCity,
-        shippingState,
-        shippingPinCode,
-        total,
-        cartItems, // store cart snapshot (guest_cart or server-cart snapshot)
-      };
-      localStorage.setItem("pendingCheckout", JSON.stringify(pending));
+      const data = await createOrder({ amount: total * 100, currency: "INR" });
+      if (!data.success) throw new Error("Failed to create Razorpay order");
 
-      // navigate to login page, passing postLoginRedirect as a query param instead of storing in localStorage
-      const redirectPath = "/checkout";
-      const search = new URLSearchParams({ postLoginRedirect: redirectPath }).toString();
-      navigate(`/login?${search}`);
+      const { id: order_id, amount, currency } = data.order;
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount,
+        currency,
+        name: "Iraichi Kadai",
+        order_id,
+        prefill: {
+          name: `${shippingFirstName} ${shippingLastName}`,
+          email: contactInfo,
+          contact: mobileInfo,
+        },
+        notes: {
+          address: `${shippingAddress}, ${shippingCity}, ${shippingState}, ${shippingPinCode}`,
+          name: `${shippingFirstName} ${shippingLastName}`,
+          contact: mobileInfo,
+        },
+        // inside options for Razorpay, replace the handler with this updated handler
+        handler: async (response) => {
+          try {
+            await verifyPayment(response);
+
+            // show processing overlay
+            setProcessingPayment(true);
+            const procStart = Date.now();
+
+            const user = JSON.parse(localStorage.getItem("user") || "null");
+
+            let pingLocation = null;
+            if (location?.latitude != null && location?.longitude != null) {
+              pingLocation = {
+                type: "Point",
+                coordinates: [location.longitude, location.latitude],
+              };
+            } else {
+              pingLocation = {
+                type: "Point",
+                coordinates: [0, 0],
+              };
+            }
+
+            const productsForOrder = cartItems.map((p) => ({
+              productId: p.product?._id || p.productId || p.id,
+              name: p.product?.name || p.name,
+              price: p.price,
+              quantity: p.quantity,
+              unit: p.unit || "",
+              weight: p.weight,
+            }));
+
+            // create order on server (this may take time)
+            await createOrderData({
+              buyer: user?.id || null,
+              buyerDetails: {
+                name: user?.name || `${shippingFirstName} ${shippingLastName}`,
+                email: user?.email || contactInfo,
+                phone: user?.phone || mobileInfo,
+              },
+              shippingAddress,
+              location: mapUrl,
+              pingLocation,
+              paymentMethod: "online",
+              paymentStatus: "paid",
+              paymentVerifiedAt: new Date(),
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+              products: productsForOrder,
+              total,
+            });
+
+            // Remove items from server-side cart if logged-in OR clear guest cart
+            try {
+              const token = localStorage.getItem("token");
+              if (token && Array.isArray(cartItems) && cartItems.length > 0) {
+                const removals = cartItems.map((it) => {
+                  const idToRemove = it._id || it.id || it.product?._id || it.productId;
+                  if (!idToRemove) return Promise.resolve({ status: "skipped", reason: "no-id" });
+                  return cartApi(idToRemove);
+                });
+                const results = await Promise.allSettled(removals);
+                results.forEach((r, idx) => {
+                  if (r.status === "rejected") {
+                    console.warn("Failed to remove cart item:", cartItems[idx], r.reason);
+                  } else if (r.value && r.value.success === false) {
+                    console.warn("API responded with failure removing item:", cartItems[idx], r.value);
+                  }
+                });
+              } else {
+                try {
+                  localStorage.removeItem("guest_cart");
+                  window.dispatchEvent(new Event("guestCartChanged"));
+                } catch (e) {
+                  console.warn("Failed to clear guest_cart:", e);
+                }
+              }
+            } catch (err) {
+              console.warn("Error while removing items from cart:", err);
+            }
+
+            // remove user_cart local storage and update profile (unchanged)
+            try {
+              localStorage.removeItem("user_cart");
+              try { window.dispatchEvent(new Event("userCartChanged")); } catch (e) { }
+            } catch (err) { console.warn("Failed to remove user_cart from localStorage:", err); }
+
+            if (user) {
+              try {
+                const token = localStorage.getItem("token");
+                const updatedUser = await updateProfile(
+                  {
+                    phone: mobileInfo,
+                    addresses: [
+                      {
+                        label: "Home",
+                        street: shippingAddress,
+                        city: shippingCity,
+                        state: shippingState,
+                        pincode: shippingPinCode,
+                        isDefault: true,
+                      },
+                    ],
+                  },
+                  token
+                );
+                if (updatedUser && updatedUser.user) {
+                  localStorage.setItem("user", JSON.stringify(updatedUser.user));
+                }
+              } catch (err) {
+                console.warn("Failed to update profile after payment:", err);
+              }
+            }
+
+            // ensure at least 5s of processing overlay so user doesn't see a flash
+            const elapsed = Date.now() - procStart;
+            const minWait = 5000;
+            if (elapsed < minWait) {
+              await new Promise((res) => setTimeout(res, minWait - elapsed));
+            }
+
+            // clear UI cart then hide overlay and navigate
+            setCartItems([]);
+            setTotal(0);
+            setProcessingPayment(false);
+
+            const queryParams = new URLSearchParams({
+              order_id: order_id,
+              paymentId: response.razorpay_payment_id,
+              amount: amount.toString(),
+              currency,
+              contact: contactInfo,
+            }).toString();
+
+            navigate(`/order-confirmed?${queryParams}`);
+          } catch (err) {
+            // if anything failed, hide overlay and fallback to your existing retry flow
+            setProcessingPayment(false);
+            console.error(err);
+            localStorage.setItem(
+              "retryPaymentData",
+              JSON.stringify({
+                contactInfo,
+                mobileInfo,
+                shippingFirstName,
+                shippingLastName,
+                shippingAddress,
+                shippingCity,
+                shippingState,
+                shippingPinCode,
+                total,
+              })
+            );
+            navigate("/payment-failed", {
+              state: {
+                orderId: order_id,
+                amount,
+                currency,
+                contact: contactInfo,
+                error: err.message,
+              },
+            });
+          }
+        },
+
+        modal: {
+          ondismiss: () => {
+            localStorage.setItem(
+              "retryPaymentData",
+              JSON.stringify({
+                contactInfo,
+                mobileInfo,
+                shippingFirstName,
+                shippingLastName,
+                shippingAddress,
+                shippingCity,
+                shippingState,
+                shippingPinCode,
+                total,
+              })
+            );
+            navigate("/payment-failed", {
+              state: { reason: "User cancelled the payment" },
+            });
+          },
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
     } catch (err) {
-      console.error("Failed to save pending checkout state:", err);
-      // still include redirect param as a fallback
-      navigate(`/login?postLoginRedirect=${encodeURIComponent("/checkout")}`);
+      console.error(err);
+      localStorage.setItem(
+        "retryPaymentData",
+        JSON.stringify({
+          contactInfo,
+          mobileInfo,
+          shippingFirstName,
+          shippingLastName,
+          shippingAddress,
+          shippingCity,
+          shippingState,
+          shippingPinCode,
+          total,
+        })
+      );
+      navigate("/payment-failed", { state: { error: err.message } });
     } finally {
       setpaymentload(false);
     }
-    return; // stop further processing
-  }
-
-  // If code reaches here, user exists — proceed with Razorpay flow
-  try {
-    const data = await createOrder({ amount: total * 100, currency: "INR" });
-    if (!data.success) throw new Error("Failed to create Razorpay order");
-
-    const { id: order_id, amount, currency } = data.order;
-
-    const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-      amount,
-      currency,
-      name: "Iraichi Kadai",
-      order_id,
-      prefill: {
-        name: `${shippingFirstName} ${shippingLastName}`,
-        email: contactInfo,
-        contact: mobileInfo,
-      },
-      notes: {
-        address: `${shippingAddress}, ${shippingCity}, ${shippingState}, ${shippingPinCode}`,
-        name: `${shippingFirstName} ${shippingLastName}`,
-        contact: mobileInfo,
-      },
-      // inside options for Razorpay, replace the handler with this updated handler
-      handler: async (response) => {
-        try {
-          await verifyPayment(response);
-
-          // show processing overlay
-          setProcessingPayment(true);
-          const procStart = Date.now();
-
-          const user = JSON.parse(localStorage.getItem("user") || "null");
-
-          let pingLocation = null;
-          if (location?.latitude != null && location?.longitude != null) {
-            pingLocation = {
-              type: "Point",
-              coordinates: [location.longitude, location.latitude],
-            };
-          } else {
-            pingLocation = {
-              type: "Point",
-              coordinates: [0, 0],
-            };
-          }
-
-          const productsForOrder = cartItems.map((p) => ({
-            productId: p.product?._id || p.productId || p.id,
-            name: p.product?.name || p.name,
-            price: p.price,
-            quantity: p.quantity,
-            unit: p.unit || "",
-            weight: p.weight,
-          }));
-
-          // create order on server (this may take time)
-          await createOrderData({
-            buyer: user?.id || null,
-            buyerDetails: {
-              name: user?.name || `${shippingFirstName} ${shippingLastName}`,
-              email: user?.email || contactInfo,
-              phone: user?.phone || mobileInfo,
-            },
-            shippingAddress,
-            location: mapUrl,
-            pingLocation,
-            paymentMethod: "online",
-            paymentStatus: "paid",
-            paymentVerifiedAt: new Date(),
-            razorpayOrderId: response.razorpay_order_id,
-            razorpayPaymentId: response.razorpay_payment_id,
-            razorpaySignature: response.razorpay_signature,
-            products: productsForOrder,
-            total,
-          });
-
-          // Remove items from server-side cart if logged-in OR clear guest cart
-          try {
-            const token = localStorage.getItem("token");
-            if (token && Array.isArray(cartItems) && cartItems.length > 0) {
-              const removals = cartItems.map((it) => {
-                const idToRemove = it._id || it.id || it.product?._id || it.productId;
-                if (!idToRemove) return Promise.resolve({ status: "skipped", reason: "no-id" });
-                return cartApi(idToRemove);
-              });
-              const results = await Promise.allSettled(removals);
-              results.forEach((r, idx) => {
-                if (r.status === "rejected") {
-                  console.warn("Failed to remove cart item:", cartItems[idx], r.reason);
-                } else if (r.value && r.value.success === false) {
-                  console.warn("API responded with failure removing item:", cartItems[idx], r.value);
-                }
-              });
-            } else {
-              try {
-                localStorage.removeItem("guest_cart");
-                window.dispatchEvent(new Event("guestCartChanged"));
-              } catch (e) {
-                console.warn("Failed to clear guest_cart:", e);
-              }
-            }
-          } catch (err) {
-            console.warn("Error while removing items from cart:", err);
-          }
-
-          // remove user_cart local storage and update profile (unchanged)
-          try {
-            localStorage.removeItem("user_cart");
-            try { window.dispatchEvent(new Event("userCartChanged")); } catch (e) { }
-          } catch (err) { console.warn("Failed to remove user_cart from localStorage:", err); }
-
-          if (user) {
-            try {
-              const token = localStorage.getItem("token");
-              const updatedUser = await updateProfile(
-                {
-                  phone: mobileInfo,
-                  addresses: [
-                    {
-                      label: "Home",
-                      street: shippingAddress,
-                      city: shippingCity,
-                      state: shippingState,
-                      pincode: shippingPinCode,
-                      isDefault: true,
-                    },
-                  ],
-                },
-                token
-              );
-              if (updatedUser && updatedUser.user) {
-                localStorage.setItem("user", JSON.stringify(updatedUser.user));
-              }
-            } catch (err) {
-              console.warn("Failed to update profile after payment:", err);
-            }
-          }
-
-          // ensure at least 5s of processing overlay so user doesn't see a flash
-          const elapsed = Date.now() - procStart;
-          const minWait = 5000;
-          if (elapsed < minWait) {
-            await new Promise((res) => setTimeout(res, minWait - elapsed));
-          }
-
-          // clear UI cart then hide overlay and navigate
-          setCartItems([]);
-          setTotal(0);
-          setProcessingPayment(false);
-
-          const queryParams = new URLSearchParams({
-            order_id: order_id,
-            paymentId: response.razorpay_payment_id,
-            amount: amount.toString(),
-            currency,
-            contact: contactInfo,
-          }).toString();
-
-          navigate(`/order-confirmed?${queryParams}`);
-        } catch (err) {
-          // if anything failed, hide overlay and fallback to your existing retry flow
-          setProcessingPayment(false);
-          console.error(err);
-          localStorage.setItem(
-            "retryPaymentData",
-            JSON.stringify({
-              contactInfo,
-              mobileInfo,
-              shippingFirstName,
-              shippingLastName,
-              shippingAddress,
-              shippingCity,
-              shippingState,
-              shippingPinCode,
-              total,
-            })
-          );
-          navigate("/payment-failed", {
-            state: {
-              orderId: order_id,
-              amount,
-              currency,
-              contact: contactInfo,
-              error: err.message,
-            },
-          });
-        }
-      },
-
-      modal: {
-        ondismiss: () => {
-          localStorage.setItem(
-            "retryPaymentData",
-            JSON.stringify({
-              contactInfo,
-              mobileInfo,
-              shippingFirstName,
-              shippingLastName,
-              shippingAddress,
-              shippingCity,
-              shippingState,
-              shippingPinCode,
-              total,
-            })
-          );
-          navigate("/payment-failed", {
-            state: { reason: "User cancelled the payment" },
-          });
-        },
-      },
-    };
-
-    const rzp = new window.Razorpay(options);
-    rzp.open();
-  } catch (err) {
-    console.error(err);
-    localStorage.setItem(
-      "retryPaymentData",
-      JSON.stringify({
-        contactInfo,
-        mobileInfo,
-        shippingFirstName,
-        shippingLastName,
-        shippingAddress,
-        shippingCity,
-        shippingState,
-        shippingPinCode,
-        total,
-      })
-    );
-    navigate("/payment-failed", { state: { error: err.message } });
-  } finally {
-    setpaymentload(false);
-  }
-};
-
-
-
+  };
 
   return (
     <>
@@ -667,13 +675,13 @@ function PaymentPage() {
         </div>
       )}
 
-
       <div className="flex gap-12 justify-center mt-20 mb-52 px-4 flex-col-reverse lg:flex-row">
         <div className="lg:w-1/2 w-full space-y-8">
           {/* CONTACT */}
           <div className="space-y-4">
             <h3 className="text-2xl font-bold">CONTACT</h3>
             <input
+              ref={emailRef}
               type="text"
               placeholder="Email Address"
               value={contactInfo}
@@ -681,7 +689,7 @@ function PaymentPage() {
               className="w-full h-[52px] border border-gray-300 rounded px-4"
             />
             {errors.contactInfo && <p className="text-red-500 text-sm mt-1">{errors.contactInfo}</p>}
-            <PhoneNumberField mobileInfo={mobileInfo} setMobileInfo={setMobileInfo} errors={errors} />
+            <PhoneNumberField ref={phoneRef} mobileInfo={mobileInfo} setMobileInfo={setMobileInfo} errors={errors} />
           </div>
 
           {/* DELIVERY */}
@@ -701,53 +709,77 @@ function PaymentPage() {
             {deliveryOption === "ship" && (
               <div className="flex flex-col gap-4 mt-4">
                 <div className="flex gap-4 flex-col sm:flex-row">
-                  <input
-                    type="text"
-                    placeholder="First Name"
-                    value={shippingFirstName}
-                    onChange={(e) => setShippingFirstName(e.target.value)}
-                    className="flex-1 h-[52px] border border-gray-300 rounded px-4 py-4 lg:py-0"
-                  />
-                  {errors.shippingFirstName && <p className="text-red-500 text-sm mt-1">{errors.shippingFirstName}</p>}
-                  <input
-                    type="text"
-                    placeholder="Last Name"
-                    value={shippingLastName}
-                    onChange={(e) => setShippingLastName(e.target.value)}
-                    className="flex-1 h-[52px] border border-gray-300 rounded px-4 py-4 lg:py-0"
-                  />
-                  {errors.shippingLastName && <p className="text-red-500 text-sm mt-1">{errors.shippingLastName}</p>}
+                  <div className="flex-1">
+                    <input
+                      ref={firstNameRef}
+                      type="text"
+                      placeholder="First Name"
+                      value={shippingFirstName}
+                      onChange={(e) => setShippingFirstName(e.target.value)}
+                      className="w-full h-[52px] border border-gray-300 rounded px-4 py-4 lg:py-0"
+                    />
+                    {errors.shippingFirstName && <p className="text-red-500 text-sm mt-1">{errors.shippingFirstName}</p>}
+                  </div>
+                  <div className="flex-1">
+                    <input
+                      ref={lastNameRef}
+                      type="text"
+                      placeholder="Last Name"
+                      value={shippingLastName}
+                      onChange={(e) => setShippingLastName(e.target.value)}
+                      className="w-full h-[52px] border border-gray-300 rounded px-4 py-4 lg:py-0"
+                    />
+                    {errors.shippingLastName && <p className="text-red-500 text-sm mt-1">{errors.shippingLastName}</p>}
+                  </div>
                 </div>
-                <input
-                  type="text"
-                  placeholder="Address"
-                  value={shippingAddress}
-                  onChange={(e) => setShippingAddress(e.target.value)}
-                  className="w-full h-[52px] border border-gray-300 rounded px-4 "
-                />
-                {errors.shippingAddress && <p className="text-red-500 text-sm mt-1">{errors.shippingAddress}</p>}
-
-                <input
-                  type="text"
-                  placeholder="City"
-                  value={shippingCity}
-                  onChange={(e) => setShippingCity(e.target.value)}
-                  className="w-full h-[52px] border border-gray-300 rounded px-4"
-                />
-                {errors.shippingCity && <p className="text-red-500 text-sm mt-1">{errors.shippingCity}</p>}
-
+                <div>
+                  <input
+                    ref={addressRef}
+                    type="text"
+                    placeholder="Address"
+                    value={shippingAddress}
+                    onChange={(e) => setShippingAddress(e.target.value)}
+                    className="w-full h-[52px] border border-gray-300 rounded px-4"
+                  />
+                  {errors.shippingAddress && <p className="text-red-500 text-sm mt-1">{errors.shippingAddress}</p>}
+                </div>
+                <div>
+                  <input
+                    ref={cityRef}
+                    type="text"
+                    placeholder="City"
+                    value={shippingCity}
+                    onChange={(e) => setShippingCity(e.target.value)}
+                    className="w-full h-[52px] border border-gray-300 rounded px-4"
+                  />
+                  {errors.shippingCity && <p className="text-red-500 text-sm mt-1">{errors.shippingCity}</p>}
+                </div>
                 <input type="text" placeholder="Country" disabled value={shippingCountry} className="w-full h-[52px] border border-gray-300 rounded px-4" />
-
-                <select value={shippingState} onChange={(e) => setShippingState(e.target.value)} className="w-full h-[52px] border border-gray-300 rounded px-4">
-                  <option value="">Select State</option>
-                  {indianStates.map((st) => (
-                    <option key={st}>{st}</option>
-                  ))}
-                </select>
-                {errors.shippingState && <p className="text-red-500 text-sm mt-1">{errors.shippingState}</p>}
-
-                <input type="text" placeholder="PinCode" value={shippingPinCode} onChange={(e) => setShippingPinCode(e.target.value)} className="w-full h-[52px] border border-gray-300 rounded px-4" />
-                {errors.shippingPinCode && <p className="text-red-500 text-sm mt-1">{errors.shippingPinCode}</p>}
+                <div>
+                  <select
+                    ref={stateRef}
+                    value={shippingState}
+                    onChange={(e) => setShippingState(e.target.value)}
+                    className="w-full h-[52px] border border-gray-300 rounded px-4"
+                  >
+                    <option value="">Select State</option>
+                    {indianStates.map((st) => (
+                      <option key={st}>{st}</option>
+                    ))}
+                  </select>
+                  {errors.shippingState && <p className="text-red-500 text-sm mt-1">{errors.shippingState}</p>}
+                </div>
+                <div>
+                  <input
+                    ref={pinCodeRef}
+                    type="text"
+                    placeholder="PinCode"
+                    value={shippingPinCode}
+                    onChange={(e) => setShippingPinCode(e.target.value)}
+                    className="w-full h-[52px] border border-gray-300 rounded px-4"
+                  />
+                  {errors.shippingPinCode && <p className="text-red-500 text-sm mt-1">{errors.shippingPinCode}</p>}
+                </div>
               </div>
             )}
           </div>
@@ -795,7 +827,7 @@ function PaymentPage() {
                   <div className="flex flex-col items-end gap-1">
                     <span className="text-lg font-medium">₹{((item.price || 0) * (item.quantity || 0)).toLocaleString()}</span>
                     <button className="text-red-600 text-sm underline" onClick={() => handleRemoveItem(item._id || item.id)}>
-                      Remove
+                      <Trash2 size={16} className="inline mb-0.5" />
                     </button>
                   </div>
                 </div>

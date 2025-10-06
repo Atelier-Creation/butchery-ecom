@@ -42,6 +42,11 @@ const MobileBestseller = ({
     fetchProducts();
   }, []);
 
+  // navigate to product details
+  const goToProduct = (item) => {
+    navigate(`/products/${item._id}`, { state: { product: item } });
+  };
+
   return (
     <div className="block px-5 py-6 lg:px-30 lg:mt-10">
       {/* Header */}
@@ -74,11 +79,12 @@ const MobileBestseller = ({
       {/* Swiper */}
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
-        spaceBetween={16}
+        spaceBetween={12}
         autoplay={{ delay: 4500, disableOnInteraction: false }}
         pagination={{ clickable: true }}
         breakpoints={{
           320: { slidesPerView: 2 },
+          420: { slidesPerView: 2.2 },
           768: { slidesPerView: 2 },
           1024: { slidesPerView: 5 },
         }}
@@ -88,11 +94,9 @@ const MobileBestseller = ({
           <SwiperSlide key={item._id}>
             <div
               className="group rounded-xl cursor-pointer shadow-md overflow-hidden relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
-              onClick={() =>
-                navigate(`/products/${item._id}`, { state: { product: item } })
-              }
+              onClick={() => goToProduct(item)}
               data-aos="fade-up"
-              data-aos-delay={idx * 200}
+              data-aos-delay={idx * 120}
             >
               {/* Sale Tag */}
               <div className="relative">
@@ -103,42 +107,57 @@ const MobileBestseller = ({
                 )}
 
                 {/* Image */}
-                <div className="overflow-hidden rounded-xl">
+                <div className="overflow-hidden rounded-xl h-40 sm:h-48">
                   <img
                     src={item.images[0]}
                     alt={item.name}
-                    className="w-full aspect-square object-cover transform transition-transform duration-500 group-hover:scale-105"
+                    className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
 
-                {/* Eye Icon (opens modal) */}
-                <span
+                {/* Eye Icon (hidden on mobile, shows on hover in md+) */}
+                <button
                   onClick={(e) => {
                     e.stopPropagation();
                     handleBuyNow(item._id);
                   }}
-                  className="hidden md:flex absolute bottom-2 right-2 cursor-pointer bg-[#EE1c25] text-white text-xs px-2.5 py-2 rounded-md
-             opacity-0 translate-y-2 transition-all duration-300
-             group-hover:opacity-100 group-hover:translate-y-0"
+                  className="hidden md:flex absolute bottom-2 right-2 items-center justify-center cursor-pointer bg-[#EE1c25] text-white text-xs px-2.5 py-2 rounded-md
+                    opacity-0 translate-y-2 transition-all duration-300
+                    group-hover:opacity-100 group-hover:translate-y-0"
+                  aria-label={`Quick view ${item.name}`}
                 >
                   <Eye size={18} />
-                </span>
+                </button>
               </div>
 
               {/* Info */}
               <div className="p-2">
-                <p className="text-md h-[50px] font-medium line-clamp-2 group-hover:text-[#EE1c25] transition-colors">
+                <p className="text-sm md:text-[13px] lg:text-base h-[40px] md:h-[56px] lg:h-[72px] font-medium line-clamp-3 group-hover:text-[#EE1c25] transition-colors">
                   {item.name}
                 </p>
-                <div className="mt-2 flex items-center gap-2">
-                  <span className="text-[#EE1c25] font-semibold text-md">
-                    ₹{item.weightOptions[0].price}
-                  </span>
-                  {item.weightOptions[0].discountPrice && (
-                    <span className="text-gray-500 line-through text-md">
-                      ₹{item.weightOptions[0].discountPrice}
+
+                {/* Price + Add button */}
+                <div className="mt-1 flex items-center justify-between">
+                  <div className="flex items-center gap-1">
+                    {item.weightOptions?.[0]?.discountPrice && (
+                      <span className="text-gray-500 line-through text-[10px]">
+                        ₹{item.weightOptions[0].discountPrice}
+                      </span>
+                    )}
+                    <span className="text-[#EE1c25] font-semibold text-ms">
+                      ₹{item.weightOptions?.[0]?.price ?? "-"}
                     </span>
-                  )}
+                  </div>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goToProduct(item);
+                    }}
+                    className="px-2 py-1 rounded-md bg-[#EE1c25] text-white text-[14px] font-medium hover:bg-red-700 transition-colors"
+                  >
+                    Add
+                  </button>
                 </div>
               </div>
             </div>
