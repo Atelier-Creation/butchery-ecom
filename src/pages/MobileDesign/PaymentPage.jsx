@@ -820,7 +820,7 @@ function PaymentPage() {
                   <div className="flex gap-4 items-center">
                     <img src={item.product?.images?.[0] || item.product?.image || item.image} alt={item.product?.name || item.name} className="w-[100px] h-[100px] rounded object-cover" />
                     <div>
-                      <h3 className="text-base font-semibold">{item.product?.name || item.name}</h3>
+                      <h3 className="text-base font-semibold">{item.product?.name || item.title.en}</h3>
                       <p className="text-sm text-gray-500">{item.quantity} x ₹{item.price}</p>
                     </div>
                   </div>

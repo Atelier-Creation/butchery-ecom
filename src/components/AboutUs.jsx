@@ -19,7 +19,7 @@ export default function AboutUs() {
             <img
               src="/butcher.jpg"
               alt="background"
-              className="absolute -right-[5%] bottom-45 w-[50%] h-[50%] object-cover opacity-15 -z-10"
+              className="absolute top-10 right-[30%] bottom-45 w-[50%] h-[50%] object-cover opacity-15 -z-10"
             />
 
             <p className="text-lg text-red-600 font-semibold mb-1">
