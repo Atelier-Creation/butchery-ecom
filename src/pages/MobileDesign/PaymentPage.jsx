@@ -508,32 +508,32 @@ function PaymentPage() {
               try { window.dispatchEvent(new Event("userCartChanged")); } catch (e) { }
             } catch (err) { console.warn("Failed to remove user_cart from localStorage:", err); }
 
-            if (user) {
-              try {
-                const token = localStorage.getItem("token");
-                const updatedUser = await updateProfile(
-                  {
-                    phone: mobileInfo,
-                    addresses: [
-                      {
-                        label: "Home",
-                        street: shippingAddress,
-                        city: shippingCity,
-                        state: shippingState,
-                        pincode: shippingPinCode,
-                        isDefault: true,
-                      },
-                    ],
-                  },
-                  token
-                );
-                if (updatedUser && updatedUser.user) {
-                  localStorage.setItem("user", JSON.stringify(updatedUser.user));
-                }
-              } catch (err) {
-                console.warn("Failed to update profile after payment:", err);
-              }
-            }
+            // if (user) {
+            //   try {
+            //     const token = localStorage.getItem("token");
+            //     const updatedUser = await updateProfile(
+            //       {
+            //         phone: mobileInfo,
+            //         addresses: [
+            //           {
+            //             label: "Home",
+            //             street: shippingAddress,
+            //             city: shippingCity,
+            //             state: shippingState,
+            //             pincode: shippingPinCode,
+            //             isDefault: true,
+            //           },
+            //         ],
+            //       },
+            //       token
+            //     );
+            //     if (updatedUser && updatedUser.user) {
+            //       localStorage.setItem("user", JSON.stringify(updatedUser.user));
+            //     }
+            //   } catch (err) {
+            //     console.warn("Failed to update profile after payment:", err);
+            //   }
+            // }
 
             // ensure at least 5s of processing overlay so user doesn't see a flash
             const elapsed = Date.now() - procStart;
@@ -818,7 +818,7 @@ function PaymentPage() {
               cartItems.map((item) => (
                 <div key={item._id || item.id} className="flex justify-between items-center gap-4 border-b pb-4">
                   <div className="flex gap-4 items-center">
-                    <img src={item.product?.images?.[0] || item.product?.image || "/fallback.png"} alt={item.product?.name || item.name} className="w-[100px] h-[100px] rounded object-cover" />
+                    <img src={item.product?.images?.[0] || item.product?.image || item.image} alt={item.product?.name || item.name} className="w-[100px] h-[100px] rounded object-cover" />
                     <div>
                       <h3 className="text-base font-semibold">{item.product?.name || item.name}</h3>
                       <p className="text-sm text-gray-500">{item.quantity} x ₹{item.price}</p>

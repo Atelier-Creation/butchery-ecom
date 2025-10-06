@@ -85,108 +85,136 @@ export const QuickModal = ({ productId }) => {
   const decrease = () => quantity > 1 && setQuantity(quantity - 1);
 
   const handleAddToCart = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      closeModal();
-      navigate("/login");
-      return;
-    }
+  const token = localStorage.getItem("token");
 
-    if (!selectedDrop && product?.cutType?.length) {
-      alert("Please select a cut type");
-      return;
-    }
-    if (!selected) {
-      alert("Please select a size");
-      return;
-    }
+  // Common validation
+  if (!selected) {
+    alert("Please select a size");
+    return;
+  }
+  if (!selectedDrop && product?.cutType?.length) {
+    alert("Please select a cut type");
+    return;
+  }
 
-    try {
-      // add to server cart
-      await addToCartAPI(product._id, quantity, selected.price, selected._id);
-
-      // add to local/cart context (this intentionally opens drawer for "Add to cart" action)
-      addToCart({
-        ...product,
-        quantity,
-        size: `${selected.weight}`,
-        unit: selected.unit,
-        cutType: selectedDrop || "",
-        price: selected.price,
-        discountPrice: selected.discountPrice,
-        id: product._id,
-        title: { en: product.name, ta: product.tamilName },
-        image: product.images?.[0],
-      });
-
-      // show drawer after adding
-      toggleDrawer(true);
-      closeModal();
-    } catch (err) {
-      console.error(err);
-      alert("Failed to add item to cart. Please try again.");
-    }
+  const cartItem = {
+    productId: product._id,
+    quantity,
+    size: `${selected.weight}`,
+    unit: selected.unit,
+    cutType: selectedDrop || "",
+    price: selected.price,
+    discountPrice: selected.discountPrice,
+    id: product._id,
+    title: { en: product.name, ta: product.tamilName },
+    image: product.images?.[0],
+    weightOptionId: selected._id,
   };
+
+  // If user is NOT logged in → store in guest_cart
+  if (!token) {
+    let guestCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
+
+    // Check if product already exists (same product + cut + weight)
+    const existingIndex = guestCart.findIndex(
+      (item) =>
+        item.productId === cartItem.productId &&
+        item.cutType === cartItem.cutType &&
+        item.weightOptionId === cartItem.weightOptionId
+    );
+
+    if (existingIndex >= 0) {
+      guestCart[existingIndex].quantity += quantity;
+    } else {
+      guestCart.push(cartItem);
+    }
+
+    localStorage.setItem("guest_cart", JSON.stringify(guestCart));
+
+    // Optionally update local cart drawer
+    addToCart(cartItem);
+    toggleDrawer(true);
+    closeModal();
+    return;
+  }
+
+  // Logged-in user → normal API flow
+  try {
+    await addToCartAPI(product._id, quantity, selected.price, selected._id);
+
+    addToCart(cartItem);
+    toggleDrawer(true);
+    closeModal();
+  } catch (err) {
+    console.error(err);
+    alert("Failed to add item to cart. Please try again.");
+  }
+};
+
 
   // Buy Now — add item to cart and go straight to /checkout WITHOUT opening the drawer
   const handleBuyNow = async () => {
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
-    // If not logged in, redirect to login first
-    if (!token) {
-      closeModal();
-      navigate("/login");
-      return;
-    }
+  if (!selected) {
+    alert("Please select a size");
+    return;
+  }
+  if (!selectedDrop && product?.cutType?.length) {
+    alert("Please select a cut type");
+    return;
+  }
 
-    // Validate selection
-    if (!selected) {
-      alert("Please select a size");
-      return;
-    }
-    if (!selectedDrop && product?.cutType?.length) {
-      alert("Please select a cut type");
-      return;
-    }
-
-    try {
-      // Add to server-side cart
-      await addToCartAPI(product._id, quantity, selected.price, selected._id);
-
-      // Update local cart context so UI and header count reflect the new item.
-      // NOTE: addToCart may open the drawer in your context implementation.
-      // To ensure the drawer is NOT open on checkout, we:
-      // 1) call addToCart (to update context/local state)
-      // 2) immediately close the drawer (toggleDrawer(false))
-      // 3) then navigate to /checkout
-      addToCart({
-        ...product,
-        quantity,
-        size: `${selected.weight}`,
-        unit: selected.unit,
-        cutType: selectedDrop || "",
-        price: selected.price,
-        discountPrice: selected.discountPrice,
-        id: product._id,
-        title: { en: product.name, ta: product.tamilName },
-        image: product.images?.[0],
-      });
-
-      // Ensure drawer is closed (in case addToCart triggered it)
-      try {
-        toggleDrawer(false);
-      } catch (e) {
-        // ignore if toggleDrawer not available or throws
-      }
-
-      closeModal();
-      // navigate to checkout page
-      navigate("/checkout");
-    } catch (err) {
-      console.error("Buy Now failed:", err);
-      alert("Failed to proceed to checkout. Please try again.");
-    }
+  const cartItem = {
+    productId: product._id,
+    quantity,
+    size: `${selected.weight}`,
+    unit: selected.unit,
+    cutType: selectedDrop || "",
+    price: selected.price,
+    discountPrice: selected.discountPrice,
+    id: product._id,
+    title: { en: product.name, ta: product.tamilName },
+    image: product.images?.[0],
+    weightOptionId: selected._id,
   };
+
+  // If NOT logged in → store guest cart, then redirect to login
+  if (!token) {
+    let guestCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
+    const existingIndex = guestCart.findIndex(
+      (item) =>
+        item.productId === cartItem.productId &&
+        item.cutType === cartItem.cutType &&
+        item.weightOptionId === cartItem.weightOptionId
+    );
+
+    if (existingIndex >= 0) {
+      guestCart[existingIndex].quantity += quantity;
+    } else {
+      guestCart.push(cartItem);
+    }
+
+    localStorage.setItem("guest_cart", JSON.stringify(guestCart));
+
+    closeModal();
+    navigate("/checkout"); 
+    return;
+  }
+
+  // Logged-in flow
+  try {
+    await addToCartAPI(product._id, quantity, selected.price, selected._id);
+    addToCart(cartItem);
+    toggleDrawer(false);
+    closeModal();
+    navigate("/checkout");
+  } catch (err) {
+    console.error("Buy Now failed:", err);
+    alert("Failed to proceed to checkout. Please try again.");
+  }
+};
+
 
   if (!product)
     return (
