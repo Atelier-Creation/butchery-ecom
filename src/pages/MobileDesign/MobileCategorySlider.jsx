@@ -60,7 +60,7 @@ const MobileCategorySlider = () => {
     <div
       key={idx}
       onClick={() => navigate(`/collections/${item.id}`)}
-      className="relative w-40 p-3 cursor-pointer rounded-xl overflow-hidden transition-all duration-300 justify-self-center shadow-lg"
+      className="relative w-36 p-3 cursor-pointer rounded-xl overflow-hidden transition-all duration-300 justify-self-center shadow-lg"
       data-aos="fade-up"
       data-aos-delay={idx * 100}
     >
@@ -68,7 +68,7 @@ const MobileCategorySlider = () => {
       <img
         src={item.img}
         alt={item.title.en}
-        className="w-full h-34 object-cover rounded-t-xl"
+        className="w-full h-30 object-cover rounded-t-xl"
       />
 
       {/* Text under image */}
