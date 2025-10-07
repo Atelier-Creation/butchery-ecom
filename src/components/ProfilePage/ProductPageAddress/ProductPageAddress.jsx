@@ -95,7 +95,7 @@ function ProductPageAddress() {
     <div className='profile-page-info-con'>
       <div className="saved-address-heading">
       <h2>Saved Addresses</h2>
-      <button className='new-address-add-btn' onClick={handleAddNew}>
+      <button className='new-address-add-btn'  onClick={handleAddNew}>
         + ADD NEW ADDRESS
       </button>
       </div>

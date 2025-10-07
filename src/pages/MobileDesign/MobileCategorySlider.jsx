@@ -87,7 +87,7 @@ const MobileCategorySlider = () => {
           pagination={{ clickable: true }}
           autoplay={{ delay: 3000, disableOnInteraction: false }}
           className="py-20 "
-          style={{overflowY:'visible'}}
+          style={{overflowY:'visible', paddingTop:"3rem", paddingBottom:"3rem"}}
         >
           {collections.map((item, idx) => (
             <SwiperSlide key={idx}>
