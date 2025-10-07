@@ -16,33 +16,31 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
 
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [activeButton, setActiveButton] = useState(null);
+  // { key: itemKey, type: 'increment' | 'decrement' }
 
-  // ✅ check if user logged in
   const isLoggedIn = !!localStorage.getItem("token") || !!localStorage.getItem("user_id");
 
-  // Calculate total
+  const getItemKey = (item, index) => item._id || item.id || `guest-${index}`;
+
   const total = cartItems.reduce(
     (sum, item) => sum + (item.price || 0) * (item.quantity || 0),
     0
   );
 
-  // Safe getter for product image
   const getImageSrc = (item) => {
     if (!item) return "/fallback.png";
     if (item.product) {
-      if (Array.isArray(item.product.images) && item.product.images.length > 0) {
+      if (Array.isArray(item.product.images) && item.product.images.length > 0)
         return item.product.images[0];
-      }
-      if (typeof item.product.images === "string" && item.product.images) {
+      if (typeof item.product.images === "string" && item.product.images)
         return item.product.images;
-      }
       if (item.product.image) return item.product.image;
     }
     if (item.image) return item.image;
     return "/fallback.png";
   };
 
-  // Safe getter for display name
   const getDisplayName = (item) => {
     if (!item) return "Untitled";
     if (item.product && (item.product.name || item.product.title)) {
@@ -54,21 +52,14 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
     return "Untitled";
   };
 
-  // ✅ Fetch cart depending on login state
   useEffect(() => {
     const fetchCart = async () => {
       setLoading(true);
       try {
         if (!isLoggedIn) {
-          // Guest user → localStorage cart
           const localData = localStorage.getItem("guest_cart");
-          if (localData) {
-            setCartItems(JSON.parse(localData));
-          } else {
-            setCartItems([]);
-          }
+          setCartItems(localData ? JSON.parse(localData) : []);
         } else {
-          // Logged-in user → backend cart
           const data = await getCartByUserId();
           if (data?.data?.items) {
             setCartItems(data.data.items);
@@ -85,31 +76,38 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
     if (drawerOpen) fetchCart();
   }, [drawerOpen, isLoggedIn]);
 
-  // ✅ Update quantity (handles guest + logged-in)
-  const handleUpdateQuantity = async (item, delta) => {
+  const handleUpdateQuantity = async (item, delta, type) => {
+  const newQuantity = (item.quantity || 0) + delta;
+  if (newQuantity < 1) return;
+
+  // Optimistically update the active button state
+  setActiveButton({ key: getItemKey(item), type });
+  setTimeout(() => setActiveButton(null), 200);
+
+  // Optimistically update cart in UI first
+  setCartItems((prev) => {
+    const updated = prev.map((i, idx) =>
+      getItemKey(i, idx) === getItemKey(item) ? { ...i, quantity: newQuantity } : i
+    );
+    localStorage.setItem(
+      isLoggedIn ? "user_cart" : "guest_cart",
+      JSON.stringify(updated)
+    );
+    return updated;
+  });
+
+  // Update server in the background
+  if (isLoggedIn) {
     try {
-      const newQuantity = (item.quantity || 0) + delta;
-      if (newQuantity < 1) return;
-
-      if (isLoggedIn) {
-        await updateCartItemAPI(item._id, { quantity: newQuantity });
-      }
-
-      setCartItems((prev) => {
-        const updated = prev.map((i) =>
-          i._id === item._id ? { ...i, quantity: newQuantity } : i
-        );
-
-        // store in correct localStorage
-        localStorage.setItem(isLoggedIn ? "user_cart" : "guest_cart", JSON.stringify(updated));
-        return updated;
-      });
+      await updateCartItemAPI(item._id, { quantity: newQuantity });
     } catch (err) {
-      console.error("Failed to update quantity", err);
+      console.error("Failed to update quantity on server", err);
+      // Optionally: revert UI change if API fails
     }
-  };
+  }
+};
 
-  // ✅ Remove item (handles guest + logged-in)
+
   const handleRemove = async (item) => {
     try {
       if (isLoggedIn) {
@@ -121,8 +119,13 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
       }
 
       setCartItems((prev) => {
-        const updated = prev.filter((i) => i._id !== item._id);
-        localStorage.setItem(isLoggedIn ? "user_cart" : "guest_cart", JSON.stringify(updated));
+        const updated = prev.filter(
+          (i, idx) => getItemKey(i, idx) !== getItemKey(item)
+        );
+        localStorage.setItem(
+          isLoggedIn ? "user_cart" : "guest_cart",
+          JSON.stringify(updated)
+        );
         if (typeof onCartChange === "function") onCartChange();
         return updated;
       });
@@ -199,21 +202,16 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
               </button>
             </div>
           ) : (
-            cartItems.map((item) => (
-              <div key={item._id || item.id} className="d-flex my-3 flex gap-3">
+            cartItems.map((item, idx) => (
+              <div key={getItemKey(item, idx)} className="d-flex my-3 flex gap-3">
                 <img
                   src={getImageSrc(item)}
                   alt={getDisplayName(item)}
                   className="me-3"
-                  style={{
-                    width: "100px",
-                    height: "100px",
-                    objectFit: "cover",
-                  }}
+                  style={{ width: "100px", height: "100px", objectFit: "cover" }}
                 />
                 <div className="flex-grow-1 flex flex-col gap-1">
                   <div className="text-base font-semibold">{getDisplayName(item)}</div>
-
                   {item.weight && <p className="text-muted mb-1">{item.weight} {item.unit}</p>}
 
                   <div className="flex items-center justify-between">
@@ -230,16 +228,22 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
                     </button>
                   </div>
 
-                  <div className="quantity-box-cart-drawer">
+                  <div
+                    className={`quantity-box-cart-drawer ${activeButton?.key === getItemKey(item) ? "active-quantity-box" : ""
+                      }`}
+                  >
                     <button
-                      onClick={() => handleUpdateQuantity(item, -1)}
+                      onClick={() => handleUpdateQuantity(item, -1, "decrement")}
                       disabled={item.quantity === 1}
                     >
                       -
                     </button>
                     <span>{item.quantity}</span>
-                    <button onClick={() => handleUpdateQuantity(item, 1)}>+</button>
+                    <button onClick={() => handleUpdateQuantity(item, 1, "increment")}>
+                      +
+                    </button>
                   </div>
+
                 </div>
               </div>
             ))

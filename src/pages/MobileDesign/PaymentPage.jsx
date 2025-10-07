@@ -3,7 +3,7 @@ import Confetti from "react-confetti";
 import happyAnim from "../../assets/LottieJson/happy.json";
 import Lottie from "lottie-react";
 import MobileFooter from "./MobileFooter";
-import { Trash2 } from "lucide-react";
+// import { Trash2 } from "lucide-react";
 import Navbar from "./Navbar";
 import { useNavigate } from "react-router-dom";
 import { getCartByUserId, removeFromCart as cartApi } from "../../api/cartApi";
@@ -88,6 +88,12 @@ function PaymentPage() {
   const [mapUrl, setMapUrl] = useState("");
   const [errors, setErrors] = useState({});
   const [showLocationModal, setShowLocationModal] = useState(false);
+  useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    navigate("/login");
+  }
+}, [navigate]);
 
   // ------------------ Guest cart helpers ------------------
   const getGuestCart = useCallback(() => {
@@ -824,12 +830,12 @@ function PaymentPage() {
                       <p className="text-sm text-gray-500">{item.quantity} x ₹{item.price}</p>
                     </div>
                   </div>
-                  <div className="flex flex-col items-end gap-1">
+                  {/* <div className="flex flex-col items-end gap-1">
                     <span className="text-lg font-medium">₹{((item.price || 0) * (item.quantity || 0)).toLocaleString()}</span>
                     <button className="text-red-600 text-sm underline" onClick={() => handleRemoveItem(item._id || item.id)}>
                       <Trash2 size={16} className="inline mb-0.5" />
                     </button>
-                  </div>
+                  </div> */}
                 </div>
               ))
             )}

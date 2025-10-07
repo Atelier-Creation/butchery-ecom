@@ -128,7 +128,6 @@ function PDPsec1() {
     const token = localStorage.getItem("token");
 
     const cartItem = {
-      // keep minimal snapshot data needed by UI rather than full product where possible
       productId: product?._id,
       quantity,
       size: `${selected?.weight ?? ""}${selected?.unit ? ` ${selected.unit}` : ""}`,
@@ -141,48 +140,40 @@ function PDPsec1() {
       weightOptionId: selected?._id || null,
     };
 
-    if (token) {
-      // logged-in flow: call API and also update client cart
-      try {
-        // addToCartAPI signature: (productId, quantity, price, weightOptionId, unit)
-        await addToCartAPI(
-          product._id,
-          quantity,
-          selected?.price ?? 0,
-          selected?._id ?? null,
-          selected?.unit ?? null
-        );
-      } catch (err) {
-        console.warn("addToCartAPI failed (continuing with local UI update):", err);
-        // don't stop the UI experience — continue to update client cart
-      }
-
-      // update UI/cart context
-      addToCart({
-        ...cartItem,
-        id: product._id,
-      });
-      // open drawer so user sees cart
-      toggleDrawer(true);
-    } else {
-      // guest flow: store in localStorage guest_cart and update UI
-      mergeGuestCartItem({
-        ...cartItem,
-        id: product._id,
-      });
-
-      // update UI/cart context so site behaves same as logged-in
-      addToCart({
-        ...cartItem,
-        id: product._id,
-      });
-      toggleDrawer(true);
+    if (!token) {
+      // 👇 Redirect to login if no token
+      navigate("/login");
+      return;
     }
+
+    try {
+      await addToCartAPI(
+        product._id,
+        quantity,
+        selected?.price ?? 0,
+        selected?._id ?? null,
+        selected?.unit ?? null
+      );
+    } catch (err) {
+      console.warn("addToCartAPI failed:", err);
+    }
+
+    addToCart({
+      ...cartItem,
+      id: product._id,
+    });
+    toggleDrawer(true);
   };
 
   // ----- Buy now handler (redirect to checkout) -----
   const handleBuyNow = async () => {
     const token = localStorage.getItem("token");
+
+    if (!token) {
+      // ❌ No token: redirect to login immediately
+      navigate("/login");
+      return;
+    }
 
     // validate selections similar to Add to Cart
     if (!selected && product?.weightOptions?.length) {
@@ -196,7 +187,7 @@ function PDPsec1() {
 
     const purchaseItem = {
       id: product._id,
-      product, // optional full product snapshot
+      product,
       quantity,
       size: `${selected?.weight ?? ""}${selected?.unit ? ` ${selected.unit}` : ""}`,
       unit: selected?.unit ?? "",
@@ -208,7 +199,7 @@ function PDPsec1() {
       title: { en: product?.name, ta: product?.tamilName },
     };
 
-    // Save a snapshot so checkout can prefill (optional but helpful)
+    // Save a snapshot so checkout can prefill
     try {
       localStorage.setItem(
         "pendingCheckout",
@@ -223,43 +214,30 @@ function PDPsec1() {
           shippingPinCode: "",
           total: (selected?.price || 0) * quantity,
           cartItems: [purchaseItem],
-          buyNow: true, // flag to indicate direct buy-now flow
+          buyNow: true,
         })
       );
     } catch (e) {
       console.warn("Could not save pending checkout:", e);
     }
 
-    if (token) {
-      // Logged-in: attempt to add to server cart (fire-and-forget), but DO NOT update client cart UI
-      try {
-        await addToCartAPI(
-          product._id,
-          quantity,
-          selected?.price ?? 0,
-          selected?._id ?? null,
-          selected?.unit ?? null
-        );
-      } catch (err) {
-        console.warn("addToCartAPI failed for BuyNow (continuing):", err);
-      }
-
-      // redirect to checkout without opening drawer
-      navigate("/checkout");
-    } else {
-      // Guest: merge into guest_cart (localStorage) but do NOT call addToCart or open drawer
-      try {
-        mergeGuestCartItem({
-          ...purchaseItem,
-          id: product._id,
-        });
-      } catch (err) {
-        console.warn("Failed to merge guest cart for BuyNow:", err);
-      }
-
-      navigate("/checkout");
+    // Logged-in: attempt to add to server cart (fire-and-forget)
+    try {
+      await addToCartAPI(
+        product._id,
+        quantity,
+        selected?.price ?? 0,
+        selected?._id ?? null,
+        selected?.unit ?? null
+      );
+    } catch (err) {
+      console.warn("addToCartAPI failed for BuyNow (continuing):", err);
     }
+
+    // redirect to checkout
+    navigate("/checkout");
   };
+
 
   return (
     <>

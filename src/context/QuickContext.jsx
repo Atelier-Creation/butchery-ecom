@@ -111,29 +111,10 @@ export const QuickModal = ({ productId }) => {
     weightOptionId: selected._id,
   };
 
-  // If user is NOT logged in → store in guest_cart
+  // If user is NOT logged in → redirect to login
   if (!token) {
-    let guestCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
-
-    // Check if product already exists (same product + cut + weight)
-    const existingIndex = guestCart.findIndex(
-      (item) =>
-        item.productId === cartItem.productId &&
-        item.cutType === cartItem.cutType &&
-        item.weightOptionId === cartItem.weightOptionId
-    );
-
-    if (existingIndex >= 0) {
-      guestCart[existingIndex].quantity += quantity;
-    } else {
-      guestCart.push(cartItem);
-    }
-
-    localStorage.setItem("guest_cart", JSON.stringify(guestCart));
-
-    // Optionally update local cart drawer
-    addToCart(cartItem);
-    toggleDrawer(true);
+    alert("Please log in to add items to your cart.");
+    navigate("/login");
     closeModal();
     return;
   }
@@ -156,6 +137,7 @@ export const QuickModal = ({ productId }) => {
   const handleBuyNow = async () => {
   const token = localStorage.getItem("token");
 
+  // Common validation
   if (!selected) {
     alert("Please select a size");
     return;
@@ -179,30 +161,15 @@ export const QuickModal = ({ productId }) => {
     weightOptionId: selected._id,
   };
 
-  // If NOT logged in → store guest cart, then redirect to login
+  // 🔒 If NOT logged in → redirect to login
   if (!token) {
-    let guestCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
-    const existingIndex = guestCart.findIndex(
-      (item) =>
-        item.productId === cartItem.productId &&
-        item.cutType === cartItem.cutType &&
-        item.weightOptionId === cartItem.weightOptionId
-    );
-
-    if (existingIndex >= 0) {
-      guestCart[existingIndex].quantity += quantity;
-    } else {
-      guestCart.push(cartItem);
-    }
-
-    localStorage.setItem("guest_cart", JSON.stringify(guestCart));
-
+    alert("Please log in to continue to checkout.");
+    navigate("/login");
     closeModal();
-    navigate("/checkout"); 
     return;
   }
 
-  // Logged-in flow
+  // ✅ Logged-in flow
   try {
     await addToCartAPI(product._id, quantity, selected.price, selected._id);
     addToCart(cartItem);

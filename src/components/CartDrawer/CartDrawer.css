@@ -59,6 +59,19 @@
   color: #d6791f !important;
 }
 
+.quantity-box-cart-drawer.active-quantity-box {
+  background-color: #ee1c25; /* change to your desired color */
+  color: transparent;
+  border-color: #ee1c25;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.quantity-box-cart-drawer.active-quantity-box button {
+  color: #fff;
+  background-color: transparent;
+}
+
+
 .cart-backdrop {
   position: fixed;
   top: 0;
