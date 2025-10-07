@@ -10,6 +10,7 @@ import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { color } from "framer-motion";
 
 const MobileBestseller = ({
   title = "Best Sellers",
@@ -48,16 +49,17 @@ const MobileBestseller = ({
   };
 
   return (
-    <div className="block px-5 py-6 lg:px-30 lg:mt-10">
+    <div className="block px-5 py-2 lg:px-30 lg:mt-2">
       {/* Header */}
       <div className="lg:flex lg:justify-between">
         <div>
           {subtitle && (
-            <p className="text-[#4a5565] pt-6 text-lg lg:text-xl font-semibold">{subtitle}</p>
+            <p className="text-lg text-red-600 font-semibold mb-1">{subtitle}</p>
           )}
-          <h2 className="text-xl font-bold mb-4 lg:mb-8 lg:text-4xl">
+          <h2 className="text-3xl md:text-3xl font-extrabold leading-tight mb-4 text-gray-700">
             {title}
           </h2>
+
         </div>
         <div className="hidden lg:block mt-6 text-center">
           <button

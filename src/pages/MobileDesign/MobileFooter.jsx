@@ -45,7 +45,7 @@ const MobileFooter = () => {
           Having had very bitter experiences with the local meat shops and
           seeing that my free range Country Chicken were sold alongside the
           other poultry, I decided to bring them directly to customers. Thus the
-          brand “Le Naturel Meat” came into existence!
+          brand “Iraichi Kadai” came into existence!
         </p>
       </div>
 
@@ -103,7 +103,7 @@ const MobileFooter = () => {
             Having had very bitter experiences with the local meat shops and
             seeing that my free range Country Chicken were sold alongside the
             other poultry, I decided to bring them directly to customers. Thus
-            the brand “Le Naturel Meat” came into existence!
+            the brand “Iraichi Kadai” came into existence!
           </p>
         </div>
 

@@ -47,36 +47,87 @@ const MobileCategorySlider = () => {
 
   return (
     <div className="w-full px-5 lg:px-12 mb-6 lg:mt-6">
-      <p className="text-[#4a5565] pt-6 text-xl lg:text-xl font-semibold">
+      <p className="text-lg text-red-600 font-semibold mb-1">
         Categories
       </p>
-      <p className="py-1 mb-6 text-xl font-bold lg:text-3xl">
+      <p className="text-3xl md:text-3xl font-extrabold leading-tight mb-4 text-gray-700">
         Enjoy Fresh Meat With The Best Quality
       </p>
 
       {/* ✅ Mobile View */}
-      <div className="block md:hidden category grid grid-cols-2 gap-4 justify-items-center">
-        {collections.map((item, idx) => (
-          <div
-            key={idx}
-            onClick={() => navigate(`/collections/${item.id}`)}
-            className="relative w-36 p-3 cursor-pointer rounded-xl overflow-hidden transition-all duration-300 justify-self-center shadow-lg"
-            data-aos="fade-up"
-            data-aos-delay={idx * 100}
-          >
-            <img
-              src={item.img}
-              alt={item.title.en}
-              className="w-full h-30 object-cover rounded-t-xl"
-            />
-            <div className="p-2 text-center bg-white rounded-b-xl">
-              <h3 className="text-base text-sm font-semibold text-black">
-                {item.title.en}
-              </h3>
-            </div>
+      <div className="block md:hidden category space-y-4">
+  {/* FIRST ROW: two wide horizontal cards (each = 50% width) */}
+  <div className="flex w-full gap-2">
+    {collections.slice(0, 2).map((item, idx) => (
+      <div
+        key={item.id ?? idx}
+        onClick={() => navigate(`/collections/${item.id}`)}
+        className="relative flex items-center overflow-hidden bg-white rounded-2xl shadow-md w-1/2 p-3 cursor-pointer  transition-transform duration-300 hover:scale-102 h-30"
+        data-aos="fade-up"
+        data-aos-delay={idx * 100}
+      >
+        {/* circular image slightly inset */}
+        <div className="flex-shrink-0 -ml-1">
+          <img
+            src={item.img}
+            alt={item.title.en}
+            className="w-20 h-20 object-cover rounded-full shadow-md border-4 border-white"
+          />
+        </div>
+
+        {/* title on the right */}
+        <div className="ml-3 flex-1">
+          <h3 className="text-sm font-semibold text-gray-700">
+            {item.title.en}
+          </h3>
+        </div>
+
+        {/* pink bottom badge (positioned absolute to overlap bottom center) */}
+        <div className="absolute bottom-2  left-7/11 transform -translate-x-1/2 translate-y-3/4">
+          <div className="bg-pink-100 w-20 h-6 text-[8px] text-center  py-1 rounded-full shadow-sm text-xs text-gray-700">
+            {item.title.ta || ""}
           </div>
-        ))}
+        </div>
       </div>
+    ))}
+  </div>
+
+  {/* SECOND ROW: three small square cards (each = 1/3 width) */}
+  <div className="grid grid-cols-3 gap-2 w-full">
+    {collections.slice(2, 5).map((item, idx) => (
+      <div
+        key={item.id ?? idx + 2}
+        onClick={() => navigate(`/collections/${item.id}`)}
+        className="relative h-27 flex flex-col overflow-hidden items-center bg-white rounded-2xl shadow-md p-2 cursor-pointer transition-transform duration-300 hover:scale-105"
+        data-aos="fade-up"
+        data-aos-delay={(idx + 2) * 100}
+      >
+        <div className="flex justify-center -mt-2">
+          <img
+            src={item.img}
+            alt={item.title.en}
+            className="w-16 h-16 object-cover rounded-full shadow-md border-2 border-white"
+          />
+        </div>
+        <div className="text-center mt-2">
+          <h3 className="text-[10px] font-medium text-gray-700">
+            {item.title.en}
+          </h3>
+        </div>
+
+        <div className="absolute bottom-2 left-1/2  transform -translate-x-1/2 translate-y-3/4">
+          <div className="bg-pink-100 w-20  h-6 text-[8px] text-center px-2 py-0.5 rounded-full text-[8px] text-gray-700">
+            {item.title.ta || ""}
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
+
+
+
 
       {/* 🖥️ Desktop View with Swiper (but same design) */}
       <div className="hidden md:block category">
@@ -86,7 +137,7 @@ const MobileCategorySlider = () => {
           slidesPerView={4}
           pagination={{ clickable: true }}
           autoplay={{ delay: 3000, disableOnInteraction: false }}
-          className="py-20 "
+          className="py-10 "
           style={{overflowY:'visible', paddingTop:"3rem", paddingBottom:"3rem"}}
         >
           {collections.map((item, idx) => (
