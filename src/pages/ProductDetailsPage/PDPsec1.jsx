@@ -167,76 +167,69 @@ function PDPsec1() {
 
   // ----- Buy now handler (redirect to checkout) -----
   const handleBuyNow = async () => {
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
-    if (!token) {
-      // ❌ No token: redirect to login immediately
-      navigate("/login");
-      return;
-    }
+  // If not logged in, redirect to login immediately
+  if (!token) {
+    navigate("/login");
+    return;
+  }
 
-    // validate selections similar to Add to Cart
-    if (!selected && product?.weightOptions?.length) {
-      alert("Please select a size");
-      return;
-    }
-    if (!selectedDrop && product?.cutType?.length) {
-      alert("Please select a cut type");
-      return;
-    }
+  // validate selections similar to Add to Cart
+  if (!selected && product?.weightOptions?.length) {
+    alert("Please select a size");
+    return;
+  }
+  if (!selectedDrop && product?.cutType?.length) {
+    alert("Please select a cut type");
+    return;
+  }
 
-    const purchaseItem = {
-      id: product._id,
-      product,
-      quantity,
-      size: `${selected?.weight ?? ""}${selected?.unit ? ` ${selected.unit}` : ""}`,
-      unit: selected?.unit ?? "",
-      cutType: selectedDrop || "",
-      price: selected?.price ?? 0,
-      discountPrice: selected?.discountPrice ?? 0,
-      image: product?.images?.[0] || "",
-      weightOptionId: selected?._id || null,
-      title: { en: product?.name, ta: product?.tamilName },
+  const purchaseItem = {
+    id: product._id,
+    product,
+    quantity,
+    size: `${selected?.weight ?? ""}${selected?.unit ? ` ${selected.unit}` : ""}`,
+    unit: selected?.unit ?? "",
+    cutType: selectedDrop || "",
+    price: selected?.price ?? 0,
+    discountPrice: selected?.discountPrice ?? 0,
+    image: product?.images?.[0] || "",
+    weightOptionId: selected?._id || null,
+    title: { en: product?.name, ta: product?.tamilName },
+  };
+
+  // Save a snapshot so checkout can prefill
+  try {
+    const snapshot = {
+      contactInfo: "",
+      mobileInfo: "",
+      shippingFirstName: "",
+      shippingLastName: "",
+      shippingAddress: "",
+      shippingCity: "",
+      shippingState: "",
+      shippingPinCode: "",
+      total: (selected?.price || 0) * quantity,
+      cartItems: [purchaseItem],
+      buyNow: true,
     };
 
-    // Save a snapshot so checkout can prefill
-    try {
-      localStorage.setItem(
-        "pendingCheckout",
-        JSON.stringify({
-          contactInfo: "",
-          mobileInfo: "",
-          shippingFirstName: "",
-          shippingLastName: "",
-          shippingAddress: "",
-          shippingCity: "",
-          shippingState: "",
-          shippingPinCode: "",
-          total: (selected?.price || 0) * quantity,
-          cartItems: [purchaseItem],
-          buyNow: true,
-        })
-      );
-    } catch (e) {
-      console.warn("Could not save pending checkout:", e);
-    }
+    // Save under 'pendingCheckout' (optional) and also under 'bynowProduct' per request
+    localStorage.setItem("pendingCheckout", JSON.stringify(snapshot));
+    localStorage.setItem("bynowProduct", JSON.stringify(purchaseItem));
+  } catch (e) {
+    console.warn("Could not save pending checkout / bynowProduct:", e);
+  }
 
-    // Logged-in: attempt to add to server cart (fire-and-forget)
-    try {
-      await addToCartAPI(
-        product._id,
-        quantity,
-        selected?.price ?? 0,
-        selected?._id ?? null,
-        selected?.unit ?? null
-      );
-    } catch (err) {
-      console.warn("addToCartAPI failed for BuyNow (continuing):", err);
-    }
+  // IMPORTANT: Do NOT add to server cart for Buy Now — skip addToCartAPI entirely.
+  // (If you previously had a fire-and-forget addToCartAPI call, it's removed here.)
 
-    // redirect to checkout
-    navigate("/checkout");
-  };
+  // redirect to checkout with query params + state (so checkout page can use either)
+  const query = `?buyNow=true&productId=${encodeURIComponent(product._id)}`;
+  navigate(`/checkout${query}`, { state: { buyNow: true, purchaseItem } });
+};
+
 
 
   return (
