@@ -1,28 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { Eye, EyeClosed } from "lucide-react";
 import MobileFooter from "../MobileDesign/MobileFooter";
 import Navbar from "../MobileDesign/Navbar";
-import { registerUser } from "../../api/authApi"; // your API
+import { registerUser } from "../../api/authApi";
 
 function CreateAccount() {
   const navigate = useNavigate();
-  const location = useLocation(); // <- used to preserve query string
+  const location = useLocation();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  // inline validation errors keyed by field name
   const [errors, setErrors] = useState({
     firstName: "",
     lastName: "",
     email: "",
     password: "",
   });
-
-  // banner messages (no modal)
   const [successMessage, setSuccessMessage] = useState("");
   const [serverMessage, setServerMessage] = useState("");
 
@@ -33,14 +31,12 @@ function CreateAccount() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // validate fields, returns true if valid and sets errors
   const validate = () => {
     const newErrors = { firstName: "", lastName: "", email: "", password: "" };
     if (!firstName.trim()) newErrors.firstName = "First name is required";
     if (!lastName.trim()) newErrors.lastName = "Last name is required";
     if (!email.trim()) newErrors.email = "Email is required";
     else {
-      // basic email pattern
       const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!re.test(email)) newErrors.email = "Please enter a valid email";
     }
@@ -48,20 +44,15 @@ function CreateAccount() {
     else if (password.length < 6) newErrors.password = "Password must be at least 6 characters";
 
     setErrors(newErrors);
-    // return true when no error messages
     return Object.values(newErrors).every((v) => v === "");
   };
 
   const handleCreate = async () => {
-    // clear previous messages/errors
     setErrors({ firstName: "", lastName: "", email: "", password: "" });
     setServerMessage("");
     setSuccessMessage("");
 
-    if (!validate()) {
-      // stop here, inline errors will show under fields
-      return;
-    }
+    if (!validate()) return;
 
     const userData = {
       name: `${firstName.trim()} ${lastName.trim()}`,
@@ -74,24 +65,15 @@ function CreateAccount() {
       const response = await registerUser(userData);
       console.log("Registration success:", response);
 
-      // show inline success banner then redirect to login after short delay,
-      // preserving any query string that was present on the CreateAccount page.
       setSuccessMessage("Account created successfully. Redirecting to login...");
       const search = location.search || "";
-      setTimeout(() => {
-        navigate(`/login${search}`);
-      }, 1200);
+      setTimeout(() => navigate(`/login${search}`), 1200);
     } catch (error) {
       console.error("Registration error:", error);
-
-      // Preferred pattern: server returns either
-      // { message: "..." } OR { errors: { email: "already used", ... } }
       const resp = error?.response?.data;
 
       if (resp && resp.errors && typeof resp.errors === "object") {
-        // map backend field errors into inline errors
         setErrors((prev) => ({ ...prev, ...resp.errors }));
-        // also show a top-level server message if provided
         if (resp.message) setServerMessage(resp.message);
       } else if (resp && resp.message) {
         setServerMessage(resp.message);
@@ -103,7 +85,6 @@ function CreateAccount() {
     }
   };
 
-  // Build login link for "Already have an account?" that also preserves query params
   const loginHref = `/login${location.search || ""}`;
 
   return (
@@ -113,7 +94,6 @@ function CreateAccount() {
       <div className="flex flex-col items-center justify-center gap-3 my-10 lg:w-120 md:w-110 w-full lg:mx-auto md:mx-auto px-5">
         <h1 className="text-3xl font-bold mb-4">Create account</h1>
 
-        {/* Top banners */}
         {serverMessage && (
           <div className="w-full bg-red-100 border border-red-200 text-red-800 rounded-md p-3 mb-3">
             {serverMessage}
@@ -133,14 +113,13 @@ function CreateAccount() {
               if (errors.firstName) setErrors((p) => ({ ...p, firstName: "" }));
             }}
             type="text"
+            autoComplete="given-name"
             placeholder="First Name"
-            className={`py-3 w-full pl-2 border rounded-md ${
+            className={`py-3 w-full pl-3 rounded-md border ${
               errors.firstName ? "border-red-400" : "border-gray-200"
-            }`}
+            } focus:outline-none focus:ring-2 focus:ring-[#EE1c25]`}
           />
-          {errors.firstName && (
-            <p className="text-sm text-red-600 mt-1">{errors.firstName}</p>
-          )}
+          {errors.firstName && <p className="text-sm text-red-600 mt-1">{errors.firstName}</p>}
         </div>
 
         <div className="w-full">
@@ -151,14 +130,13 @@ function CreateAccount() {
               if (errors.lastName) setErrors((p) => ({ ...p, lastName: "" }));
             }}
             type="text"
+            autoComplete="family-name"
             placeholder="Last Name"
-            className={`py-3 w-full pl-2 rounded-md mt-3 ${
-              errors.lastName ? "border-red-400" : "border border-gray-200"
-            }`}
+            className={`py-3 w-full pl-3 rounded-md mt-3 border ${
+              errors.lastName ? "border-red-400" : "border-gray-200"
+            } focus:outline-none focus:ring-2 focus:ring-[#EE1c25]`}
           />
-          {errors.lastName && (
-            <p className="text-sm text-red-600 mt-1">{errors.lastName}</p>
-          )}
+          {errors.lastName && <p className="text-sm text-red-600 mt-1">{errors.lastName}</p>}
         </div>
 
         <div className="w-full">
@@ -168,32 +146,47 @@ function CreateAccount() {
               setEmail(e.target.value);
               if (errors.email) setErrors((p) => ({ ...p, email: "" }));
             }}
-            type="text"
+            type="email"
+            autoComplete="email"
             placeholder="Email"
-            className={`py-3 w-full pl-2 rounded-md ${
-              errors.email ? "border-red-400" : "border border-gray-200"
-            }`}
+            className={`py-3 w-full pl-3 rounded-md mt-3 border ${
+              errors.email ? "border-red-400" : "border-gray-200"
+            } focus:outline-none focus:ring-2 focus:ring-[#EE1c25]`}
           />
-          {errors.email && (
-            <p className="text-sm text-red-600 mt-1">{errors.email}</p>
-          )}
+          {errors.email && <p className="text-sm text-red-600 mt-1">{errors.email}</p>}
         </div>
 
-        <div className="w-full">
+        {/* Password with Eye Icon */}
+        <div className="w-full relative">
           <input
             value={password}
             onChange={(e) => {
               setPassword(e.target.value);
               if (errors.password) setErrors((p) => ({ ...p, password: "" }));
             }}
-            type="password"
+            type={showPassword ? "text" : "password"}
+            autoComplete="new-password"
             placeholder="Password"
-            className={`py-3 w-full pl-2 rounded-md mt-3 ${
-              errors.password ? "border-red-400" : "border border-gray-200"
-            }`}
+            className={`py-3 w-full pl-3 pr-12 rounded-md mt-3 border ${
+              errors.password ? "border-red-400" : "border-gray-200"
+            } focus:outline-none focus:ring-2 focus:ring-[#EE1c25]`}
+            aria-invalid={errors.password ? "true" : "false"}
+            aria-describedby={errors.password ? "password-error" : undefined}
           />
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute mt-1 right-3 top-1/2 -translate-y-1/2 p-1 text-gray-600 hover:text-gray-800 focus:outline-none z-10"
+            aria-pressed={showPassword}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            title={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? <EyeClosed size={20} /> : <Eye size={20} />}
+          </button>
           {errors.password && (
-            <p className="text-sm text-red-600 mt-1">{errors.password}</p>
+            <p id="password-error" className="text-sm text-red-600 mt-1">
+              {errors.password}
+            </p>
           )}
         </div>
 
