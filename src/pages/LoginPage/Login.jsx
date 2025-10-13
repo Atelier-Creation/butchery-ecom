@@ -141,48 +141,70 @@ function Login() {
   };
 
   const handleLogin = async () => {
-    setError("");
-    if (!email || !password) {
-      setError("Email and Password are required");
-      return;
-    }
+  setError("");
 
-    setLoading(true);
-    try {
-      const response = await loginUser({ email, password });
+  if (!email || !password) {
+    setError("Email and Password are required");
+    return;
+  }
 
-      if (response?.token) {
-        localStorage.setItem("token", response.token);
-        localStorage.setItem("user", JSON.stringify(response.user));
+  setLoading(true);
 
-        const guestCart = getGuestCart();
-        if (guestCart && guestCart.length > 0) {
-          try {
-            await mergeGuestCartToServer();
-            localStorage.removeItem("guest_cart");
-            window.dispatchEvent(new Event("guestCartChanged"));
-          } catch {
-            localStorage.removeItem("guest_cart");
-            window.dispatchEvent(new Event("guestCartChanged"));
-          }
+  try {
+    const response = await loginUser({ email, password });
+
+    if (response?.token) {
+      // ✅ Save login data
+      localStorage.setItem("token", response.token);
+      localStorage.setItem("user", JSON.stringify(response.user));
+
+      // ✅ Merge guest cart if exists
+      const guestCart = getGuestCart();
+      if (guestCart && guestCart.length > 0) {
+        try {
+          await mergeGuestCartToServer();
+        } catch {
+          // Even if merging fails, clear guest cart to avoid duplication
+        } finally {
+          localStorage.removeItem("guest_cart");
+          window.dispatchEvent(new Event("guestCartChanged"));
         }
-
-        // Show login modal
-        setShowLoginModal(true);
-        setTimeout(() => {
-          setShowLoginModal(false);
-          navigate(postLoginRedirect || "/");
-        }, 2000);
-      } else {
-        setError("Invalid login response");
       }
-    } catch (err) {
-      console.error("Login failed:", err);
-      setError(err?.response?.data?.message || err?.message || "Login failed");
-    } finally {
-      setLoading(false);
+
+      // ✅ Get post-login redirect info (path + modal)
+      const savedRedirect = JSON.parse(localStorage.getItem("postLoginRedirect") || "{}");
+      localStorage.removeItem("postLoginRedirect"); // Clear after using
+
+      // ✅ Show login success modal
+      setShowLoginModal(true);
+
+      setTimeout(() => {
+        setShowLoginModal(false);
+
+        // Default redirect path
+        const redirectPath = savedRedirect?.path || "/";
+
+        // Redirect user
+        navigate(redirectPath, { replace: true });
+
+        // ✅ Reopen modal if needed
+        if (savedRedirect?.modal) {
+          window.dispatchEvent(
+            new CustomEvent("reopenModalAfterLogin", { detail: savedRedirect.modal })
+          );
+        }
+      }, 2000);
+    } else {
+      setError("Invalid login response");
     }
-  };
+  } catch (err) {
+    console.error("Login failed:", err);
+    setError(err?.response?.data?.message || err?.message || "Login failed");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const createAccountHref = `/create-account${location.search || ""}`;
 

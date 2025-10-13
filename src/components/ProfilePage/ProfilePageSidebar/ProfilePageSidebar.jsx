@@ -34,6 +34,7 @@ function ProfilePageSidebar({ setActiveSection, activeSection }) {
   const navigate = useNavigate();
 
   const handleSignOut = () => {
+     setMenuOpen(false);
     // remove stored data immediately
     localStorage.removeItem("user");
     localStorage.removeItem("token");
@@ -112,17 +113,6 @@ function ProfilePageSidebar({ setActiveSection, activeSection }) {
           </div>
 
           <div
-            className={isActive("wishlist")}
-            onClick={() => {
-              setActiveSection("wishlist");
-              setMenuOpen(false);
-            }}
-          >
-            <i className="bi bi-heart"></i>
-            <h5>My Wishlist</h5>
-          </div>
-
-          <div
             className={isActive("help")}
             onClick={() => {
               setActiveSection("help");
@@ -134,10 +124,8 @@ function ProfilePageSidebar({ setActiveSection, activeSection }) {
           </div>
 
           <div onClick={handleSignOut} style={{ cursor: "pointer" }}>
-            <div className="profile-page-sidebar-icon-text">
               <i className="bi bi-box-arrow-in-left"></i>
               <h5>Log Out</h5>
-            </div>
           </div>
         </div>
       )}
@@ -183,7 +171,7 @@ function ProfilePageSidebar({ setActiveSection, activeSection }) {
           </div>
         </div>
 
-        <div className="profile-page-sidebar-individual-sec">
+        {/* <div className="profile-page-sidebar-individual-sec">
           <div
             className={isActive("wishlist")}
             onClick={() => {
@@ -194,7 +182,7 @@ function ProfilePageSidebar({ setActiveSection, activeSection }) {
             <i className="bi bi-heart"></i>
             <h5>My Wishlist</h5>
           </div>
-        </div>
+        </div> */}
 
         <div className="profile-page-sidebar-individual-sec">
           <div

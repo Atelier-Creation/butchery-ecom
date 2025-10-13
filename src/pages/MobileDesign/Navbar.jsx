@@ -92,7 +92,8 @@ const Navbar = () => {
       }
     } catch (err) {
       const errMsg =
-        (err?.response && (err.response.data?.message || err.response.data?.error)) ||
+        (err?.response &&
+          (err.response.data?.message || err.response.data?.error)) ||
         err?.message ||
         "";
 
@@ -267,6 +268,12 @@ const Navbar = () => {
               if (token) {
                 navigate("/profile");
               } else {
+                localStorage.setItem(
+                  "postLoginRedirect",
+                  JSON.stringify({
+                    path: window.location.pathname,
+                  })
+                );
                 navigate("/login");
               }
             }}
@@ -345,6 +352,12 @@ const Navbar = () => {
                 if (token) {
                   navigate("/profile");
                 } else {
+                  localStorage.setItem(
+                    "postLoginRedirect",
+                    JSON.stringify({
+                      path: window.location.pathname,
+                    })
+                  );
                   navigate("/login");
                 }
               }}
@@ -360,7 +373,7 @@ const Navbar = () => {
               )}
             </div>
 
-            <CartDrawer onCartChange={updateCartCountBasedOnAuth}/>
+            <CartDrawer onCartChange={updateCartCountBasedOnAuth} />
           </div>
         </div>
       </div>
@@ -377,7 +390,11 @@ const Navbar = () => {
                 }}
                 className="cursor-pointer"
               >
-                <img src="/iraichi-logo1.svg" alt="Logo" className="h-12 w-auto" />
+                <img
+                  src="/iraichi-logo1.svg"
+                  alt="Logo"
+                  className="h-12 w-auto"
+                />
               </div>
               <button
                 onClick={() => setMobileOpen(false)}
@@ -389,16 +406,32 @@ const Navbar = () => {
             </div>
 
             <nav className="flex flex-col gap-4 font-medium">
-              <a href="/" onClick={() => setMobileOpen(false)} className="py-2 ">
+              <a
+                href="/"
+                onClick={() => setMobileOpen(false)}
+                className="py-2 "
+              >
                 Home
               </a>
-              <a href="/collections/all" onClick={() => setMobileOpen(false)} className="py-2 ">
+              <a
+                href="/collections/all"
+                onClick={() => setMobileOpen(false)}
+                className="py-2 "
+              >
                 Product
               </a>
-              <a href="#" onClick={() => setMobileOpen(false)} className="py-2 ">
+              <a
+                href="#"
+                onClick={() => setMobileOpen(false)}
+                className="py-2 "
+              >
                 About Us
               </a>
-              <a href="#" onClick={() => setMobileOpen(false)} className="py-2 ">
+              <a
+                href="#"
+                onClick={() => setMobileOpen(false)}
+                className="py-2 "
+              >
                 Contact Us
               </a>
             </nav>
@@ -410,7 +443,15 @@ const Navbar = () => {
                   const token = localStorage.getItem("token");
                   setMobileOpen(false);
                   if (token) navigate("/profile");
-                  else navigate("/login");
+                  else {
+                    localStorage.setItem(
+                      "postLoginRedirect",
+                      JSON.stringify({
+                        path: window.location.pathname,
+                      })
+                    );
+                    navigate("/login");
+                  }
                 }}
               >
                 My Account
@@ -433,7 +474,7 @@ const Navbar = () => {
       )}
 
       {/* Ensure CartDrawer is available on all viewports */}
-      <CartDrawer onCartChange={updateCartCountBasedOnAuth}/>
+      <CartDrawer onCartChange={updateCartCountBasedOnAuth} />
     </header>
   );
 };

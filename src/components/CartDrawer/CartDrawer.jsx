@@ -16,8 +16,10 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
 
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [quantityErrors, setQuantityErrors] = useState({});
   const [activeButton, setActiveButton] = useState(null);
-  const isLoggedIn = !!localStorage.getItem("token") || !!localStorage.getItem("user_id");
+  const isLoggedIn =
+    !!localStorage.getItem("token") || !!localStorage.getItem("user_id");
 
   const getItemKey = (item, index) => item._id || item.id || `guest-${index}`;
 
@@ -43,10 +45,15 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
   const getDisplayName = (item) => {
     if (!item) return "Untitled";
     if (item.product && (item.product.name || item.product.title)) {
-      return item.product.name || (item.product.title && item.product.title.en) || "Untitled";
+      return (
+        item.product.name ||
+        (item.product.title && item.product.title.en) ||
+        "Untitled"
+      );
     }
     if (item.name) return item.name;
-    if (item.title && typeof item.title === "object" && item.title.en) return item.title.en;
+    if (item.title && typeof item.title === "object" && item.title.en)
+      return item.title.en;
     if (item.title && typeof item.title === "string") return item.title;
     return "Untitled";
   };
@@ -84,14 +91,38 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
     const newQuantity = (item.quantity || 0) + delta;
     if (newQuantity < 1) return;
 
-    setActiveButton({ key: getItemKey(item), type });
+    const itemKey = getItemKey(item);
+
+    // Get available stock for this item
+    const stock = item.stock ?? 0;
+
+    // Check stock
+    if (newQuantity > stock) {
+      setQuantityErrors((prev) => ({
+        ...prev,
+        [itemKey]: `Only ${stock} item${stock > 1 ? "s" : ""} in stock`,
+      }));
+      return; // do not increase beyond stock
+    } else if (delta < 0) {
+      // clear error when decreasing
+      setQuantityErrors((prev) => {
+        const copy = { ...prev };
+        delete copy[itemKey];
+        return copy;
+      });
+    }
+
+    setActiveButton({ key: itemKey, type });
     setTimeout(() => setActiveButton(null), 200);
 
     setCartItems((prev) => {
       const updated = prev.map((i, idx) =>
-        getItemKey(i, idx) === getItemKey(item) ? { ...i, quantity: newQuantity } : i
+        getItemKey(i, idx) === itemKey ? { ...i, quantity: newQuantity } : i
       );
-      localStorage.setItem(isLoggedIn ? "user_cart" : "guest_cart", JSON.stringify(updated));
+      localStorage.setItem(
+        isLoggedIn ? "user_cart" : "guest_cart",
+        JSON.stringify(updated)
+      );
       return updated;
     });
 
@@ -115,8 +146,13 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
       }
 
       setCartItems((prev) => {
-        const updated = prev.filter((i, idx) => getItemKey(i, idx) !== getItemKey(item));
-        localStorage.setItem(isLoggedIn ? "user_cart" : "guest_cart", JSON.stringify(updated));
+        const updated = prev.filter(
+          (i, idx) => getItemKey(i, idx) !== getItemKey(item)
+        );
+        localStorage.setItem(
+          isLoggedIn ? "user_cart" : "guest_cart",
+          JSON.stringify(updated)
+        );
         if (typeof onCartChange === "function") onCartChange();
         return updated;
       });
@@ -151,7 +187,7 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
     // ensure body overflow reset
     document.body.style.overflow = "";
   };
-
+  console.log("Rendering CartDrawer with items:", cartItems);
   return (
     <>
       <div
@@ -164,11 +200,7 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
           <h5 className="mb-0 text-lg font-medium text-gray-600">
             {cartItems.length ? "Item Added to Your Cart" : "Shopping Cart"}
           </h5>
-          <button
-            onClick={closeDrawer}
-            aria-label="Close cart"
-            title="Close"
-          >
+          <button onClick={closeDrawer} aria-label="Close cart" title="Close">
             <X className="text-gray-400" />
           </button>
         </div>
@@ -182,38 +214,91 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
             </>
           ) : cartItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-2 text-center mt-[50%]">
-              <img src="/cart_empty.svg" alt="Empty Cart" className="mb-3" style={{ width: "90px" }} />
+              <img
+                src="/cart_empty.svg"
+                alt="Empty Cart"
+                className="mb-3"
+                style={{ width: "90px" }}
+              />
               <p>Your cart is empty</p>
-              <button className="btn btn-dark mt-3 bg-black text-white py-2 px-5 rounded-md" onClick={() => {
-                navigate("/collections/all");
-                toggleDrawer(false);
-              }}>
+              <button
+                className="btn btn-dark mt-3 bg-black text-white py-2 px-5 rounded-md"
+                onClick={() => {
+                  navigate("/collections/all");
+                  toggleDrawer(false);
+                }}
+              >
                 Continue Shopping
               </button>
             </div>
           ) : (
             cartItems.map((item, idx) => (
-              <div key={getItemKey(item, idx)} className="d-flex my-3 flex gap-3">
-                <img src={getImageSrc(item)} alt={getDisplayName(item)} className="me-3" style={{ width: "100px", height: "100px", objectFit: "cover" }} />
+              <div
+                key={getItemKey(item, idx)}
+                className="d-flex my-3 flex gap-3"
+              >
+                <img
+                  src={getImageSrc(item)}
+                  alt={getDisplayName(item)}
+                  className="me-3"
+                  style={{
+                    width: "100px",
+                    height: "100px",
+                    objectFit: "cover",
+                  }}
+                />
                 <div className="flex-grow-1 flex flex-col gap-1">
-                  <div className="text-base font-semibold">{getDisplayName(item)}</div>
-                  {item.weight && <p className="text-muted mb-1">{item.weight} {item.unit}</p>}
+                  <div className="text-base font-semibold">
+                    {getDisplayName(item)}
+                  </div>
+                  {item.weight && (
+                    <p className="text-muted mb-1">
+                      {item.weight} {item.unit}
+                    </p>
+                  )}
                   <div className="flex items-center justify-between">
                     <span className="fw-semibold text-[#EE1c25]">
                       ₹{item.price} X {item.quantity}
                     </span>
-                    <button className="p-1 rounded hover:bg-gray-100" onClick={() => handleRemove(item)} aria-label={`Remove ${getDisplayName(item)} from cart`} title="Remove">
+                    <div className="flex items-center border justify-between border-gray-400 rounded-full w-fit">
+                      <button
+                        className="px-3 line-clamp-none py-1 text-lg rounded-l-full cursor-pointer transition-colors duration-200 bg-transparent text-gray-800 hover:bg-red-100 active:bg-red-500 active:text-white"
+                        onClick={() =>
+                          handleUpdateQuantity(item, -1, "decrement")
+                        }
+                        disabled={item.quantity === 1}
+                      >
+                        -
+                      </button>
+                      <input
+                        type="text"
+                        value={item.quantity}
+                        readOnly
+                        className="w-6 text-gray-800 font-semiold text-center focus:outline-0 mx-2"
+                      />
+                      <button
+                        className="px-3 line-clamp-none py-1 text-lg rounded-r-full cursor-pointer transition-colors duration-200 bg-transparent text-gray-800 hover:bg-red-100 active:bg-red-500 active:text-white"
+                        onClick={() =>
+                          handleUpdateQuantity(item, 1, "increment")
+                        }
+                      >
+                        +
+                      </button>
+                    </div>
+                    <button
+                      className="p-1 rounded hover:bg-gray-100"
+                      onClick={() => handleRemove(item)}
+                      aria-label={`Remove ${getDisplayName(item)} from cart`}
+                      title="Remove"
+                    >
                       <Trash2 size={18} className="text-red-600" />
                     </button>
                   </div>
-
-                  <div className={`quantity-box-cart-drawer ${activeButton?.key === getItemKey(item) ? "active-quantity-box" : ""}`}>
-                    <button onClick={() => handleUpdateQuantity(item, -1, "decrement")} disabled={item.quantity === 1}>
-                      -
-                    </button>
-                    <span>{item.quantity}</span>
-                    <button onClick={() => handleUpdateQuantity(item, 1, "increment")}>+</button>
-                  </div>
+                  {quantityErrors[getItemKey(item)] && (
+                        <span className="text-red-500 text-xs mt-1">
+                          {quantityErrors[getItemKey(item)]}
+                        </span>
+                      )}
                 </div>
               </div>
             ))
@@ -223,21 +308,29 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
         {cartItems.length > 0 && (
           <div className="border-top p-3 mt-3">
             <div className="flex justify-between items-center mt-3">
-              <strong className="text-2xl font-bold">Subtotal</strong>
-              <span className="text-2xl">₹{total.toLocaleString()}</span>
+              <strong className="text-xl font-bold">Subtotal</strong>
+              <span className="text-3xl font-bold text-black">
+                ₹{total.toLocaleString()}
+              </span>
             </div>
 
             <div className="cart-drawer-footer p-3">
-              <button className="border py-3 rounded-2xl w-full border-[#EE1c25]" onClick={() => {
-                navigate("/view-cart", { state: { cartItems } });
-                toggleDrawer(false);
-              }}>
+              <button
+                className="border py-3 rounded-2xl w-full border-[#EE1c25] mt-3"
+                onClick={() => {
+                  navigate("/view-cart", { state: { cartItems } });
+                  toggleDrawer(false);
+                }}
+              >
                 View Cart
               </button>
-              <button className="w-full border py-3 rounded-2xl border-[#EE1c25] bg-[#EE1c25] text-white mt-3" onClick={() => {
-                navigate("/checkout", { state: { cartItems } });
-                toggleDrawer(false);
-              }}>
+              <button
+                className="w-full border py-3 rounded-2xl border-[#EE1c25] bg-[#EE1c25] text-white mt-3"
+                onClick={() => {
+                  navigate("/checkout", { state: { cartItems } });
+                  toggleDrawer(false);
+                }}
+              >
                 Checkout
               </button>
             </div>

@@ -1,11 +1,19 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { FaTimes, FaMinus, FaPlus, FaBook, FaChevronDown, FaChevronUp } from "react-icons/fa";
+import {
+  FaTimes,
+  FaMinus,
+  FaPlus,
+  FaBook,
+  FaChevronDown,
+  FaChevronUp,
+} from "react-icons/fa";
 import { useCart } from "../components/CartDrawer/CartContext";
 import { useModal, PincodeModal } from "./GlobalModal";
 import MeatCutDropdown from "../pages/MobileDesign/MeatCutDropdown";
 import { useNavigate } from "react-router-dom";
 import { getProductById } from "../api/productApi";
 import { addToCartAPI } from "../api/cartApi";
+import QuantitySelector from "../components/QuantitySelector";
 
 const QuickContext = createContext();
 
@@ -21,6 +29,21 @@ export const ModalQuickProvider = ({ children }) => {
     setModalContent(null);
     setIsOpen(false);
   };
+
+  useEffect(() => {
+    const handleReopen = (e) => {
+      const { type, productId } = e.detail || {};
+      if (type === "quickView" && productId) {
+        // Reopen the same modal
+        setModalContent(<QuickModal productId={productId} />);
+        setIsOpen(true);
+      }
+    };
+
+    window.addEventListener("reopenModalAfterLogin", handleReopen);
+    return () =>
+      window.removeEventListener("reopenModalAfterLogin", handleReopen);
+  }, []);
 
   return (
     <QuickContext.Provider value={{ openModal, closeModal }}>
@@ -54,7 +77,9 @@ export const QuickModal = ({ productId }) => {
 
   const [product, setProduct] = useState(null);
   const [selected, setSelected] = useState(null);
+  const [quantityError, setQuantityError] = useState("");
   const [selectedDrop, setSelectedDrop] = useState("");
+  const [active, setActive] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [openDescription, setOpenDescription] = useState(false);
 
@@ -81,125 +106,172 @@ export const QuickModal = ({ productId }) => {
     }
   }, [product]);
 
-  const increase = () => quantity < 10 && setQuantity(quantity + 1);
-  const decrease = () => quantity > 1 && setQuantity(quantity - 1);
+  const increase = () => {
+    if (!selected) return; // safety check
+    const stock = selected.stock || 0;
 
-  const handleAddToCart = async () => {
-  const token = localStorage.getItem("token");
-
-  // Common validation
-  if (!selected) {
-    alert("Please select a size");
-    return;
-  }
-  if (!selectedDrop && product?.cutType?.length) {
-    alert("Please select a cut type");
-    return;
-  }
-
-  const cartItem = {
-    productId: product._id,
-    quantity,
-    size: `${selected.weight}`,
-    unit: selected.unit,
-    cutType: selectedDrop || "",
-    price: selected.price,
-    discountPrice: selected.discountPrice,
-    id: product._id,
-    title: { en: product.name, ta: product.tamilName },
-    image: product.images?.[0],
-    weightOptionId: selected._id,
+    if (quantity < stock) {
+      setQuantity((q) => q + 1);
+    } else {
+      setQuantityError(`Only ${stock} items in stock`);
+    }
+  };
+  const decrease = () => {
+    quantityError && setQuantityError("");
+    if (quantity > 1) setQuantity((q) => q - 1);
   };
 
-  // If user is NOT logged in → redirect to login
-  if (!token) {
-    alert("Please log in to add items to your cart.");
-    navigate("/login");
-    closeModal();
-    return;
-  }
+  const handleAddToCart = async () => {
+    const token = localStorage.getItem("token");
 
-  // Logged-in user → normal API flow
-  try {
-    await addToCartAPI(product._id, quantity, selected.price, selected._id);
+    // Common validation
+    if (!selected) {
+      alert("Please select a size");
+      return;
+    }
+    if (!selectedDrop && product?.cutType?.length) {
+      alert("Please select a cut type");
+      return;
+    }
 
-    addToCart(cartItem);
-    toggleDrawer(true);
-    closeModal();
-  } catch (err) {
-    console.error(err);
-    alert("Failed to add item to cart. Please try again.");
-  }
-};
+    const cartItem = {
+      productId: product._id,
+      quantity,
+      size: `${selected.weight}`,
+      unit: selected.unit,
+      cutType: selectedDrop || "",
+      price: selected.price,
+      stock: selected.stock,
+      discountPrice: selected.discountPrice,
+      id: product._id,
+      title: { en: product.name, ta: product.tamilName },
+      image: product.images?.[0],
+      weightOptionId: selected._id,
+    };
 
+    // If user is NOT logged in → redirect to login
+    if (!token) {
+      alert("Please log in to add items to your cart.");
+      localStorage.setItem(
+        "postLoginRedirect",
+        JSON.stringify({
+          path: window.location.pathname,
+          modal: {
+            type: "quickView",
+            productId: product._id,
+          },
+        })
+      );
+      navigate("/login");
+      closeModal();
+      return;
+    }
+
+    // Logged-in user → normal API flow
+    try {
+      await addToCartAPI(product._id, quantity, selected.price, selected._id);
+
+      addToCart(cartItem);
+      toggleDrawer(true);
+      closeModal();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to add item to cart. Please try again.");
+    }
+  };
 
   // Buy Now — add item to cart and go straight to /checkout WITHOUT opening the drawer
   const handleBuyNow = async () => {
-  const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-  // If not logged in, redirect to login immediately
-  if (!token) {
-    navigate("/login");
-    closeModal();
-    return;
-  }
+    // If not logged in, redirect to login immediately
+    if (!token) {
+      localStorage.setItem(
+        "postLoginRedirect",
+        JSON.stringify({
+          path: window.location.pathname,
+          modal: {
+            type: "quickView",
+            productId: product._id,
+          },
+        })
+      );
+      navigate("/login");
+      closeModal();
+      return;
+    }
 
-  // validate selections similar to Add to Cart
-  if (!selected && product?.weightOptions?.length) {
-    alert("Please select a size");
-    return;
-  }
-  if (!selectedDrop && product?.cutType?.length) {
-    alert("Please select a cut type");
-    return;
-  }
+    // validate selections similar to Add to Cart
+    if (!selected && product?.weightOptions?.length) {
+      alert("Please select a size");
+      return;
+    }
+    if (!selectedDrop && product?.cutType?.length) {
+      alert("Please select a cut type");
+      return;
+    }
 
-  const purchaseItem = {
-    id: product._id,
-    product,
-    quantity,
-    size: `${selected?.weight ?? ""}${selected?.unit ? ` ${selected.unit}` : ""}`,
-    unit: selected?.unit ?? "",
-    cutType: selectedDrop || "",
-    price: selected?.price ?? 0,
-    discountPrice: selected?.discountPrice ?? 0,
-    image: product?.images?.[0] || "",
-    weightOptionId: selected?._id || null,
-    title: { en: product?.name, ta: product?.tamilName },
-  };
-
-  // Save a snapshot so checkout can prefill
-  try {
-    const snapshot = {
-      contactInfo: "",
-      mobileInfo: "",
-      shippingFirstName: "",
-      shippingLastName: "",
-      shippingAddress: "",
-      shippingCity: "",
-      shippingState: "",
-      shippingPinCode: "",
-      total: (selected?.price || 0) * quantity,
-      cartItems: [purchaseItem],
-      buyNow: true,
+    const purchaseItem = {
+      id: product._id,
+      product,
+      quantity,
+      size: `${selected?.weight ?? ""}${
+        selected?.unit ? ` ${selected.unit}` : ""
+      }`,
+      unit: selected?.unit ?? "",
+      cutType: selectedDrop || "",
+      price: selected?.price ?? 0,
+      discountPrice: selected?.discountPrice ?? 0,
+      image: product?.images?.[0] || "",
+      weightOptionId: selected?._id || null,
+      title: { en: product?.name, ta: product?.tamilName },
     };
 
-    // Save under 'pendingCheckout' (optional) and also under 'bynowProduct' per request
-    localStorage.setItem("pendingCheckout", JSON.stringify(snapshot));
-    localStorage.setItem("bynowProduct", JSON.stringify(purchaseItem));
-  } catch (e) {
-    console.warn("Could not save pending checkout / bynowProduct:", e);
-  }
+    // Save a snapshot so checkout can prefill
+    try {
+      const snapshot = {
+        contactInfo: "",
+        mobileInfo: "",
+        shippingFirstName: "",
+        shippingLastName: "",
+        shippingAddress: "",
+        shippingCity: "",
+        shippingState: "",
+        shippingPinCode: "",
+        total: (selected?.price || 0) * quantity,
+        cartItems: [purchaseItem],
+        buyNow: true,
+      };
 
-  // IMPORTANT: Do NOT add to server cart for Buy Now — skip addToCartAPI entirely.
-  // (If you previously had a fire-and-forget addToCartAPI call, it's removed here.)
+      // Save under 'pendingCheckout' (optional) and also under 'bynowProduct' per request
+      localStorage.setItem("pendingCheckout", JSON.stringify(snapshot));
+      localStorage.setItem("bynowProduct", JSON.stringify(purchaseItem));
+    } catch (e) {
+      console.warn("Could not save pending checkout / bynowProduct:", e);
+    }
 
-  // redirect to checkout with query params + state (so checkout page can use either)
-  const query = `?buyNow=true&productId=${encodeURIComponent(product._id)}`;
-  navigate(`/checkout${query}`, { state: { buyNow: true, purchaseItem } });
-  closeModal();
-};
+    // IMPORTANT: Do NOT add to server cart for Buy Now — skip addToCartAPI entirely.
+    // (If you previously had a fire-and-forget addToCartAPI call, it's removed here.)
 
+    // redirect to checkout with query params + state (so checkout page can use either)
+    const query = `?buyNow=true&productId=${encodeURIComponent(product._id)}`;
+    navigate(`/checkout${query}`, { state: { buyNow: true, purchaseItem } });
+    closeModal();
+  };
+
+  useEffect(() => {
+    if (product?.cutType?.length > 0 && !selectedDrop) {
+      setSelectedDrop(product.cutType[0]);
+    }
+  }, [product, selectedDrop]);
+  const handleClick = () => {
+    setActive(true);
+    // Your increment logic here
+    console.log("Increased!");
+
+    // Optional: revert after 200ms
+    setTimeout(() => setActive(false), 200);
+  };
 
   if (!product)
     return (
@@ -239,13 +311,18 @@ export const QuickModal = ({ productId }) => {
       <div className="flex flex-col gap-3">
         <p className="text-xs">Iraichi Kadai</p>
         <h1 className="text-xl font-bold">
-          {product.name} <span className="text-sm block mt-3">{product.tamilName}</span>
+          {product.name}{" "}
+          <span className="text-sm block mt-3">{product.tamilName}</span>
         </h1>
 
         <div className="flex flex-row gap-2 items-center">
           <p className="text-lg font-semibold">Rs. {selected?.price}</p>
-          <p className="text-gray-500 line-through">Rs. {selected?.discountPrice}</p>
-          <button className="bg-[#EE1c25] text-white text-base px-5 py-0.5 rounded-md">sale</button>
+          <p className="text-gray-500 line-through">
+            Rs. {selected?.discountPrice}
+          </p>
+          <button className="bg-[#EE1c25] text-white text-base px-5 py-0.5 rounded-md">
+            sale
+          </button>
         </div>
 
         <div>
@@ -255,8 +332,11 @@ export const QuickModal = ({ productId }) => {
               <button
                 key={opt._id}
                 onClick={() => setSelected(opt)}
-                className={`lg:px-5 lg:py-2 px-3 py-2 rounded-md text-base border transition duration-300 ${selected?._id === opt._id ? "bg-[#EE1c25] text-white border-[#EE1c25]" : "bg-transparent text-black border-gray-400"
-                  }`}
+                className={`lg:px-5 lg:py-2 px-3 py-2 cursor-pointer rounded-md text-base border transition duration-300 ${
+                  selected?._id === opt._id
+                    ? "bg-[#EE1c25] text-white border-[#EE1c25]"
+                    : "bg-transparent text-black border-gray-400"
+                }`}
               >
                 {opt.weight} {opt.unit}
               </button>
@@ -270,9 +350,8 @@ export const QuickModal = ({ productId }) => {
             <select
               value={selectedDrop}
               onChange={(e) => setSelectedDrop(e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 bg-white text-gray-800"
+              className="border border-gray-300 cursor-pointer rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 bg-white text-gray-800"
             >
-              <option value="">Please select</option>
               {product.cutType.map((cut) => (
                 <option key={cut} value={cut}>
                   {cut}
@@ -282,36 +361,74 @@ export const QuickModal = ({ productId }) => {
           </div>
         )}
 
+        {/* <QuantitySelector/> */}
+        <div className="flex items-center border border-gray-400  w-fit rounded-full lg:my-3 my-2">
+          <button
+            onClick={decrease}
+            className="px-3 py-3 rounded-l-full cursor-pointer transition-colors duration-200 bg-transparent text-gray-800 hover:bg-red-100 active:bg-red-500 active:text-white"
+          >
+            <FaMinus size={15} />
+          </button>
 
-        <div className="flex items-center border border-gray-400 py-2 px-2 w-fit rounded-md lg:my-3 my-2">
-          <button onClick={decrease} className="px-3 py-1 cursor-pointer"><FaMinus size={15} /></button>
-          <input type="text" value={quantity} readOnly className="w-12 text-center focus:outline-0" />
-          <button onClick={increase} className="px-3 py-1 cursor-pointer"><FaPlus size={15} /></button>
+          <input
+            type="text"
+            value={quantity}
+            readOnly
+            className="w-8 text-center focus:outline-0 mx-2"
+          />
+
+          <button
+            onClick={increase}
+            className="px-3 py-3 rounded-r-full cursor-pointer transition-colors duration-200 bg-transparent text-gray-800 hover:bg-red-100 active:bg-red-500 active:text-white"
+          >
+            <FaPlus size={15} />
+          </button>
         </div>
-
+{quantityError && (
+          <p className="text-red-500 text-sm mt-0">{quantityError}</p>
+        )}
         <div className="flex flex-col gap-3">
-          <button className="border py-3 rounded-md border-[#EE1c25]" onClick={handleAddToCart}>Add to cart</button>
-          <button onClick={handleBuyNow} className="border py-3 rounded-md border-[#EE1c25] bg-[#EE1c25] text-white">Buy it now</button>
+          <button
+            className="border py-3 rounded-md border-[#EE1c25]"
+            onClick={handleAddToCart}
+          >
+            Add to cart
+          </button>
+          <button
+            onClick={handleBuyNow}
+            className="border py-3 rounded-md border-[#EE1c25] bg-[#EE1c25] text-white"
+          >
+            Buy it now
+          </button>
         </div>
-
+        
         <div>
           <p className="text-base">Order Notes</p>
           <textarea className="border border-gray-400 rounded-md w-full h-30 my-3" />
         </div>
 
         <div>
-          <div onClick={() => setOpenDescription(!openDescription)} className="flex flex-row justify-between items-center border-t border-b border-gray-200 py-4 px-2 cursor-pointer">
+          <div
+            onClick={() => setOpenDescription(!openDescription)}
+            className="flex flex-row justify-between items-center border-t border-b border-gray-200 py-4 px-2 cursor-pointer"
+          >
             <div className="flex flex-row gap-3 items-center">
               <FaBook />
               <p className="text-base font-semibold">Description</p>
             </div>
-            {openDescription ? <FaChevronUp size={15} /> : <FaChevronDown size={15} />}
+            {openDescription ? (
+              <FaChevronUp size={15} />
+            ) : (
+              <FaChevronDown size={15} />
+            )}
           </div>
           {openDescription && (
             <ul className="mt-2 ml-8 list-disc text-gray-600">
-              {product.description?.split("\n")?.map((desc, idx) => (
-                <li key={idx}>{desc}</li>
-              )) || <li>{product.description}</li>}
+              {product.description
+                ?.split("\n")
+                ?.map((desc, idx) => <li key={idx}>{desc}</li>) || (
+                <li>{product.description}</li>
+              )}
             </ul>
           )}
         </div>

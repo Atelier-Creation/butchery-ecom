@@ -446,6 +446,7 @@ function PaymentPage() {
         const productsForOrder = cartItems.map((p) => ({
           productId: p.product?._id || p.productId || p.id,
           name: p.product?.name || p.name,
+          weightOptionId: p.selectedWeightOptionId || p.weightOptionId || p.weightOption || "",
           price: p.price,
           quantity: p.quantity,
           unit: p.unit || "",
@@ -520,7 +521,7 @@ function PaymentPage() {
         setTotal(0);
         setProcessingPayment(false);
 
-        const createdOrderId = orderRes?.data?._id || orderRes?._id || orderRes?.order?._id || null;
+        const createdOrderId = orderRes?.data?.orderId || orderRes?.orderId || orderRes?.order?.orderId || null;
         navigate(`/order-confirmed?order_id=${createdOrderId || "unknown"}&paymentMethod=cod`);
       } catch (err) {
         console.error("COD order creation failed:", err);

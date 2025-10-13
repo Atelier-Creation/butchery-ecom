@@ -29,6 +29,7 @@ function PDPsec1() {
   const [selected, setSelected] = useState(null);
   const [selectedDrop, setSelectedDrop] = useState("");
   const [quantity, setQuantity] = useState(1);
+  const [quantityError, setQuantityError] = useState("");
   const [openDescription, setOpenDescription] = useState(false);
 
   // main image state
@@ -70,9 +71,17 @@ function PDPsec1() {
   }, [product]);
 
   const increase = () => {
-    if (quantity < 10) setQuantity((q) => q + 1);
+    if (!selected) return; // safety check
+    const stock = selected.stock || 0;
+
+    if (quantity < stock) {
+      setQuantity((q) => q + 1);
+    } else {
+      setQuantityError(`Only ${stock} items in stock`);
+    }
   };
   const decrease = () => {
+    quantityError && setQuantityError("");
     if (quantity > 1) setQuantity((q) => q - 1);
   };
 
@@ -106,7 +115,10 @@ function PDPsec1() {
     );
 
     if (idx > -1) {
-      cart[idx].quantity = Math.min(10, (cart[idx].quantity || 0) + newItem.quantity);
+      cart[idx].quantity = Math.min(
+        10,
+        (cart[idx].quantity || 0) + newItem.quantity
+      );
     } else {
       cart.push(newItem);
     }
@@ -130,10 +142,13 @@ function PDPsec1() {
     const cartItem = {
       productId: product?._id,
       quantity,
-      size: `${selected?.weight ?? ""}${selected?.unit ? ` ${selected.unit}` : ""}`,
+      size: `${selected?.weight ?? ""}${
+        selected?.unit ? ` ${selected.unit}` : ""
+      }`,
       unit: selected?.unit ?? "",
       cutType: selectedDrop || "",
       price: selected?.price ?? 0,
+      stock: selected.stock,
       discountPrice: selected?.discountPrice ?? 0,
       title: { en: product?.name, ta: product?.tamilName },
       image: product?.images?.[0] || "",
@@ -141,7 +156,12 @@ function PDPsec1() {
     };
 
     if (!token) {
-      // 👇 Redirect to login if no token
+      localStorage.setItem(
+        "postLoginRedirect",
+        JSON.stringify({
+          path: window.location.pathname,
+        })
+      );
       navigate("/login");
       return;
     }
@@ -167,70 +187,82 @@ function PDPsec1() {
 
   // ----- Buy now handler (redirect to checkout) -----
   const handleBuyNow = async () => {
-  const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-  // If not logged in, redirect to login immediately
-  if (!token) {
-    navigate("/login");
-    return;
-  }
+    // If not logged in, redirect to login immediately
+    if (!token) {
+      localStorage.setItem(
+        "postLoginRedirect",
+        JSON.stringify({
+          path: window.location.pathname,
+        })
+      );
+      navigate("/login");
+      return;
+    }
 
-  // validate selections similar to Add to Cart
-  if (!selected && product?.weightOptions?.length) {
-    alert("Please select a size");
-    return;
-  }
-  if (!selectedDrop && product?.cutType?.length) {
-    alert("Please select a cut type");
-    return;
-  }
+    // validate selections similar to Add to Cart
+    if (!selected && product?.weightOptions?.length) {
+      alert("Please select a size");
+      return;
+    }
+    if (!selectedDrop && product?.cutType?.length) {
+      alert("Please select a cut type");
+      return;
+    }
 
-  const purchaseItem = {
-    id: product._id,
-    product,
-    quantity,
-    size: `${selected?.weight ?? ""}${selected?.unit ? ` ${selected.unit}` : ""}`,
-    unit: selected?.unit ?? "",
-    cutType: selectedDrop || "",
-    price: selected?.price ?? 0,
-    discountPrice: selected?.discountPrice ?? 0,
-    image: product?.images?.[0] || "",
-    weightOptionId: selected?._id || null,
-    title: { en: product?.name, ta: product?.tamilName },
-  };
-
-  // Save a snapshot so checkout can prefill
-  try {
-    const snapshot = {
-      contactInfo: "",
-      mobileInfo: "",
-      shippingFirstName: "",
-      shippingLastName: "",
-      shippingAddress: "",
-      shippingCity: "",
-      shippingState: "",
-      shippingPinCode: "",
-      total: (selected?.price || 0) * quantity,
-      cartItems: [purchaseItem],
-      buyNow: true,
+    const purchaseItem = {
+      id: product._id,
+      product,
+      quantity,
+      size: `${selected?.weight ?? ""}${
+        selected?.unit ? ` ${selected.unit}` : ""
+      }`,
+      unit: selected?.unit ?? "",
+      cutType: selectedDrop || "",
+      price: selected?.price ?? 0,
+      discountPrice: selected?.discountPrice ?? 0,
+      image: product?.images?.[0] || "",
+      weightOptionId: selected?._id || null,
+      title: { en: product?.name, ta: product?.tamilName },
     };
 
-    // Save under 'pendingCheckout' (optional) and also under 'bynowProduct' per request
-    localStorage.setItem("pendingCheckout", JSON.stringify(snapshot));
-    localStorage.setItem("bynowProduct", JSON.stringify(purchaseItem));
-  } catch (e) {
-    console.warn("Could not save pending checkout / bynowProduct:", e);
-  }
+    // Save a snapshot so checkout can prefill
+    try {
+      const snapshot = {
+        contactInfo: "",
+        mobileInfo: "",
+        shippingFirstName: "",
+        shippingLastName: "",
+        shippingAddress: "",
+        shippingCity: "",
+        shippingState: "",
+        shippingPinCode: "",
+        total: (selected?.price || 0) * quantity,
+        cartItems: [purchaseItem],
+        buyNow: true,
+      };
 
-  // IMPORTANT: Do NOT add to server cart for Buy Now — skip addToCartAPI entirely.
-  // (If you previously had a fire-and-forget addToCartAPI call, it's removed here.)
+      // Save under 'pendingCheckout' (optional) and also under 'bynowProduct' per request
+      localStorage.setItem("pendingCheckout", JSON.stringify(snapshot));
+      localStorage.setItem("bynowProduct", JSON.stringify(purchaseItem));
+    } catch (e) {
+      console.warn("Could not save pending checkout / bynowProduct:", e);
+    }
 
-  // redirect to checkout with query params + state (so checkout page can use either)
-  const query = `?buyNow=true&productId=${encodeURIComponent(product._id)}`;
-  navigate(`/checkout${query}`, { state: { buyNow: true, purchaseItem } });
-};
+    // IMPORTANT: Do NOT add to server cart for Buy Now — skip addToCartAPI entirely.
+    // (If you previously had a fire-and-forget addToCartAPI call, it's removed here.)
 
+    // redirect to checkout with query params + state (so checkout page can use either)
+    const query = `?buyNow=true&productId=${encodeURIComponent(product._id)}`;
+    navigate(`/checkout${query}`, { state: { buyNow: true, purchaseItem } });
+  };
 
+  useEffect(() => {
+    if (product?.cutType?.length > 0 && !selectedDrop) {
+      setSelectedDrop(product.cutType[0]);
+    }
+  }, [product, selectedDrop]);
 
   return (
     <>
@@ -274,7 +306,10 @@ function PDPsec1() {
             {/* Dynamic Price */}
             <div className="flex flex-row gap-2 items-center">
               <p className="text-lg font-semibold">
-                Rs. {selected?.price ?? product?.weightOptions?.[0]?.price ?? "0.00"}
+                Rs.{" "}
+                {selected?.price ??
+                  product?.weightOptions?.[0]?.price ??
+                  "0.00"}
               </p>
               <p className="text-gray-500 line-through">
                 Rs.{" "}
@@ -315,7 +350,6 @@ function PDPsec1() {
                   onChange={(e) => setSelectedDrop(e.target.value)}
                   className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 bg-white text-gray-800"
                 >
-                  <option value="">Please select</option>
                   {product.cutType.map((cut) => (
                     <option key={cut} value={cut}>
                       {cut}
@@ -327,28 +361,49 @@ function PDPsec1() {
 
             <div>
               <p className="text-base">Quantity</p>
-              <div className="flex items-center border border-gray-400 py-2 px-2 w-fit rounded-md lg:my-3 my-2">
+              <div className="flex items-center border border-gray-400  w-fit rounded-md lg:my-3 my-2">
                 <button
                   onClick={decrease}
-                  className="px-3 py-1 cursor-pointer text-gray-500"
+                  className="px-3 py-3 rounded-l-md cursor-pointer transition-colors duration-200 bg-transparent text-gray-800 hover:bg-red-100 active:bg-red-500 active:text-white"
                 >
-                  <FaMinus size={12} />
+                  <FaMinus size={15} />
                 </button>
+
                 <input
                   type="text"
                   value={quantity}
-                  min={1}
-                  max={10}
-                  readOnly
-                  className="w-12 text-center"
+                  onChange={(e) => {
+                    if (!selected) return;
+                    const stock = selected.stock || 0;
+                    const val = parseInt(e.target.value, 10);
+
+                    if (isNaN(val) || val < 1) {
+                      setQuantity(1);
+                      setQuantityError("");
+                      return;
+                    }
+
+                    if (val > stock) {
+                      setQuantity(stock);
+                      setQuantityError(`Only ${stock} items in stock`);
+                    } else {
+                      setQuantity(val);
+                      setQuantityError("");
+                    }
+                  }}
+                  className="w-8 text-center focus:outline-0 mx-2"
                 />
+
                 <button
                   onClick={increase}
-                  className="px-3 py-1 cursor-pointer text-gray-500"
+                  className="px-3 py-3 rounded-r-md cursor-pointer transition-colors duration-200 bg-transparent text-gray-800 hover:bg-red-100 active:bg-red-500 active:text-white"
                 >
-                  <FaPlus size={12} />
+                  <FaPlus size={15} />
                 </button>
               </div>
+              {quantityError && (
+                <p className="text-red-500 text-sm mt-1">{quantityError}</p>
+              )}
             </div>
 
             <div className="flex flex-col gap-3 lg:pr-10">
@@ -380,7 +435,11 @@ function PDPsec1() {
                   <FaBook />
                   <p className="text-base font-semibold">Description</p>
                 </div>
-                {openDescription ? <FaChevronUp size={15} /> : <FaChevronDown size={15} />}
+                {openDescription ? (
+                  <FaChevronUp size={15} />
+                ) : (
+                  <FaChevronDown size={15} />
+                )}
               </div>
               {openDescription && (
                 <ul className="mt-2 ml-8 list-disc text-gray-600">
