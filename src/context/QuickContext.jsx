@@ -137,8 +137,15 @@ export const QuickModal = ({ productId }) => {
   const handleBuyNow = async () => {
   const token = localStorage.getItem("token");
 
-  // Common validation
-  if (!selected) {
+  // If not logged in, redirect to login immediately
+  if (!token) {
+    navigate("/login");
+    closeModal();
+    return;
+  }
+
+  // validate selections similar to Add to Cart
+  if (!selected && product?.weightOptions?.length) {
     alert("Please select a size");
     return;
   }
@@ -147,39 +154,50 @@ export const QuickModal = ({ productId }) => {
     return;
   }
 
-  const cartItem = {
-    productId: product._id,
-    quantity,
-    size: `${selected.weight}`,
-    unit: selected.unit,
-    cutType: selectedDrop || "",
-    price: selected.price,
-    discountPrice: selected.discountPrice,
+  const purchaseItem = {
     id: product._id,
-    title: { en: product.name, ta: product.tamilName },
-    image: product.images?.[0],
-    weightOptionId: selected._id,
+    product,
+    quantity,
+    size: `${selected?.weight ?? ""}${selected?.unit ? ` ${selected.unit}` : ""}`,
+    unit: selected?.unit ?? "",
+    cutType: selectedDrop || "",
+    price: selected?.price ?? 0,
+    discountPrice: selected?.discountPrice ?? 0,
+    image: product?.images?.[0] || "",
+    weightOptionId: selected?._id || null,
+    title: { en: product?.name, ta: product?.tamilName },
   };
 
-  // 🔒 If NOT logged in → redirect to login
-  if (!token) {
-    alert("Please log in to continue to checkout.");
-    navigate("/login");
-    closeModal();
-    return;
+  // Save a snapshot so checkout can prefill
+  try {
+    const snapshot = {
+      contactInfo: "",
+      mobileInfo: "",
+      shippingFirstName: "",
+      shippingLastName: "",
+      shippingAddress: "",
+      shippingCity: "",
+      shippingState: "",
+      shippingPinCode: "",
+      total: (selected?.price || 0) * quantity,
+      cartItems: [purchaseItem],
+      buyNow: true,
+    };
+
+    // Save under 'pendingCheckout' (optional) and also under 'bynowProduct' per request
+    localStorage.setItem("pendingCheckout", JSON.stringify(snapshot));
+    localStorage.setItem("bynowProduct", JSON.stringify(purchaseItem));
+  } catch (e) {
+    console.warn("Could not save pending checkout / bynowProduct:", e);
   }
 
-  // ✅ Logged-in flow
-  try {
-    await addToCartAPI(product._id, quantity, selected.price, selected._id);
-    addToCart(cartItem);
-    toggleDrawer(false);
-    closeModal();
-    navigate("/checkout");
-  } catch (err) {
-    console.error("Buy Now failed:", err);
-    alert("Failed to proceed to checkout. Please try again.");
-  }
+  // IMPORTANT: Do NOT add to server cart for Buy Now — skip addToCartAPI entirely.
+  // (If you previously had a fire-and-forget addToCartAPI call, it's removed here.)
+
+  // redirect to checkout with query params + state (so checkout page can use either)
+  const query = `?buyNow=true&productId=${encodeURIComponent(product._id)}`;
+  navigate(`/checkout${query}`, { state: { buyNow: true, purchaseItem } });
+  closeModal();
 };
 
 

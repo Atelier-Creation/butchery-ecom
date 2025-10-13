@@ -88,12 +88,13 @@ function PaymentPage() {
   const [mapUrl, setMapUrl] = useState("");
   const [errors, setErrors] = useState({});
   const [showLocationModal, setShowLocationModal] = useState(false);
+
   useEffect(() => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    navigate("/login");
-  }
-}, [navigate]);
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+    }
+  }, [navigate]);
 
   // ------------------ Guest cart helpers ------------------
   const getGuestCart = useCallback(() => {
@@ -112,7 +113,7 @@ function PaymentPage() {
       // notify other same-tab listeners
       try {
         window.dispatchEvent(new Event("guestCartChanged"));
-      } catch (e) { }
+      } catch (e) {}
     } catch (err) {
       console.error("Failed to save guest_cart", err);
     }
@@ -122,6 +123,27 @@ function PaymentPage() {
   const fetchCart = useCallback(async () => {
     const token = localStorage.getItem("token");
     let items = [];
+
+    // ✅ Step 1: Check URL param for buyNow
+    const queryParams = new URLSearchParams(window.location.search);
+    const isBuyNow = queryParams.get("buyNow") === "true";
+
+    if (isBuyNow) {
+      const buyNowProduct = localStorage.getItem("bynowProduct");
+      if (buyNowProduct) {
+        try {
+          const parsedItem = JSON.parse(buyNowProduct);
+          items = [parsedItem];
+        } catch (err) {
+          console.error("Error parsing bynowProduct:", err);
+        }
+      }
+
+      setCartItems(items);
+      const subtotal = items.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0);
+      setTotal(subtotal);
+      return; // 🛑 Stop here — skip server/guest cart fetch
+    }
 
     if (token) {
       try {
@@ -151,10 +173,7 @@ function PaymentPage() {
 
   // recompute total whenever cartItems changes
   useEffect(() => {
-    const subtotal = cartItems.reduce(
-      (sum, item) => sum + (item.price || 0) * (item.quantity || 0),
-      0
-    );
+    const subtotal = cartItems.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0);
     setTotal(subtotal);
   }, [cartItems]);
 
@@ -229,8 +248,7 @@ function PaymentPage() {
           }
 
           if (user.addresses && user.addresses.length > 0) {
-            const defaultAddress =
-              user.addresses.find((a) => a.isDefault) || user.addresses[0];
+            const defaultAddress = user.addresses.find((a) => a.isDefault) || user.addresses[0];
             setShippingAddress(defaultAddress.street || "");
             setShippingCity(defaultAddress.city || "");
             setShippingState(defaultAddress.state || "Tamil Nadu");
@@ -294,7 +312,8 @@ function PaymentPage() {
     if (!contactInfo.trim()) newErrors.contactInfo = "Please enter your email address.";
     if (!mobileInfo.trim()) newErrors.mobileInfo = "Please enter your mobile number.";
 
-    if (deliveryOption === "ship") {
+    // require shipping fields for both ship and cod
+    if (["ship", "COD"].includes(deliveryOption)) {
       if (!shippingFirstName.trim()) newErrors.shippingFirstName = "First name is required.";
       if (!shippingLastName.trim()) newErrors.shippingLastName = "Last name is required.";
       if (!shippingAddress.trim()) newErrors.shippingAddress = "Address is required.";
@@ -315,25 +334,25 @@ function PaymentPage() {
         // Call API to remove item, pass itemId
         const response = await cartApi(itemId); // cartApi should accept itemId
         if (response?.success) {
-          setCartItems(prev => prev.filter(item => item._id !== itemId));
+          setCartItems((prev) => prev.filter((item) => item._id !== itemId));
         } else {
           console.warn("Server did not remove item, fallback locally");
-          setCartItems(prev => prev.filter(item => item._id !== itemId));
+          setCartItems((prev) => prev.filter((item) => item._id !== itemId));
         }
       } catch (err) {
         console.error("Failed to remove from server cart:", err);
-        setCartItems(prev => prev.filter(item => item._id !== itemId));
+        setCartItems((prev) => prev.filter((item) => item._id !== itemId));
       }
     } else {
       // guest fallback
       const guest = getGuestCart();
-      const newGuest = guest.filter(it => it._id !== itemId && it.id !== itemId);
+      const newGuest = guest.filter((it) => it._id !== itemId && it.id !== itemId);
       saveGuestCart(newGuest);
       setCartItems(newGuest);
     }
   };
 
-  // ------------------ Payment handler ------------------
+  // ------------------ Payment handler (supports online + COD) ------------------
   const handlePayment = async () => {
     setpaymentload(true);
 
@@ -385,6 +404,7 @@ function PaymentPage() {
           shippingPinCode,
           total,
           cartItems, // store cart snapshot (guest_cart or server-cart snapshot)
+          deliveryOption,
         };
         localStorage.setItem("pendingCheckout", JSON.stringify(pending));
 
@@ -400,6 +420,130 @@ function PaymentPage() {
         setpaymentload(false);
       }
       return; // stop further processing
+    }
+
+    // user exists - parse it
+    const user = JSON.parse(storedUser);
+
+    // COD flow branch
+    if (deliveryOption === "COD") {
+      setpaymentload(true);
+      try {
+        setProcessingPayment(true);
+        const procStart = Date.now();
+
+        const pingLocation =
+          location?.latitude != null && location?.longitude != null
+            ? {
+                type: "Point",
+                coordinates: [location.longitude, location.latitude],
+              }
+            : {
+                type: "Point",
+                coordinates: [0, 0],
+              };
+
+        const productsForOrder = cartItems.map((p) => ({
+          productId: p.product?._id || p.productId || p.id,
+          name: p.product?.name || p.name,
+          price: p.price,
+          quantity: p.quantity,
+          unit: p.unit || "",
+          weight: p.weight,
+        }));
+
+        // create order on server for COD
+        const orderRes = await createOrderData({
+          buyer: user?.id || null,
+          buyerDetails: {
+            name: user?.name || `${shippingFirstName} ${shippingLastName}`,
+            email: user?.email || contactInfo,
+            phone: user?.phone || mobileInfo,
+          },
+          shippingAddress,
+          location: mapUrl,
+          pingLocation,
+          paymentMethod: "COD",
+          paymentStatus: "pending",
+          products: productsForOrder,
+          total,
+        });
+
+        // remove items from server-side cart if logged-in OR clear guest cart
+        try {
+          const token = localStorage.getItem("token");
+          if (token && Array.isArray(cartItems) && cartItems.length > 0) {
+            const removals = cartItems.map((it) => {
+              const idToRemove = it._id || it.id || it.product?._id || it.productId;
+              if (!idToRemove) return Promise.resolve({ status: "skipped", reason: "no-id" });
+              return cartApi(idToRemove);
+            });
+            const results = await Promise.allSettled(removals);
+            results.forEach((r, idx) => {
+              if (r.status === "rejected") {
+                console.warn("Failed to remove cart item:", cartItems[idx], r.reason);
+              } else if (r.value && r.value.success === false) {
+                console.warn("API responded with failure removing item:", cartItems[idx], r.value);
+              }
+            });
+          } else {
+            try {
+              localStorage.removeItem("guest_cart");
+              window.dispatchEvent(new Event("guestCartChanged"));
+            } catch (e) {
+              console.warn("Failed to clear guest_cart:", e);
+            }
+          }
+        } catch (err) {
+          console.warn("Error while removing items from cart:", err);
+        }
+
+        // remove user_cart local storage and notify
+        try {
+          localStorage.removeItem("user_cart");
+          try {
+            window.dispatchEvent(new Event("userCartChanged"));
+          } catch (e) {}
+        } catch (err) {
+          console.warn("Failed to remove user_cart from localStorage:", err);
+        }
+
+        // ensure at least 1s of processing (you had 5s for online — keep UX snappy for COD)
+        const elapsed = Date.now() - procStart;
+        const minWait = 1000;
+        if (elapsed < minWait) {
+          await new Promise((res) => setTimeout(res, minWait - elapsed));
+        }
+
+        // clear UI cart then hide overlay and navigate
+        setCartItems([]);
+        setTotal(0);
+        setProcessingPayment(false);
+
+        const createdOrderId = orderRes?.data?._id || orderRes?._id || orderRes?.order?._id || null;
+        navigate(`/order-confirmed?order_id=${createdOrderId || "unknown"}&paymentMethod=cod`);
+      } catch (err) {
+        console.error("COD order creation failed:", err);
+        localStorage.setItem(
+          "retryPaymentData",
+          JSON.stringify({
+            contactInfo,
+            mobileInfo,
+            shippingFirstName,
+            shippingLastName,
+            shippingAddress,
+            shippingCity,
+            shippingState,
+            shippingPinCode,
+            total,
+          })
+        );
+        navigate("/payment-failed", { state: { error: err.message } });
+      } finally {
+        setpaymentload(false);
+        setProcessingPayment(false);
+      }
+      return;
     }
 
     // If code reaches here, user exists — proceed with Razorpay flow
@@ -425,7 +569,6 @@ function PaymentPage() {
           name: `${shippingFirstName} ${shippingLastName}`,
           contact: mobileInfo,
         },
-        // inside options for Razorpay, replace the handler with this updated handler
         handler: async (response) => {
           try {
             await verifyPayment(response);
@@ -511,35 +654,12 @@ function PaymentPage() {
             // remove user_cart local storage and update profile (unchanged)
             try {
               localStorage.removeItem("user_cart");
-              try { window.dispatchEvent(new Event("userCartChanged")); } catch (e) { }
-            } catch (err) { console.warn("Failed to remove user_cart from localStorage:", err); }
-
-            // if (user) {
-            //   try {
-            //     const token = localStorage.getItem("token");
-            //     const updatedUser = await updateProfile(
-            //       {
-            //         phone: mobileInfo,
-            //         addresses: [
-            //           {
-            //             label: "Home",
-            //             street: shippingAddress,
-            //             city: shippingCity,
-            //             state: shippingState,
-            //             pincode: shippingPinCode,
-            //             isDefault: true,
-            //           },
-            //         ],
-            //       },
-            //       token
-            //     );
-            //     if (updatedUser && updatedUser.user) {
-            //       localStorage.setItem("user", JSON.stringify(updatedUser.user));
-            //     }
-            //   } catch (err) {
-            //     console.warn("Failed to update profile after payment:", err);
-            //   }
-            // }
+              try {
+                window.dispatchEvent(new Event("userCartChanged"));
+              } catch (e) {}
+            } catch (err) {
+              console.warn("Failed to remove user_cart from localStorage:", err);
+            }
 
             // ensure at least 5s of processing overlay so user doesn't see a flash
             const elapsed = Date.now() - procStart;
@@ -643,25 +763,12 @@ function PaymentPage() {
     <>
       {showSuccessPopup && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <Confetti
-            numberOfPieces={200}
-            width={window.innerWidth}
-            height={window.innerHeight}
-            recycle={false}
-          />
+          <Confetti numberOfPieces={200} width={window.innerWidth} height={window.innerHeight} recycle={false} />
           <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-            <Lottie
-              animationData={happyAnim}
-              loop
-              autoplay
-              style={{ width: 100, height: 100, margin: "0 auto" }}
-            />
+            <Lottie animationData={happyAnim} loop autoplay style={{ width: 100, height: 100, margin: "0 auto" }} />
             <h2 className="text-xl font-bold">Coupon Applied!</h2>
             <p className="text-gray-600">You saved ₹{0}</p>
-            <button
-              className="mt-4 bg-black text-white px-4 py-2 rounded"
-              onClick={() => setShowSuccessPopup(false)}
-            >
+            <button className="mt-4 bg-black text-white px-4 py-2 rounded" onClick={() => setShowSuccessPopup(false)}>
               Okay
             </button>
           </div>
@@ -702,8 +809,9 @@ function PaymentPage() {
           <div className="space-y-4">
             <h3 className="text-2xl font-bold">DELIVERY</h3>
             <label
-              className={`flex items-center justify-between h-[52px] border rounded px-4 cursor-pointer ${deliveryOption === "ship" ? "border-blue-600 bg-blue-50" : "border-gray-300"
-                }`}
+              className={`flex items-center justify-between h-[52px] border rounded px-4 cursor-pointer ${
+                deliveryOption === "ship" ? "border-blue-600 bg-blue-50" : "border-gray-300"
+              }`}
               onClick={() => setDeliveryOption("ship")}
             >
               <span className="flex items-center gap-2">
@@ -712,7 +820,20 @@ function PaymentPage() {
               </span>
             </label>
 
-            {deliveryOption === "ship" && (
+            <label
+              className={`flex items-center justify-between h-[52px] border rounded px-4 cursor-pointer ${
+                deliveryOption === "COD" ? "border-blue-600 bg-blue-50" : "border-gray-300"
+              }`}
+              onClick={() => setDeliveryOption("COD")}
+            >
+              <span className="flex items-center gap-2">
+                <input type="radio" checked={deliveryOption === "COD"} onChange={() => setDeliveryOption("cod")} />
+                Cash on Delivery
+              </span>
+            </label>
+
+            {/* show shipping fields for both ship and cod */}
+            {["ship", "COD"].includes(deliveryOption) && (
               <div className="flex flex-col gap-4 mt-4">
                 <div className="flex gap-4 flex-col sm:flex-row">
                   <div className="flex-1">
@@ -809,7 +930,7 @@ function PaymentPage() {
           {/* ACTION */}
           <div className="mt-8">
             <button type="button" className="w-full bg-black text-white h-[52px] rounded cursor-pointer" onClick={handlePayment}>
-              {paymentload ? "Redirecting to payment page" : " Proceed to Pay"}
+              {paymentload ? "Redirecting to payment page" : deliveryOption === "COD" ? "Place Order (Cash on Delivery)" : " Proceed to Pay"}
             </button>
           </div>
         </div>
@@ -826,22 +947,20 @@ function PaymentPage() {
                   <div className="flex gap-4 items-center">
                     <img src={item.product?.images?.[0] || item.product?.image || item.image} alt={item.product?.name || item.name} className="w-[100px] h-[100px] rounded object-cover" />
                     <div>
-                      <h3 className="text-base font-semibold">{item.product?.name || item.title.en}</h3>
+                      <h3 className="text-base font-semibold">{item.product?.name || item.title?.en || item.name}</h3>
                       <p className="text-sm text-gray-500">{item.quantity} x ₹{item.price}</p>
                     </div>
                   </div>
-                  {/* <div className="flex flex-col items-end gap-1">
-                    <span className="text-lg font-medium">₹{((item.price || 0) * (item.quantity || 0)).toLocaleString()}</span>
-                    <button className="text-red-600 text-sm underline" onClick={() => handleRemoveItem(item._id || item.id)}>
-                      <Trash2 size={16} className="inline mb-0.5" />
-                    </button>
-                  </div> */}
+                  {/* optionally add remove button */}
                 </div>
               ))
             )}
             <div className="flex justify-between mt-4">
               <h6 className="text-lg font-bold">Total</h6>
               <span className="text-lg font-medium">₹{total.toLocaleString()}</span>
+            </div>
+            <div className="mt-2 text-sm text-gray-600">
+              <strong>Payment:</strong> {deliveryOption === "COD" ? "Cash on Delivery" : "Online Payment"}
             </div>
           </div>
         </div>

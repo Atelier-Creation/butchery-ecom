@@ -195,7 +195,7 @@ const Navbar = () => {
           </div>
           <div className="flex items-center gap-1">
             <IoMail size={16} />
-            <span className="text-gray-600">customercare@iraichikadai.com</span>
+            <span className="text-gray-600">iraichikadai@gmail.com</span>
           </div>
         </div>
         <div className="flex-1 flex justify-end mr-1">

@@ -17,8 +17,6 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [activeButton, setActiveButton] = useState(null);
-  // { key: itemKey, type: 'increment' | 'decrement' }
-
   const isLoggedIn = !!localStorage.getItem("token") || !!localStorage.getItem("user_id");
 
   const getItemKey = (item, index) => item._id || item.id || `guest-${index}`;
@@ -28,6 +26,7 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
     0
   );
 
+  // helper getters (unchanged)
   const getImageSrc = (item) => {
     if (!item) return "/fallback.png";
     if (item.product) {
@@ -51,6 +50,11 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
     if (item.title && typeof item.title === "string") return item.title;
     return "Untitled";
   };
+
+  useEffect(() => {
+    // lock body scroll when drawer is open (optional)
+    document.body.style.overflow = drawerOpen ? "hidden" : "";
+  }, [drawerOpen]);
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -77,36 +81,28 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
   }, [drawerOpen, isLoggedIn]);
 
   const handleUpdateQuantity = async (item, delta, type) => {
-  const newQuantity = (item.quantity || 0) + delta;
-  if (newQuantity < 1) return;
+    const newQuantity = (item.quantity || 0) + delta;
+    if (newQuantity < 1) return;
 
-  // Optimistically update the active button state
-  setActiveButton({ key: getItemKey(item), type });
-  setTimeout(() => setActiveButton(null), 200);
+    setActiveButton({ key: getItemKey(item), type });
+    setTimeout(() => setActiveButton(null), 200);
 
-  // Optimistically update cart in UI first
-  setCartItems((prev) => {
-    const updated = prev.map((i, idx) =>
-      getItemKey(i, idx) === getItemKey(item) ? { ...i, quantity: newQuantity } : i
-    );
-    localStorage.setItem(
-      isLoggedIn ? "user_cart" : "guest_cart",
-      JSON.stringify(updated)
-    );
-    return updated;
-  });
+    setCartItems((prev) => {
+      const updated = prev.map((i, idx) =>
+        getItemKey(i, idx) === getItemKey(item) ? { ...i, quantity: newQuantity } : i
+      );
+      localStorage.setItem(isLoggedIn ? "user_cart" : "guest_cart", JSON.stringify(updated));
+      return updated;
+    });
 
-  // Update server in the background
-  if (isLoggedIn) {
-    try {
-      await updateCartItemAPI(item._id, { quantity: newQuantity });
-    } catch (err) {
-      console.error("Failed to update quantity on server", err);
-      // Optionally: revert UI change if API fails
+    if (isLoggedIn) {
+      try {
+        await updateCartItemAPI(item._id, { quantity: newQuantity });
+      } catch (err) {
+        console.error("Failed to update quantity on server", err);
+      }
     }
-  }
-};
-
+  };
 
   const handleRemove = async (item) => {
     try {
@@ -119,13 +115,8 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
       }
 
       setCartItems((prev) => {
-        const updated = prev.filter(
-          (i, idx) => getItemKey(i, idx) !== getItemKey(item)
-        );
-        localStorage.setItem(
-          isLoggedIn ? "user_cart" : "guest_cart",
-          JSON.stringify(updated)
-        );
+        const updated = prev.filter((i, idx) => getItemKey(i, idx) !== getItemKey(item));
+        localStorage.setItem(isLoggedIn ? "user_cart" : "guest_cart", JSON.stringify(updated));
         if (typeof onCartChange === "function") onCartChange();
         return updated;
       });
@@ -150,14 +141,22 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
     </div>
   );
 
+  // If drawer is closed, render nothing — guarantees footer/buttons are removed
+  if (!drawerOpen) return null;
+
+  const closeDrawer = () => {
+    toggleDrawer(false);
+    if (typeof onCartChange === "function") onCartChange();
+    if (typeof onClose === "function") onClose();
+    // ensure body overflow reset
+    document.body.style.overflow = "";
+  };
+
   return (
     <>
       <div
         className={`cart-backdrop ${drawerOpen ? "show" : ""}`}
-        onClick={() => {
-          toggleDrawer(false);
-          if (typeof onCartChange === "function") onCartChange();
-        }}
+        onClick={closeDrawer}
       ></div>
 
       <div className={`cart-drawer ${drawerOpen ? "open" : ""} text-gray-700`}>
@@ -166,10 +165,9 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
             {cartItems.length ? "Item Added to Your Cart" : "Shopping Cart"}
           </h5>
           <button
-            onClick={() => {
-              toggleDrawer(false);
-              if (typeof onCartChange === "function") onCartChange();
-            }}
+            onClick={closeDrawer}
+            aria-label="Close cart"
+            title="Close"
           >
             <X className="text-gray-400" />
           </button>
@@ -184,66 +182,38 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
             </>
           ) : cartItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-2 text-center mt-[50%]">
-              <img
-                src="/cart_empty.svg"
-                alt="Empty Cart"
-                className="mb-3"
-                style={{ width: "90px" }}
-              />
+              <img src="/cart_empty.svg" alt="Empty Cart" className="mb-3" style={{ width: "90px" }} />
               <p>Your cart is empty</p>
-              <button
-                className="btn btn-dark mt-3 bg-black text-white py-2 px-5 rounded-md"
-                onClick={() => {
-                  navigate("/collections/all");
-                  toggleDrawer(false);
-                }}
-              >
+              <button className="btn btn-dark mt-3 bg-black text-white py-2 px-5 rounded-md" onClick={() => {
+                navigate("/collections/all");
+                toggleDrawer(false);
+              }}>
                 Continue Shopping
               </button>
             </div>
           ) : (
             cartItems.map((item, idx) => (
               <div key={getItemKey(item, idx)} className="d-flex my-3 flex gap-3">
-                <img
-                  src={getImageSrc(item)}
-                  alt={getDisplayName(item)}
-                  className="me-3"
-                  style={{ width: "100px", height: "100px", objectFit: "cover" }}
-                />
+                <img src={getImageSrc(item)} alt={getDisplayName(item)} className="me-3" style={{ width: "100px", height: "100px", objectFit: "cover" }} />
                 <div className="flex-grow-1 flex flex-col gap-1">
                   <div className="text-base font-semibold">{getDisplayName(item)}</div>
                   {item.weight && <p className="text-muted mb-1">{item.weight} {item.unit}</p>}
-
                   <div className="flex items-center justify-between">
                     <span className="fw-semibold text-[#EE1c25]">
                       ₹{item.price} X {item.quantity}
                     </span>
-                    <button
-                      className="p-1 rounded hover:bg-gray-100"
-                      onClick={() => handleRemove(item)}
-                      aria-label={`Remove ${getDisplayName(item)} from cart`}
-                      title="Remove"
-                    >
+                    <button className="p-1 rounded hover:bg-gray-100" onClick={() => handleRemove(item)} aria-label={`Remove ${getDisplayName(item)} from cart`} title="Remove">
                       <Trash2 size={18} className="text-red-600" />
                     </button>
                   </div>
 
-                  <div
-                    className={`quantity-box-cart-drawer ${activeButton?.key === getItemKey(item) ? "active-quantity-box" : ""
-                      }`}
-                  >
-                    <button
-                      onClick={() => handleUpdateQuantity(item, -1, "decrement")}
-                      disabled={item.quantity === 1}
-                    >
+                  <div className={`quantity-box-cart-drawer ${activeButton?.key === getItemKey(item) ? "active-quantity-box" : ""}`}>
+                    <button onClick={() => handleUpdateQuantity(item, -1, "decrement")} disabled={item.quantity === 1}>
                       -
                     </button>
                     <span>{item.quantity}</span>
-                    <button onClick={() => handleUpdateQuantity(item, 1, "increment")}>
-                      +
-                    </button>
+                    <button onClick={() => handleUpdateQuantity(item, 1, "increment")}>+</button>
                   </div>
-
                 </div>
               </div>
             ))
@@ -258,22 +228,16 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
             </div>
 
             <div className="cart-drawer-footer p-3">
-              <button
-                className="border py-3 rounded-2xl w-full border-[#EE1c25]"
-                onClick={() => {
-                  navigate("/view-cart", { state: { cartItems } });
-                  toggleDrawer(false);
-                }}
-              >
+              <button className="border py-3 rounded-2xl w-full border-[#EE1c25]" onClick={() => {
+                navigate("/view-cart", { state: { cartItems } });
+                toggleDrawer(false);
+              }}>
                 View Cart
               </button>
-              <button
-                className="w-full border py-3 rounded-2xl border-[#EE1c25] bg-[#EE1c25] text-white"
-                onClick={() => {
-                  navigate("/checkout", { state: { cartItems } });
-                  toggleDrawer(false);
-                }}
-              >
+              <button className="w-full border py-3 rounded-2xl border-[#EE1c25] bg-[#EE1c25] text-white mt-3" onClick={() => {
+                navigate("/checkout", { state: { cartItems } });
+                toggleDrawer(false);
+              }}>
                 Checkout
               </button>
             </div>

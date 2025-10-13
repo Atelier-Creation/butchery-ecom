@@ -27,7 +27,7 @@ const WhatsAppFloatButton = () => {
         hover:scale-110
       "
     >
-      <FaWhatsapp className="w-4 h-4 sm:w-8 sm:h-8" />
+      <FaWhatsapp className="w-6 h-6 sm:w-8 sm:h-8" />
     </a>
   );
 };
