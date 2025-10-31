@@ -9,36 +9,36 @@ import { Star } from "lucide-react";
 
 const testimonials = [
   {
-    text: "Iraichi Kadai chicken is my son’s favourite – it’s juicy and clean.",
-    name: "Dipanjana Yadav",
+    text: "இறைச்சி கைடல வாங்குற Chicken செம்ம fresh! Country chicken taste vera level. Deliveryயும் delay இல்ல. Super service da!",
+    name: " Ramesh, Singanallur",
   },
   {
-    text: "Iraichi Kadai makes cooking easy with pre-cut Mutton & cleaned meats!",
-    name: "Shalini Bramin",
+    text: "Inga vanguna mutton quality semma da! Na Singanallur side la iruken, time-ku delivery kudukraanga. Fresh-aum clean-aum iruku!",
+    name: "Karthik, Ramanathapuram ",
   },
   {
-    text: "Love Iraichi Kadai Country Chicken! They are soft, juicy & cleaned.",
-    name: "Rukmani Kannan",
+    text: "எப்போ order பண்ணினாலும், same quality தான். சுத்தமா pack பண்ணி, neatly deliver பண்ணுறாங்க. வீட்டுல எல்லாருக்கும் பிடிச்சிருக்கு.",
+    name: " Lakshmi, Selvapuram ",
   },
   {
-    text: "I love how juicy Licious’ Chicken Breast Boneless is!",
-    name: "Alfateh Mustafa",
+    text: "Bro seriously, kadai’la kidaikaadha quality inga kidaikkum. Chicken soft-a irukum, smell illa. Biryani taste level-up!",
+    name: "Hari, Saibaba Colony",
   },
   {
-    text: "Iraichi Kadai chicken is my son’s favourite – it’s juicy and clean.",
-    name: "Dipanjana Nandi",
+    text: "Iraichi Kadai is my go-to for all non-veg weekends! Fresh meat, perfect cuts, and good service. Totally worth it for Coimbatore people!",
+    name: "Suresh, Peelamedu",
   },
   {
-    text: "Iraichi Kadai makes cooking easy with pre-cut & cleaned meats!",
-    name: "Shalini Bardhan",
+    text: "mutton ரொம்ப clean, நல்லா wash பண்ணி pack பண்ணுறாங்க. கொஞ்சம் கூட smell இல்ல. Family use-ku super place.",
+    name: "Revathi, Kuniyamuthur",
   },
   {
-    text: "Absolutely love Iraichi Kadai Country Chicken! They are soft, juicy & cleaned.",
-    name: "Rukma Dakshy",
+    text: "Na hostel la iruken, weekends la biryani panrom. Iraichi Kadai la vangina chicken super soft and tasty da. Delivery fast ah iruku!",
+    name: "Arun, Gandhipuram",
   },
   {
-    text: "I love how juicy Licious’ Chicken Breast Boneless is!",
-    name: "Alfateh Mustafa",
+    text: "My mom used to go to market every Sunday, now we just order from Iraichi Kadai. Fresh, clean, and tasty every time! Coimbatore ku ippadi oru service romba useful.",
+    name: "Anand, Vadavalli",
   },
 ];
 
@@ -75,7 +75,7 @@ const Testimonials = () => {
           {testimonials.map((t, idx) => (
             <SwiperSlide key={idx} >
               <div
-                className="relative bg-white min-h-[250px] max-h-[250px] rounded-2xl shadow-md md-2 md:px-8 py-5 flex flex-col justify-between text-center border border-gray-200"
+                className="relative bg-white min-h-[250px] h-[350px] rounded-2xl shadow-md md-2 md:px-8 py-5 flex flex-col justify-between text-center border border-gray-200"
                 data-aos="fade-up"
                 data-aos-delay={idx * 100}
               >
