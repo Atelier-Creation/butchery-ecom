@@ -20,7 +20,14 @@ function Login() {
 
   const [productsCache, setProductsCache] = useState(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
-
+  useEffect(()=>{
+    document.title = "Login - Iraichi Kadai";
+    const token = localStorage.getItem("token");
+    console.log("Existing token:", token);
+    if(token){
+      navigate("/", { replace: true });
+    }
+  })
   // Detect mobile
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);

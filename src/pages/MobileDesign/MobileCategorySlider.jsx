@@ -63,7 +63,7 @@ const MobileCategorySlider = () => {
             <div
               key={item.id ?? idx}
               onClick={() => navigate(`/collections/${item.id}`)}
-              className="relative flex items-center overflow-hidden bg-white rounded-2xl shadow-md w-1/2 p-3 cursor-pointer  transition-transform duration-300 hover:scale-102 h-30"
+              className="relative flex sm:flex-col items-center overflow-hidden bg-white rounded-2xl shadow-md w-1/2 p-3 cursor-pointer  transition-transform duration-300 hover:scale-102 h-30"
               data-aos="fade-up"
               data-aos-delay={idx * 100}
             >
@@ -77,18 +77,18 @@ const MobileCategorySlider = () => {
               </div>
 
               {/* title on the right */}
-              <div className="ml-3 flex-1">
-                <h3 className="text-sm font-semibold text-gray-700">
+              <div className="ml-1 flex-1">
+                <h3 className="text-md font-semibold text-gray-700">
                   {item.title.en}
                 </h3>
               </div>
 
               {/* pink bottom badge (positioned absolute to overlap bottom center) */}
-              <div className="absolute bottom-2  left-7/11 transform -translate-x-1/2 translate-y-3/4">
+              {/* <div className="absolute bottom-2  left-7/11 transform -translate-x-1/2 translate-y-3/4">
                 <div className="bg-pink-100 w-20 h-6 text-[8px] text-center  py-1 rounded-full shadow-sm text-xs text-gray-700">
                   {item.title.ta || ""}
                 </div>
-              </div>
+              </div> */}
             </div>
           ))}
         </div>
@@ -111,16 +111,16 @@ const MobileCategorySlider = () => {
                 />
               </div>
               <div className="text-center mt-2">
-                <h3 className="text-[10px] font-medium text-gray-700">
+                <h3 className="text-sm font-medium text-gray-700">
                   {item.title.en}
                 </h3>
               </div>
 
-              <div className="absolute bottom-2 left-1/2  transform -translate-x-1/2 translate-y-3/4">
+              {/* <div className="absolute bottom-2 left-1/2  transform -translate-x-1/2 translate-y-3/4">
                 <div className="bg-pink-100 w-20  h-6 text-[8px] text-center px-2 py-0.5 rounded-full text-[8px] text-gray-700">
                   {item.title.ta || ""}
                 </div>
-              </div>
+              </div> */}
             </div>
           ))}
         </div>
@@ -148,12 +148,12 @@ const MobileCategorySlider = () => {
                 style={{ backgroundColor: item.bg }}
                 className="relative group cursor-pointer shadow-2xl rounded-xl h-[300px] overflow-visible transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-1"
                 data-aos="fade-up"
-                data-aos-delay={idx * 200}
+                data-aos-delay={idx * 100}
               >
                 <img
                   src={item.img}
                   alt={item.title.en}
-                  className="w-[60%] left-[42%] absolute -top-[15%] h-fit object-cover shadow-2xl rounded-[50%] transition-transform duration-500 ease-in-out group-hover:scale-110"
+                  className="w-[60%] left-[42%] absolute -top-[15%] h-fit object-cover shadow-2xl rounded-[50%] transition-transform duration-500 ease-in-out group-hover:scale-110 group-hover:z-100"
                 />
                 <div className="p-4 absolute bottom-0 text-left flex flex-col gap-1 h-auto">
                   <div>
@@ -174,7 +174,7 @@ const MobileCategorySlider = () => {
                   </div>
                   <p className="text-gray-100 text-sm opacity-90 mb-3">
                     {item.desc.en + " "}
-                    <span className="text-gray-100 text-xs opacity-90">
+                    <span className="text-gray-100 text-xs opacity-85">
                       ({item.desc.ta})
                     </span>
                   </p>
@@ -183,7 +183,7 @@ const MobileCategorySlider = () => {
                       e.stopPropagation();
                       navigate(`/collections/${item.id}`);
                     }}
-                    className="relative overflow-hidden group/button mt-auto text-center w-1/2 inline-block shadow-lg
+                    className="relative overflow-hidden group/button mt-auto text-center cursor-pointer w-1/2 inline-block shadow-lg
                       bg-black text-white px-4 py-2 rounded-full text-sm 
                       transition-all duration-300 ease-in-out 
                       hover:bg-black hover:scale-105 

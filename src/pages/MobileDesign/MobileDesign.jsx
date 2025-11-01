@@ -138,6 +138,13 @@ const featuresData = [
   },
   {
     title: {
+      en: "100% Halal",
+      ta: "100% ஹலால்",
+    },
+    img: "halal_logo.png",
+  },
+  {
+    title: {
       en: "Organic & Fresh",
       ta: "ஆர்கானிக் & புதியது",
     },
@@ -187,7 +194,7 @@ const MobileDesign = () => {
         </div>
       ) : null}
 
-      <div data-aos="zoom-in" data-aos-delay="100">
+      <div data-aos="fade-up" data-aos-delay="50">
         <MobileCategorySlider />
       </div>
 

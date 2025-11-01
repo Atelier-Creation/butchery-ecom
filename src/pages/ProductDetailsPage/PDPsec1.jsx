@@ -325,19 +325,29 @@ function PDPsec1() {
             <div>
               <p className="text-base">Size</p>
               <div className="flex lg:flex-row lg:gap-3 lg:my-3 my-2 gap-2 flex-wrap">
-                {product?.weightOptions?.map((opt) => (
-                  <button
-                    key={opt._id}
-                    onClick={() => setSelected(opt)}
-                    className={`lg:px-5 lg:py-2 px-3 py-2 rounded-md cursor-pointer text-base border transition duration-300 ${
-                      selected?._id === opt._id
-                        ? "bg-[#EE1c25] text-white border-[#EE1c25]"
-                        : "bg-transparent text-black border-gray-400"
-                    }`}
-                  >
-                    {opt.weight} {opt.unit}
-                  </button>
-                ))}
+                {product?.weightOptions?.map((opt) => {
+                  const isOutOfStock = opt.stock === 0;
+
+                  return (
+                    <div className="flex flex-col">
+                      <button
+                      key={opt._id}
+                      onClick={() => !isOutOfStock && setSelected(opt)}
+                      disabled={isOutOfStock}
+                      className={`lg:px-5 lg:py-2 px-3 py-2 rounded-md cursor-pointer text-base border transition duration-300 ${
+                        isOutOfStock
+                          ? "bg-gray-200 text-gray-500 border-gray-300 cursor-not-allowed"
+                          : selected?._id === opt._id
+                          ? "bg-[#EE1c25] text-white border-[#EE1c25]"
+                          : "bg-transparent text-black border-gray-400"
+                      }`}
+                    >
+                      {opt.weight} {opt.unit} 
+                    </button>
+                    <p className="mt-1 text-[#EE1c25]">{isOutOfStock && `${opt.weight}${opt.unit} (Out of Stock)`}</p>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 

@@ -420,7 +420,7 @@ const Navbar = () => {
               >
                 Product
               </a>
-              <a
+              {/* <a
                 href="#"
                 onClick={() => setMobileOpen(false)}
                 className="py-2 "
@@ -433,10 +433,10 @@ const Navbar = () => {
                 className="py-2 "
               >
                 Contact Us
-              </a>
+              </a> */}
             </nav>
 
-            <div className="mt-6 border-t pt-4">
+            <div className="mt-6 absolute bottom-5 pt-4">
               <button
                 className="w-full text-left py-2"
                 onClick={() => {

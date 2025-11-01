@@ -3,15 +3,15 @@ import Confetti from "react-confetti";
 import happyAnim from "../../assets/LottieJson/happy.json";
 import Lottie from "lottie-react";
 import MobileFooter from "./MobileFooter";
-// import { Trash2 } from "lucide-react";
 import Navbar from "./Navbar";
 import { useNavigate } from "react-router-dom";
 import { getCartByUserId, removeFromCart as cartApi } from "../../api/cartApi";
 import { LocationPermissionModal } from "./LocationPermissionModal";
 import { createOrder, verifyPayment } from "../../api/paymentApi";
-import { updateProfile } from "../../api/authApi";
+import failAnimation from "../../assets/LottieJson/payment-failed.json";
+import { updateProfile } from "../../api/authApi"; // Though not used directly, good to keep if intended
 import { createOrderData } from "../../api/orderApi";
-import { PhoneNumberField } from "./PhoneNumberField"; // Import the updated PhoneNumberField
+import { PhoneNumberField } from "./PhoneNumberField";
 
 const indianStates = [
   "Andhra Pradesh",
@@ -51,6 +51,14 @@ const indianStates = [
   "Lakshadweep",
   "Puducherry",
 ];
+const formatIndianMobile = (num) => {
+  if (!num) return "";
+  const cleaned = num.replace(/\D/g, ""); // remove non-digit chars
+  if (cleaned.length === 10) return "+91" + cleaned; // prepend +91
+  if (cleaned.startsWith("91") && cleaned.length === 12) return "+" + cleaned;
+  if (cleaned.startsWith("+")) return cleaned; // already in +91 format
+  return cleaned; // fallback
+};
 
 function PaymentPage() {
   const navigate = useNavigate();
@@ -65,10 +73,13 @@ function PaymentPage() {
 
   // Form states
   const [deliveryOption, setDeliveryOption] = useState("ship");
+  const [showCODConfirmModal, setShowCODConfirmModal] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [total, setTotal] = useState(0);
+  const [countdown, setCountdown] = useState(20);
   const [contactInfo, setContactInfo] = useState("");
   const [mobileInfo, setMobileInfo] = useState("");
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [shippingFirstName, setShippingFirstName] = useState("");
   const [shippingLastName, setShippingLastName] = useState("");
   const [shippingAddress, setShippingAddress] = useState("");
@@ -76,18 +87,43 @@ function PaymentPage() {
   const [shippingPinCode, setShippingPinCode] = useState("");
   const [shippingState, setShippingState] = useState("Tamil Nadu");
   const [shippingCountry, setShippingCountry] = useState("India");
-  const [gstNumber, setGstNumber] = useState("");
-  const [companyName, setCompanyName] = useState("");
 
   // UI states
   const [paymentload, setpaymentload] = useState(false);
   const [processingPayment, setProcessingPayment] = useState(false);
-  const [showFields, setShowFields] = useState(false);
-  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [showFields, setShowFields] = useState(false); // Consider removing if not used
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false); // Consider removing if not used or integrate into order-confirmed page
   const [location, setLocation] = useState(null);
   const [mapUrl, setMapUrl] = useState("");
   const [errors, setErrors] = useState({});
   const [showLocationModal, setShowLocationModal] = useState(false);
+
+  // NEW STATES for payment failure feedback
+  const [paymentErrorMessage, setPaymentErrorMessage] = useState("");
+  const [showRetryOption, setShowRetryOption] = useState(false);
+
+  useEffect(() => {
+    if (!showPaymentModal) return;
+
+    const interval = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          setShowPaymentModal(false); // auto-close modal
+          return 20; // reset countdown for next failure
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [showPaymentModal]);
+
+  useEffect(() => {
+    if (showPaymentModal) {
+      setCountdown(20); // reset countdown
+    }
+  }, [showPaymentModal]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -110,7 +146,6 @@ function PaymentPage() {
   const saveGuestCart = useCallback((cartArray) => {
     try {
       localStorage.setItem("guest_cart", JSON.stringify(cartArray));
-      // notify other same-tab listeners
       try {
         window.dispatchEvent(new Event("guestCartChanged"));
       } catch (e) {}
@@ -140,32 +175,76 @@ function PaymentPage() {
       }
 
       setCartItems(items);
-      const subtotal = items.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0);
+      const subtotal = items.reduce(
+        (sum, item) => sum + (item.price || 0) * (item.quantity || 0),
+        0
+      );
       setTotal(subtotal);
+      if (!items || items.length === 0) {
+        navigate("/collections/all"); // Redirect if buyNow item is invalid/missing
+      }
       return; // 🛑 Stop here — skip server/guest cart fetch
     }
 
+    // ✅ Step 2: Check for retryPaymentData first
+    const retryDataRaw = localStorage.getItem("retryPaymentData");
+    if (retryDataRaw) {
+      try {
+        const data = JSON.parse(retryDataRaw);
+        items = data.cartItems || [];
+        setCartItems(items);
+        setContactInfo(data.contactInfo || "");
+        setMobileInfo(formatIndianMobile(data.mobileInfo + "") || "");
+        setShippingFirstName(data.shippingFirstName || "");
+        setShippingLastName(data.shippingLastName || "");
+        setShippingAddress(data.shippingAddress || "");
+        setShippingCity(data.shippingCity || "");
+        setShippingState(data.shippingState || "Tamil Nadu");
+        setShippingPinCode(data.shippingPinCode || "");
+        setTotal(data.total || 0);
+        // Important: Do NOT remove retryPaymentData here. Only on successful payment.
+        // Important: Do NOT redirect to /collections/all here if there's retry data.
+        if (!items || items.length === 0) {
+          setPaymentErrorMessage(
+            "Your previous cart could not be loaded for retry. Please try adding items again."
+          );
+          // We might still want to clear retryData if items are truly empty and cannot be loaded
+          localStorage.removeItem("retryPaymentData");
+          navigate("/collections/all"); // Only redirect if cart is truly empty AND retry data leads to empty cart
+        }
+        return; // Exit, as we loaded from retry data
+      } catch (err) {
+        console.error("Error parsing retryPaymentData:", err);
+        localStorage.removeItem("retryPaymentData"); // Clear invalid retry data
+      }
+    }
+
+    // ✅ Step 3: Load from server cart (if logged in) or guest cart
     if (token) {
       try {
         const data = await getCartByUserId();
-        if (data && data.success && data.data && Array.isArray(data.data.items)) {
+        if (data?.success && Array.isArray(data.data?.items)) {
           items = data.data.items;
         } else {
-          items = (data && data.data && data.data.items) || (data && data.items) || [];
+          items = data?.data?.items || data?.items || [];
         }
       } catch (err) {
         console.error("Failed to fetch cart from server", err);
-        items = getGuestCart();
+        items = getGuestCart(); // Fallback to guest cart on server error
       }
     } else {
+      // Not logged in
       items = getGuestCart();
     }
 
     setCartItems(items);
-    const subtotal = items.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0);
+    const subtotal = items.reduce(
+      (sum, item) => sum + (item.price || 0) * (item.quantity || 0),
+      0
+    );
     setTotal(subtotal);
 
-    // Redirect if cart is empty after fetching
+    // Redirect if cart is empty after ALL attempts to load
     if (!items || items.length === 0) {
       navigate("/collections/all");
     }
@@ -173,7 +252,10 @@ function PaymentPage() {
 
   // recompute total whenever cartItems changes
   useEffect(() => {
-    const subtotal = cartItems.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0);
+    const subtotal = cartItems.reduce(
+      (sum, item) => sum + (item.price || 0) * (item.quantity || 0),
+      0
+    );
     setTotal(subtotal);
   }, [cartItems]);
 
@@ -184,28 +266,18 @@ function PaymentPage() {
   // Listen for storage changes and custom events to update cart live
   useEffect(() => {
     const onStorage = (e) => {
-      if (!e) {
-        fetchCart();
-        return;
-      }
-      if (e.key === "guest_cart") {
-        // if guest cart changed in another tab
-        const guest = getGuestCart();
-        setCartItems(guest);
-      } else if (e.key === "user" || e.key === "token") {
-        // login/logout occurred in another tab
+      if (
+        !e ||
+        e.key === "guest_cart" ||
+        e.key === "user" ||
+        e.key === "token"
+      ) {
         fetchCart();
       }
     };
 
-    const onGuestCartChanged = () => {
-      const guest = getGuestCart();
-      setCartItems(guest);
-    };
-
-    const onAuthChanged = () => {
-      fetchCart();
-    };
+    const onGuestCartChanged = () => fetchCart();
+    const onAuthChanged = () => fetchCart();
 
     window.addEventListener("storage", onStorage);
     window.addEventListener("guestCartChanged", onGuestCartChanged);
@@ -214,54 +286,43 @@ function PaymentPage() {
     return () => {
       window.removeEventListener("storage", onStorage);
       window.removeEventListener("guestCartChanged", onGuestCartChanged);
-      // window.removeEventListener("authChanged", onAuthChanged);
+      window.removeEventListener("authChanged", onAuthChanged); // Ensure this is removed
     };
-  }, [fetchCart, getGuestCart]);
+  }, [fetchCart]);
 
   // ------------------ Prefill form: retry data > user profile ------------------
+  // Modified to use the logic in fetchCart first
   useEffect(() => {
-    const retryData = localStorage.getItem("retryPaymentData");
-    if (retryData) {
-      const data = JSON.parse(retryData);
-      setContactInfo(data.contactInfo || "");
-      setMobileInfo(data.mobileInfo + "" || "");
-      setShippingFirstName(data.shippingFirstName || "");
-      setShippingLastName(data.shippingLastName || "");
-      setShippingAddress(data.shippingAddress || "");
-      setShippingCity(data.shippingCity || "");
-      setShippingState(data.shippingState || "Tamil Nadu");
-      setShippingPinCode(data.shippingPinCode || "");
-      setTotal(data.total || 0);
-      localStorage.removeItem("retryPaymentData");
-    } else {
-      const userData = localStorage.getItem("user");
-      if (userData) {
-        try {
-          const user = JSON.parse(userData);
-          setContactInfo(user.email || "");
-          setMobileInfo(user.phone || "");
+    const userData = localStorage.getItem("user");
+    if (userData && !localStorage.getItem("retryPaymentData")) {
+      // Only prefill from user if no retry data
+      try {
+        const user = JSON.parse(userData);
+        setContactInfo(user.email || "");
+        setMobileInfo(formatIndianMobile(user.phone || ""));
 
-          if (user.name) {
-            const [firstName, ...rest] = user.name.split(" ");
-            setShippingFirstName(firstName || "");
-            setShippingLastName(rest.join(" ") || "");
-          }
-
-          if (user.addresses && user.addresses.length > 0) {
-            const defaultAddress = user.addresses.find((a) => a.isDefault) || user.addresses[0];
-            setShippingAddress(defaultAddress.street || "");
-            setShippingCity(defaultAddress.city || "");
-            setShippingState(defaultAddress.state || "Tamil Nadu");
-            setShippingPinCode(defaultAddress.pincode || "");
-          }
-        } catch (err) {
-          console.error("Failed to parse user from localStorage:", err);
+        if (user.name) {
+          const [firstName, ...rest] = user.name.split(" ");
+          setShippingFirstName(firstName || "");
+          setShippingLastName(rest.join(" ") || "");
         }
+
+        if (user.addresses && user.addresses.length > 0) {
+          const defaultAddress =
+            user.addresses.find((a) => a.isDefault) || user.addresses[0];
+          setShippingAddress(defaultAddress.street || "");
+          setShippingCity(defaultAddress.city || "");
+          setShippingState(defaultAddress.state || "Tamil Nadu");
+          setShippingPinCode(defaultAddress.pincode || "");
+        }
+      } catch (err) {
+        console.error("Failed to parse user from localStorage:", err);
       }
     }
-  }, []);
+  }, []); // Removed fetchCart from dependencies to avoid loop, it's called separately
 
   // ------------------ Fetch location ------------------
+  // ... (no changes needed here for the payment retry logic)
   useEffect(() => {
     const fetchUserLocation = async () => {
       if (navigator.geolocation) {
@@ -272,7 +333,9 @@ function PaymentPage() {
               longitude: pos.coords.longitude,
             };
             setLocation(loc);
-            setMapUrl(`https://www.google.com/maps?q=${loc.latitude},${loc.longitude}`);
+            setMapUrl(
+              `https://www.google.com/maps?q=${loc.latitude},${loc.longitude}`
+            );
             setShowLocationModal(false);
           },
           async (err) => {
@@ -309,81 +372,182 @@ function PaymentPage() {
   // ------------------ Validation ------------------
   const validatePaymentForm = () => {
     const newErrors = {};
-    if (!contactInfo.trim()) newErrors.contactInfo = "Please enter your email address.";
-    if (!mobileInfo.trim()) newErrors.mobileInfo = "Please enter your mobile number.";
+    if (!contactInfo.trim())
+      newErrors.contactInfo = "Please enter your email address.";
+    if (!mobileInfo.trim())
+      newErrors.mobileInfo = "Please enter your mobile number.";
 
     // require shipping fields for both ship and cod
     if (["ship", "COD"].includes(deliveryOption)) {
-      if (!shippingFirstName.trim()) newErrors.shippingFirstName = "First name is required.";
-      if (!shippingLastName.trim()) newErrors.shippingLastName = "Last name is required.";
-      if (!shippingAddress.trim()) newErrors.shippingAddress = "Address is required.";
+      if (!shippingFirstName.trim())
+        newErrors.shippingFirstName = "First name is required.";
+      if (!shippingLastName.trim())
+        newErrors.shippingLastName = "Last name is required.";
+      if (!shippingAddress.trim())
+        newErrors.shippingAddress = "Address is required.";
       if (!shippingCity.trim()) newErrors.shippingCity = "City is required.";
       if (!shippingState.trim()) newErrors.shippingState = "State is required.";
-      if (!shippingPinCode.trim()) newErrors.shippingPinCode = "PinCode is required.";
+      if (!shippingPinCode.trim())
+        newErrors.shippingPinCode = "PinCode is required.";
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // ------------------ Remove item (supports server + guest) ------------------
-  const handleRemoveItem = async (itemId) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        // Call API to remove item, pass itemId
-        const response = await cartApi(itemId); // cartApi should accept itemId
-        if (response?.success) {
-          setCartItems((prev) => prev.filter((item) => item._id !== itemId));
-        } else {
-          console.warn("Server did not remove item, fallback locally");
-          setCartItems((prev) => prev.filter((item) => item._id !== itemId));
-        }
-      } catch (err) {
-        console.error("Failed to remove from server cart:", err);
-        setCartItems((prev) => prev.filter((item) => item._id !== itemId));
+  const scrollToFirstError = (errors) => {
+    // Mapping of error key to its corresponding ref
+    const refMap = {
+      contactInfo: emailRef,
+      mobileInfo: phoneRef,
+      shippingFirstName: firstNameRef,
+      shippingLastName: lastNameRef,
+      shippingAddress: addressRef,
+      shippingCity: cityRef,
+      shippingState: stateRef,
+      shippingPinCode: pinCodeRef,
+    };
+
+    // Find the first error and scroll to its corresponding ref
+    for (const key of Object.keys(refMap)) {
+      if (errors[key] && refMap[key].current) {
+        refMap[key].current.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+        refMap[key].current.focus();
+        return true; // Found and scrolled to an error
       }
-    } else {
-      // guest fallback
-      const guest = getGuestCart();
-      const newGuest = guest.filter((it) => it._id !== itemId && it.id !== itemId);
-      saveGuestCart(newGuest);
-      setCartItems(newGuest);
+    }
+    return false; // No errors found or no ref for the error
+  };
+
+  const confirmCODOrder = async () => {
+    setShowCODConfirmModal(false);
+    setpaymentload(true);
+    try {
+      setProcessingPayment(true);
+
+      const procStart = Date.now();
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+      const pingLocation =
+        location?.latitude != null && location?.longitude != null
+          ? {
+              type: "Point",
+              coordinates: [location.longitude, location.latitude],
+            }
+          : {
+              type: "Point",
+              coordinates: [0, 0],
+            };
+
+      const productsForOrder = cartItems.map((p) => ({
+        productId: p.product?._id || p.productId || p.id,
+        name: p.product?.name || p.name,
+        weightOptionId:
+          p.selectedWeightOptionId || p.weightOptionId || p.weightOption || "",
+        price: p.price,
+        quantity: p.quantity,
+        unit: p.unit || "",
+        weight: p.weight,
+      }));
+
+      const orderRes = await createOrderData({
+        buyer: user?.id || null,
+        buyerDetails: {
+          name: user?.name || `${shippingFirstName} ${shippingLastName}`,
+          email: user?.email || contactInfo,
+          phone: user?.phone || mobileInfo,
+        },
+        shippingAddress,
+        location: mapUrl,
+        pingLocation,
+        paymentMethod: "COD",
+        paymentStatus: "pending",
+        products: productsForOrder,
+        total,
+      });
+
+      // clear cart
+      try {
+        const token = localStorage.getItem("token");
+        if (token && Array.isArray(cartItems) && cartItems.length > 0) {
+          const removals = cartItems.map((it) => {
+            const idToRemove =
+              it._id || it.id || it.product?._id || it.productId;
+            if (!idToRemove) return Promise.resolve();
+            return cartApi(idToRemove);
+          });
+          await Promise.allSettled(removals);
+        } else {
+          localStorage.removeItem("guest_cart");
+          window.dispatchEvent(new Event("guestCartChanged"));
+        }
+        localStorage.removeItem("user_cart");
+        window.dispatchEvent(new Event("userCartChanged"));
+        localStorage.removeItem("retryPaymentData");
+      } catch (err) {
+        console.warn("Error while clearing cart after COD order:", err);
+      }
+
+      const elapsed = Date.now() - procStart;
+      const minWait = 1000;
+      if (elapsed < minWait)
+        await new Promise((res) => setTimeout(res, minWait - elapsed));
+
+      setCartItems([]);
+      setTotal(0);
+      setProcessingPayment(false);
+
+      const createdOrderId =
+        orderRes?.data?.orderId ||
+        orderRes?.orderId ||
+        orderRes?.order?.orderId ||
+        null;
+
+      navigate(
+        `/order-confirmed?order_id=${createdOrderId || "unknown"}&paymentId=cod`
+      );
+    } catch (err) {
+      console.error("COD order creation failed:", err);
+      localStorage.setItem(
+        "retryPaymentData",
+        JSON.stringify({
+          contactInfo,
+          mobileInfo,
+          shippingFirstName,
+          shippingLastName,
+          shippingAddress,
+          shippingCity,
+          shippingState,
+          shippingPinCode,
+          total,
+          cartItems,
+        })
+      );
+      setPaymentErrorMessage(
+        `COD order failed: ${err.message || "Please try again."}`
+      );
+      setShowRetryOption(true);
+      setShowPaymentModal(true);
+    } finally {
+      setpaymentload(false);
+      setProcessingPayment(false);
     }
   };
 
   // ------------------ Payment handler (supports online + COD) ------------------
   const handlePayment = async () => {
     setpaymentload(true);
+    setShowPaymentModal(false);
+    setPaymentErrorMessage(""); // Clear any previous error messages
+    setShowRetryOption(false); // Hide retry option on new attempt
 
     // validate first
     if (!validatePaymentForm()) {
-      // Scroll to first error
-      if (errors.contactInfo && emailRef.current) {
-        emailRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
-        emailRef.current.focus();
-      } else if (errors.mobileInfo && phoneRef.current) {
-        phoneRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
-        phoneRef.current.focus();
-      } else if (errors.shippingFirstName && firstNameRef.current) {
-        firstNameRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
-        firstNameRef.current.focus();
-      } else if (errors.shippingLastName && lastNameRef.current) {
-        lastNameRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
-        lastNameRef.current.focus();
-      } else if (errors.shippingAddress && addressRef.current) {
-        addressRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
-        addressRef.current.focus();
-      } else if (errors.shippingCity && cityRef.current) {
-        cityRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
-        cityRef.current.focus();
-      } else if (errors.shippingState && stateRef.current) {
-        stateRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
-        stateRef.current.focus();
-      } else if (errors.shippingPinCode && pinCodeRef.current) {
-        pinCodeRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
-        pinCodeRef.current.focus();
-      }
+      scrollToFirstError(errors);
+      // ... (your existing scroll to error logic)
       setpaymentload(false);
       return;
     }
@@ -392,7 +556,6 @@ function PaymentPage() {
     const storedUser = localStorage.getItem("user");
     if (!storedUser) {
       try {
-        // Save current checkout state so we can restore after login
         const pending = {
           contactInfo,
           mobileInfo,
@@ -403,151 +566,42 @@ function PaymentPage() {
           shippingState,
           shippingPinCode,
           total,
-          cartItems, // store cart snapshot (guest_cart or server-cart snapshot)
+          cartItems,
           deliveryOption,
         };
         localStorage.setItem("pendingCheckout", JSON.stringify(pending));
 
-        // navigate to login page, passing postLoginRedirect as a query param instead of storing in localStorage
-        const redirectPath = "/checkout";
-        const search = new URLSearchParams({ postLoginRedirect: redirectPath }).toString();
+        const redirectPath = { path: "/checkout" };
+        const search = new URLSearchParams({
+          postLoginRedirect: redirectPath,
+        }).toString();
         navigate(`/login?${search}`);
       } catch (err) {
         console.error("Failed to save pending checkout state:", err);
-        // still include redirect param as a fallback
         navigate(`/login?postLoginRedirect=${encodeURIComponent("/checkout")}`);
       } finally {
         setpaymentload(false);
       }
-      return; // stop further processing
+      return;
     }
 
-    // user exists - parse it
     const user = JSON.parse(storedUser);
 
     // COD flow branch
     if (deliveryOption === "COD") {
-      setpaymentload(true);
-      try {
-        setProcessingPayment(true);
-        const procStart = Date.now();
-
-        const pingLocation =
-          location?.latitude != null && location?.longitude != null
-            ? {
-                type: "Point",
-                coordinates: [location.longitude, location.latitude],
-              }
-            : {
-                type: "Point",
-                coordinates: [0, 0],
-              };
-
-        const productsForOrder = cartItems.map((p) => ({
-          productId: p.product?._id || p.productId || p.id,
-          name: p.product?.name || p.name,
-          weightOptionId: p.selectedWeightOptionId || p.weightOptionId || p.weightOption || "",
-          price: p.price,
-          quantity: p.quantity,
-          unit: p.unit || "",
-          weight: p.weight,
-        }));
-
-        // create order on server for COD
-        const orderRes = await createOrderData({
-          buyer: user?.id || null,
-          buyerDetails: {
-            name: user?.name || `${shippingFirstName} ${shippingLastName}`,
-            email: user?.email || contactInfo,
-            phone: user?.phone || mobileInfo,
-          },
-          shippingAddress,
-          location: mapUrl,
-          pingLocation,
-          paymentMethod: "COD",
-          paymentStatus: "pending",
-          products: productsForOrder,
-          total,
-        });
-
-        // remove items from server-side cart if logged-in OR clear guest cart
-        try {
-          const token = localStorage.getItem("token");
-          if (token && Array.isArray(cartItems) && cartItems.length > 0) {
-            const removals = cartItems.map((it) => {
-              const idToRemove = it._id || it.id || it.product?._id || it.productId;
-              if (!idToRemove) return Promise.resolve({ status: "skipped", reason: "no-id" });
-              return cartApi(idToRemove);
-            });
-            const results = await Promise.allSettled(removals);
-            results.forEach((r, idx) => {
-              if (r.status === "rejected") {
-                console.warn("Failed to remove cart item:", cartItems[idx], r.reason);
-              } else if (r.value && r.value.success === false) {
-                console.warn("API responded with failure removing item:", cartItems[idx], r.value);
-              }
-            });
-          } else {
-            try {
-              localStorage.removeItem("guest_cart");
-              window.dispatchEvent(new Event("guestCartChanged"));
-            } catch (e) {
-              console.warn("Failed to clear guest_cart:", e);
-            }
-          }
-        } catch (err) {
-          console.warn("Error while removing items from cart:", err);
-        }
-
-        // remove user_cart local storage and notify
-        try {
-          localStorage.removeItem("user_cart");
-          try {
-            window.dispatchEvent(new Event("userCartChanged"));
-          } catch (e) {}
-        } catch (err) {
-          console.warn("Failed to remove user_cart from localStorage:", err);
-        }
-
-        // ensure at least 1s of processing (you had 5s for online — keep UX snappy for COD)
-        const elapsed = Date.now() - procStart;
-        const minWait = 1000;
-        if (elapsed < minWait) {
-          await new Promise((res) => setTimeout(res, minWait - elapsed));
-        }
-
-        // clear UI cart then hide overlay and navigate
-        setCartItems([]);
-        setTotal(0);
-        setProcessingPayment(false);
-
-        const createdOrderId = orderRes?.data?.orderId || orderRes?.orderId || orderRes?.order?.orderId || null;
-        navigate(`/order-confirmed?order_id=${createdOrderId || "unknown"}&paymentMethod=cod`);
-      } catch (err) {
-        console.error("COD order creation failed:", err);
-        localStorage.setItem(
-          "retryPaymentData",
-          JSON.stringify({
-            contactInfo,
-            mobileInfo,
-            shippingFirstName,
-            shippingLastName,
-            shippingAddress,
-            shippingCity,
-            shippingState,
-            shippingPinCode,
-            total,
-          })
-        );
-        navigate("/payment-failed", { state: { error: err.message } });
-      } finally {
+      if (!validatePaymentForm()) {
+        scrollToFirstError(errors);
         setpaymentload(false);
-        setProcessingPayment(false);
+        return;
       }
+
+      // Instead of immediately creating the order, show confirmation
+      setShowCODConfirmModal(true);
+      setpaymentload(false);
       return;
     }
 
-    // If code reaches here, user exists — proceed with Razorpay flow
+    // Razorpay flow
     try {
       const data = await createOrder({ amount: total * 100, currency: "INR" });
       if (!data.success) throw new Error("Failed to create Razorpay order");
@@ -574,11 +628,8 @@ function PaymentPage() {
           try {
             await verifyPayment(response);
 
-            // show processing overlay
             setProcessingPayment(true);
             const procStart = Date.now();
-
-            const user = JSON.parse(localStorage.getItem("user") || "null");
 
             let pingLocation = null;
             if (location?.latitude != null && location?.longitude != null) {
@@ -587,10 +638,7 @@ function PaymentPage() {
                 coordinates: [location.longitude, location.latitude],
               };
             } else {
-              pingLocation = {
-                type: "Point",
-                coordinates: [0, 0],
-              };
+              pingLocation = { type: "Point", coordinates: [0, 0] };
             }
 
             const productsForOrder = cartItems.map((p) => ({
@@ -602,7 +650,6 @@ function PaymentPage() {
               weight: p.weight,
             }));
 
-            // create order on server (this may take time)
             await createOrderData({
               buyer: user?.id || null,
               buyerDetails: {
@@ -623,53 +670,42 @@ function PaymentPage() {
               total,
             });
 
-            // Remove items from server-side cart if logged-in OR clear guest cart
+            // --- Post-order creation (successful for Online) ---
+            // Clear carts
             try {
               const token = localStorage.getItem("token");
               if (token && Array.isArray(cartItems) && cartItems.length > 0) {
                 const removals = cartItems.map((it) => {
-                  const idToRemove = it._id || it.id || it.product?._id || it.productId;
-                  if (!idToRemove) return Promise.resolve({ status: "skipped", reason: "no-id" });
+                  const idToRemove =
+                    it._id || it.id || it.product?._id || it.productId;
+                  if (!idToRemove)
+                    return Promise.resolve({
+                      status: "skipped",
+                      reason: "no-id",
+                    });
                   return cartApi(idToRemove);
                 });
-                const results = await Promise.allSettled(removals);
-                results.forEach((r, idx) => {
-                  if (r.status === "rejected") {
-                    console.warn("Failed to remove cart item:", cartItems[idx], r.reason);
-                  } else if (r.value && r.value.success === false) {
-                    console.warn("API responded with failure removing item:", cartItems[idx], r.value);
-                  }
-                });
+                await Promise.allSettled(removals);
               } else {
-                try {
-                  localStorage.removeItem("guest_cart");
-                  window.dispatchEvent(new Event("guestCartChanged"));
-                } catch (e) {
-                  console.warn("Failed to clear guest_cart:", e);
-                }
+                localStorage.removeItem("guest_cart");
+                window.dispatchEvent(new Event("guestCartChanged"));
               }
-            } catch (err) {
-              console.warn("Error while removing items from cart:", err);
-            }
-
-            // remove user_cart local storage and update profile (unchanged)
-            try {
               localStorage.removeItem("user_cart");
-              try {
-                window.dispatchEvent(new Event("userCartChanged"));
-              } catch (e) {}
+              window.dispatchEvent(new Event("userCartChanged"));
+              localStorage.removeItem("retryPaymentData"); // CLEAR ON SUCCESS
             } catch (err) {
-              console.warn("Failed to remove user_cart from localStorage:", err);
+              console.warn(
+                "Error while clearing cart after online order:",
+                err
+              );
             }
 
-            // ensure at least 5s of processing overlay so user doesn't see a flash
             const elapsed = Date.now() - procStart;
             const minWait = 5000;
             if (elapsed < minWait) {
               await new Promise((res) => setTimeout(res, minWait - elapsed));
             }
 
-            // clear UI cart then hide overlay and navigate
             setCartItems([]);
             setTotal(0);
             setProcessingPayment(false);
@@ -684,7 +720,7 @@ function PaymentPage() {
 
             navigate(`/order-confirmed?${queryParams}`);
           } catch (err) {
-            // if anything failed, hide overlay and fallback to your existing retry flow
+            // Inner catch: Payment verified but order creation/cart clearing failed
             setProcessingPayment(false);
             console.error(err);
             localStorage.setItem(
@@ -699,22 +735,24 @@ function PaymentPage() {
                 shippingState,
                 shippingPinCode,
                 total,
+                cartItems,
               })
             );
-            navigate("/payment-failed", {
-              state: {
-                orderId: order_id,
-                amount,
-                currency,
-                contact: contactInfo,
-                error: err.message,
-              },
-            });
+            setPaymentErrorMessage(
+              `Payment failed post-verification: ${
+                err.message || "Please try again."
+              }`
+            );
+            setShowRetryOption(true); // Show retry button
+            setShowPaymentModal(true);
+            // DO NOT REDIRECT TO /payment-failed
           }
         },
 
         modal: {
           ondismiss: () => {
+            // User closed the Razorpay modal
+            console.log("Razorpay modal dismissed");
             localStorage.setItem(
               "retryPaymentData",
               JSON.stringify({
@@ -727,11 +765,15 @@ function PaymentPage() {
                 shippingState,
                 shippingPinCode,
                 total,
+                cartItems,
               })
             );
-            navigate("/payment-failed", {
-              state: { reason: "User cancelled the payment" },
-            });
+            setPaymentErrorMessage(
+              "Payment cancelled by user. Please try again."
+            );
+            setShowRetryOption(true); // Show retry button
+            setShowPaymentModal(true);
+            // DO NOT REDIRECT TO /payment-failed
           },
         },
       };
@@ -739,6 +781,7 @@ function PaymentPage() {
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (err) {
+      // Outer catch: Failed to create Razorpay order initially
       console.error(err);
       localStorage.setItem(
         "retryPaymentData",
@@ -752,24 +795,43 @@ function PaymentPage() {
           shippingState,
           shippingPinCode,
           total,
+          cartItems,
         })
       );
-      navigate("/payment-failed", { state: { error: err.message } });
+      setPaymentErrorMessage(
+        `Payment initiation failed: ${err.message || "Please try again."}`
+      );
+      setShowRetryOption(true); // Show retry button
+      setShowPaymentModal(true);
+      // DO NOT REDIRECT TO /payment-failed
     } finally {
       setpaymentload(false);
+      // setProcessingPayment(false); // This is handled within handler/catch blocks now
     }
   };
-
   return (
     <>
       {showSuccessPopup && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <Confetti numberOfPieces={200} width={window.innerWidth} height={window.innerHeight} recycle={false} />
+          <Confetti
+            numberOfPieces={200}
+            width={window.innerWidth}
+            height={window.innerHeight}
+            recycle={false}
+          />
           <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-            <Lottie animationData={happyAnim} loop autoplay style={{ width: 100, height: 100, margin: "0 auto" }} />
+            <Lottie
+              animationData={happyAnim}
+              loop
+              autoplay
+              style={{ width: 100, height: 100, margin: "0 auto" }}
+            />
             <h2 className="text-xl font-bold">Coupon Applied!</h2>
             <p className="text-gray-600">You saved ₹{0}</p>
-            <button className="mt-4 bg-black text-white px-4 py-2 rounded" onClick={() => setShowSuccessPopup(false)}>
+            <button
+              className="mt-4 bg-black text-white px-4 py-2 rounded"
+              onClick={() => setShowSuccessPopup(false)}
+            >
               Okay
             </button>
           </div>
@@ -784,7 +846,10 @@ function PaymentPage() {
             {/* simple spinner */}
             <div className="w-12 h-12 border-4 rounded-full border-t-transparent animate-spin"></div>
             <h3 className="text-lg font-semibold">Processing your order</h3>
-            <p className="text-sm text-gray-600 text-center">We’re finalizing your payment and preparing your order. This may take a few seconds.</p>
+            <p className="text-sm text-gray-600 text-center">
+              We’re finalizing your payment and preparing your order. This may
+              take a few seconds.
+            </p>
           </div>
         </div>
       )}
@@ -802,8 +867,15 @@ function PaymentPage() {
               onChange={(e) => setContactInfo(e.target.value)}
               className="w-full h-[52px] border border-gray-300 rounded px-4"
             />
-            {errors.contactInfo && <p className="text-red-500 text-sm mt-1">{errors.contactInfo}</p>}
-            <PhoneNumberField ref={phoneRef} mobileInfo={mobileInfo} setMobileInfo={setMobileInfo} errors={errors} />
+            {errors.contactInfo && (
+              <p className="text-red-500 text-sm mt-1">{errors.contactInfo}</p>
+            )}
+            <PhoneNumberField
+              ref={phoneRef}
+              mobileInfo={mobileInfo}
+              setMobileInfo={setMobileInfo}
+              errors={errors}
+            />
           </div>
 
           {/* DELIVERY */}
@@ -811,24 +883,36 @@ function PaymentPage() {
             <h3 className="text-2xl font-bold">DELIVERY</h3>
             <label
               className={`flex items-center justify-between h-[52px] border rounded px-4 cursor-pointer ${
-                deliveryOption === "ship" ? "border-blue-600 bg-blue-50" : "border-gray-300"
+                deliveryOption === "ship"
+                  ? "border-blue-600 bg-blue-50"
+                  : "border-gray-300"
               }`}
               onClick={() => setDeliveryOption("ship")}
             >
               <span className="flex items-center gap-2">
-                <input type="radio" checked={deliveryOption === "ship"} onChange={() => setDeliveryOption("ship")} />
+                <input
+                  type="radio"
+                  checked={deliveryOption === "ship"}
+                  onChange={() => setDeliveryOption("ship")}
+                />
                 Ship
               </span>
             </label>
 
             <label
               className={`flex items-center justify-between h-[52px] border rounded px-4 cursor-pointer ${
-                deliveryOption === "COD" ? "border-blue-600 bg-blue-50" : "border-gray-300"
+                deliveryOption === "COD"
+                  ? "border-blue-600 bg-blue-50"
+                  : "border-gray-300"
               }`}
               onClick={() => setDeliveryOption("COD")}
             >
               <span className="flex items-center gap-2">
-                <input type="radio" checked={deliveryOption === "COD"} onChange={() => setDeliveryOption("cod")} />
+                <input
+                  type="radio"
+                  checked={deliveryOption === "COD"}
+                  onChange={() => setDeliveryOption("cod")}
+                />
                 Cash on Delivery
               </span>
             </label>
@@ -846,7 +930,11 @@ function PaymentPage() {
                       onChange={(e) => setShippingFirstName(e.target.value)}
                       className="w-full h-[52px] border border-gray-300 rounded px-4 py-4 lg:py-0"
                     />
-                    {errors.shippingFirstName && <p className="text-red-500 text-sm mt-1">{errors.shippingFirstName}</p>}
+                    {errors.shippingFirstName && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.shippingFirstName}
+                      </p>
+                    )}
                   </div>
                   <div className="flex-1">
                     <input
@@ -857,7 +945,11 @@ function PaymentPage() {
                       onChange={(e) => setShippingLastName(e.target.value)}
                       className="w-full h-[52px] border border-gray-300 rounded px-4 py-4 lg:py-0"
                     />
-                    {errors.shippingLastName && <p className="text-red-500 text-sm mt-1">{errors.shippingLastName}</p>}
+                    {errors.shippingLastName && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.shippingLastName}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div>
@@ -869,7 +961,11 @@ function PaymentPage() {
                     onChange={(e) => setShippingAddress(e.target.value)}
                     className="w-full h-[52px] border border-gray-300 rounded px-4"
                   />
-                  {errors.shippingAddress && <p className="text-red-500 text-sm mt-1">{errors.shippingAddress}</p>}
+                  {errors.shippingAddress && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.shippingAddress}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <input
@@ -880,9 +976,19 @@ function PaymentPage() {
                     onChange={(e) => setShippingCity(e.target.value)}
                     className="w-full h-[52px] border border-gray-300 rounded px-4"
                   />
-                  {errors.shippingCity && <p className="text-red-500 text-sm mt-1">{errors.shippingCity}</p>}
+                  {errors.shippingCity && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.shippingCity}
+                    </p>
+                  )}
                 </div>
-                <input type="text" placeholder="Country" disabled value={shippingCountry} className="w-full h-[52px] border border-gray-300 rounded px-4" />
+                <input
+                  type="text"
+                  placeholder="Country"
+                  disabled
+                  value={shippingCountry}
+                  className="w-full h-[52px] border border-gray-300 rounded px-4"
+                />
                 <div>
                   <select
                     ref={stateRef}
@@ -895,7 +1001,11 @@ function PaymentPage() {
                       <option key={st}>{st}</option>
                     ))}
                   </select>
-                  {errors.shippingState && <p className="text-red-500 text-sm mt-1">{errors.shippingState}</p>}
+                  {errors.shippingState && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.shippingState}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <input
@@ -906,7 +1016,11 @@ function PaymentPage() {
                     onChange={(e) => setShippingPinCode(e.target.value)}
                     className="w-full h-[52px] border border-gray-300 rounded px-4"
                   />
-                  {errors.shippingPinCode && <p className="text-red-500 text-sm mt-1">{errors.shippingPinCode}</p>}
+                  {errors.shippingPinCode && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.shippingPinCode}
+                    </p>
+                  )}
                 </div>
               </div>
             )}
@@ -914,11 +1028,25 @@ function PaymentPage() {
 
           {location && (
             <div className="mt-4 bg-gray-50 border border-gray-300 p-4 rounded-lg text-sm">
-              <h3 className="text-lg font-semibold mb-2">Your Location on Map</h3>
+              <h3 className="text-lg font-semibold mb-2">
+                Your Location on Map
+              </h3>
               {location.latitude && location.longitude ? (
                 <>
-                  <iframe width="100%" height="300" frameBorder="0" style={{ border: 0, marginBottom: "1rem" }} src={`${mapUrl}&hl=en&z=18&output=embed`} allowFullScreen></iframe>
-                  <a href={mapUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                  <iframe
+                    width="100%"
+                    height="300"
+                    frameBorder="0"
+                    style={{ border: 0, marginBottom: "1rem" }}
+                    src={`${mapUrl}&hl=en&z=18&output=embed`}
+                    allowFullScreen
+                  ></iframe>
+                  <a
+                    href={mapUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 underline"
+                  >
                     View on Google Maps
                   </a>
                 </>
@@ -930,8 +1058,16 @@ function PaymentPage() {
 
           {/* ACTION */}
           <div className="mt-8">
-            <button type="button" className="w-full bg-black text-white h-[52px] rounded cursor-pointer" onClick={handlePayment}>
-              {paymentload ? "Redirecting to payment page" : deliveryOption === "COD" ? "Place Order (Cash on Delivery)" : " Proceed to Pay"}
+            <button
+              type="button"
+              className="w-full bg-black text-white h-[52px] rounded cursor-pointer"
+              onClick={handlePayment}
+            >
+              {paymentload
+                ? "Redirecting to payment page"
+                : deliveryOption === "COD"
+                ? "Place Order (Cash on Delivery)"
+                : " Proceed to Pay"}
             </button>
           </div>
         </div>
@@ -944,25 +1080,43 @@ function PaymentPage() {
               <p>Your cart is empty</p>
             ) : (
               cartItems.map((item) => (
-                <div key={item._id || item.id} className="flex justify-between items-center gap-4 border-b pb-4">
+                <div
+                  key={item._id || item.id}
+                  className="flex justify-between items-center gap-4 border-b pb-4"
+                >
                   <div className="flex gap-4 items-center">
-                    <img src={item.product?.images?.[0] || item.product?.image || item.image} alt={item.product?.name || item.name} className="w-[100px] h-[100px] rounded object-cover" />
+                    <img
+                      src={
+                        item.product?.images?.[0] ||
+                        item.product?.image ||
+                        item.image
+                      }
+                      alt={item.product?.name || item.name}
+                      className="w-[100px] h-[100px] rounded object-cover"
+                    />
                     <div>
-                      <h3 className="text-base font-semibold">{item.product?.name || item.title?.en || item.name}</h3>
-                      <p className="text-sm text-gray-500">{item.quantity} x ₹{item.price}</p>
+                      <h3 className="text-base font-semibold">
+                        {item.product?.name || item.title?.en || item.name}
+                      </h3>
+                      <p className="text-sm text-gray-500">
+                        {item.quantity} x ₹{item.price}
+                      </p>
                     </div>
                   </div>
                   {/* optionally add remove button */}
                 </div>
               ))
             )}
-            <div className="flex justify-between mt-4">
-              <h6 className="text-lg font-bold">Total</h6>
-              <span className="text-lg font-medium">₹{total.toLocaleString()}</span>
-            </div>
-            <div className="mt-2 text-sm text-gray-600">
-              <strong>Payment:</strong> {deliveryOption === "COD" ? "Cash on Delivery" : "Online Payment"}
-            </div>
+          </div>
+          <div className="flex justify-between mt-4">
+            <h6 className="text-lg font-bold">Total</h6>
+            <span className="text-lg font-medium">
+              ₹{total.toLocaleString()}
+            </span>
+          </div>
+          <div className="mt-2 text-sm text-gray-600">
+            <strong>Payment:</strong>{" "}
+            {deliveryOption === "COD" ? "Cash on Delivery" : "Online Payment"}
           </div>
         </div>
       </div>
@@ -979,7 +1133,9 @@ function PaymentPage() {
                     longitude: position.coords.longitude,
                   };
                   setLocation(loc);
-                  setMapUrl(`https://www.google.com/maps?q=${loc.latitude},${loc.longitude}`);
+                  setMapUrl(
+                    `https://www.google.com/maps?q=${loc.latitude},${loc.longitude}`
+                  );
                 },
                 (error) => {
                   console.error("Retry failed:", error);
@@ -991,6 +1147,76 @@ function PaymentPage() {
             }
           }}
         />
+      )}
+
+      {showPaymentModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
+          <div className="bg-white rounded-lg shadow-lg w-[90%] max-w-md p-6 text-center">
+            {/* Lottie Animation */}
+            <div className="w-full h-50 mx-auto mb-4 -mt-5">
+              <Lottie animationData={failAnimation} loop={false} autoplay />
+            </div>
+
+            {/* Error Message */}
+            {paymentErrorMessage && (
+              <p className="text-red-600 text-lg font-medium mb-4">
+                {paymentErrorMessage}
+              </p>
+            )}
+
+            {/* Retry Button */}
+            {showRetryOption && (
+              <button
+                onClick={handlePayment}
+                className="bg-red-600 text-white cursor-pointer px-6 py-3 rounded hover:bg-red-700 transition mb-4"
+              >
+                Retry Payment
+              </button>
+            )}
+
+            {/* Countdown Timer */}
+            <p className="text-gray-500 text-sm">
+              Closing in <span className="font-bold">{countdown}</span> seconds
+              or{" "}
+              <p
+                className="text-green-600 cursor-pointer underline mt-2"
+                onClick={() => {
+                  setShowPaymentModal(false);
+                  setCountdown(0);
+                }}
+              >
+                Close Now
+              </p>
+            </p>
+          </div>
+        </div>
+      )}
+      {showCODConfirmModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center max-w-sm w-[90%]">
+            <h2 className="text-lg font-bold mb-2 pb-2 border-b border-gray-200">
+              Confirm Cash on Delivery
+            </h2>
+            <p className="text-gray-600 my-4">
+              Are you sure you want to place this order with{" "}
+              <b>Cash on Delivery</b>?
+            </p>
+            <div className="flex justify-center gap-4 mt-5">
+              <button
+                className="bg-gray-200 px-4 py-2 rounded cursor-pointer hover:bg-gray-300"
+                onClick={() => setShowCODConfirmModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-red-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-red-800"
+                onClick={confirmCODOrder}
+              >
+                Yes, Place Order
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       <MobileFooter />

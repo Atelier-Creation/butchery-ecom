@@ -156,7 +156,7 @@ export default function ShoppingCart() {
                   <p className="text-sm text-gray-500">
                     Weight:{" "}
                     <span className="text-red-600">
-                      {weight} 
+                      {weight} {item.unit || "pcs"}
                     </span>
                   </p>
                   {isMobile && (
@@ -196,7 +196,7 @@ export default function ShoppingCart() {
                         : "bg-gray-50 hover:bg-gray-200"
                     }`}
                   >
-                    {item.quantity}
+                    {item.quantity} 
                   </span>
 
                   <button
@@ -230,44 +230,26 @@ export default function ShoppingCart() {
           );
         })}
 
-        <div className="mt-6">
+        {cartItems.length < 0 && <div className="mt-6">
           <button
             className="bg-black text-white w-[100%] lg:w-auto px-6 py-3 lg:py-2 rounded-xs font-medium text-sm"
             onClick={() => navigate("/collections")}
           >
             CONTINUE SHOPPING
           </button>
-        </div>
+        </div>}
 
         <div
           className={`grid ${
             isMobile ? "grid-cols-1 gap-6" : "grid-cols-3 gap-6"
-          } mt-10 border-t border-gray-700 pt-8`}
+          } mt-10 border-gray-700 pt-1`}
         >
           <div className="col-span-1">
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-              <span className="text-gray-500">✎</span> Order Special Instruction
-            </label>
-            <textarea
-              rows="4"
-              className="w-full border border-gray-700 rounded p-2 text-sm"
-            ></textarea>
+            
           </div>
 
           <div className="col-span-1">
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-              <span className="text-gray-500">🚚</span> Estimate Shipping Rates
-            </label>
-            <select className="w-full border border-gray-700 rounded p-2 text-sm mb-3">
-              <option>---</option>
-              <option>Standard - Free</option>
-              <option>Express - ₹299</option>
-            </select>
-            <input
-              type="text"
-              placeholder="Pincode"
-              className="w-full border border-gray-700 rounded p-2 text-sm"
-            />
+            
           </div>
 
           <div
@@ -275,7 +257,7 @@ export default function ShoppingCart() {
               isMobile ? "items-start" : "items-end"
             } justify-start`}
           >
-            <p className="text-lg font-semibold">Subtotal ₹ {subtotal}</p>
+            <p className="text-lg font-semibold">Subtotal ₹ <strong className="text-2xl text-red-700"> {subtotal}</strong></p>
             <p className="text-sm text-gray-500 mt-1 mb-4">
               Taxes and Shipping Calculated at Checkout
             </p>

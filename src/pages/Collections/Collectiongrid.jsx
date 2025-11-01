@@ -226,7 +226,7 @@ const Collectiongrid = () => {
                         e.stopPropagation();
                         handleBuyNow(item.id);
                       }}
-                      className="hidden md:inline-flex absolute inset-x-4 bottom-4 bg-red-800 text-white text-sm py-2 rounded-md opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-1 z-20"
+                      className="hidden md:inline-flex cursor-pointer absolute inset-x-4 bottom-4 bg-red-800 text-white text-sm py-2 rounded-md opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-1 z-20"
                       aria-hidden="false"
                     >
                       Quick Shop <Eye size={14} />

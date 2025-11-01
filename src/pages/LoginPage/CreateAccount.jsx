@@ -24,6 +24,15 @@ function CreateAccount() {
   const [successMessage, setSuccessMessage] = useState("");
   const [serverMessage, setServerMessage] = useState("");
 
+  useEffect(()=>{
+      document.title = "Register - Iraichi Kadai";
+      const token = localStorage.getItem("token");
+      console.log("Existing token:", token);
+      if(token){
+        navigate("/", { replace: true });
+      }
+    })
+
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     handleResize();

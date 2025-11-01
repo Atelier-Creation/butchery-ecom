@@ -113,8 +113,8 @@ function MobileNavbar() {
           <FiSearch size={22} />
           <FiUser size={22} />
           <button onClick={() => toggleDrawer(true)}>
-  <FiShoppingBag size={22}/>
-</button>
+            <FiShoppingBag size={22} />
+          </button>
         </div>
       </div>
 

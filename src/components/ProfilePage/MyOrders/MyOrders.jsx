@@ -35,9 +35,11 @@ function MyOrders() {
   const statusColor = {
     pending: "text-yellow-500",
     claimed: "text-blue-500",
+    Processing: "text-blue-500",
     "Reached Pickup Point": "text-indigo-500",
-    "Picked Up": "text-orange-500",
-    Delivered: "text-green-500",
+    shipped: "text-orange-500",
+    "Picked Up": "text-orange-300",
+    delivered: "text-green-500",
     cancelled: "text-red-500",
   };
 

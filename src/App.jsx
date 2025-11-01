@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  Outlet,
+} from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import MobileDesign from "./pages/MobileDesign/MobileDesign";
 import Collections from "./pages/Collections/Collections";
@@ -24,7 +30,13 @@ import usePushNotifications from "./hooks/usePushNotifications";
 function App() {
   usePushNotifications();
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-
+  const RedirectIfLoggedIn = () => {
+    const token = localStorage.getItem("token"); // or your auth check
+    if (token) {
+      return <Navigate to="/" replace />;
+    }
+    return <Outlet />;
+  };
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const notificationId = urlParams.get("notificationId");
@@ -57,10 +69,12 @@ function App() {
                 element={<OrderConfirmed />}
               ></Route>
               <Route path="/payment-failed" element={<OrderConfirmed />} />
-              <Route path="/login" element={<Login />} />
+              <Route element={<RedirectIfLoggedIn />}>
+                <Route path="/login" element={<Login />} />
+                <Route path="/create-account" element={<CreateAccount />} />
+                <Route path="/forgot-password" element={<ResetPassword />} />
+              </Route>
               <Route path="/view-cart" element={<ShoppingCart />}></Route>
-              <Route path="/forgot-password" element={<ResetPassword />} />
-              <Route path="/create-account" element={<CreateAccount />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             </Routes>

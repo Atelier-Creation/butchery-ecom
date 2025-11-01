@@ -12,34 +12,37 @@ import image2 from "../../assets/images/top-view-meat-concept-with-copy-space.jp
 import image3 from "../../assets/images/top-view-raw-meat-slices-with-greens-red-tomatoes-dark-background-dish-meat-butcher-meal-salad-.jpg";
 const MobileBanner = () => {
   const images = [
-    {
-      image:
-        "https://plus.unsplash.com/premium_photo-1668616814974-496fb1ed7a7e?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      head: "Fresh, Tender & Juicy Meat Every Day Hygienically Cut, Packed & Delivered",
-      para: "Experience meat the way it should be – clean, healthy, and full of flavor.",
-    },
+  {
+    image:
+      "https://plus.unsplash.com/premium_photo-1668616814974-496fb1ed7a7e?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    head: "Fresh, Tender & Juicy Meat Every Day Hygienically Cut, Packed & Delivered",
+    para: "Experience meat the way it should be – clean, healthy, and full of flavor.",
+    url: "/collections/68cce5d81aea2c4b460c5bf8", // 🔗 add destination URL here
+  },
+  {
+    image: image2,
+    head: "பசுமையான இறைச்சி, நாட்டு சுவை, உங்கள் குடும்பத்திற்காக.",
+    para: "நாட்டு கோழி, மட்டன், வாத்து – அனைத்தும் சுத்தமாக, நம்பிக்கையுடன்.",
+    url: "/collections/68ce83f2d5d8f0d3c148a2df", // 🔗 Tamil slide URL
+  },
+  {
+    image: image3,
+    head: "Authentic Cuts, Premium Quality Always From Farm Fresh to Your Family’s Table!",
+    para: "Bringing back the taste of tradition with meat you can truly trust.",
+    url: "/collections/68ce841bd5d8f0d3c148a2e4", // 🔗 third slide
+  },
+  {
+    image:
+      "https://images.unsplash.com/photo-1682991136736-a2b44623eeba?q=80&w=1031&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    head: "சுத்தமாக வெட்டிய இறைச்சி,1 மணி நேரத்தில் உங்கள் வீட்டு வாசலில்.",
+    para: "சுவை,பசுமை, விரைவு – அனைத்தும் ஒரே இடத்தில், இறைச்சி கடையில்.",
+    url: "/collections/68e48f6352a9f3c9ae190a45", // 🔗 Tamil quick delivery slide
+  },
+];
 
-    {
-      image: image2,
-      head: "பசுமையான இறைச்சி, நாட்டு சுவை, உங்கள் குடும்பத்திற்காக.",
-      para: "நாட்டு க ோழி, மட்டன், வாத்து – அனை த்தும் சுத்தமாக, நம்பிக்கையுடன",
-    },
-
-    {
-      image: image3,
-      head: "Authentic Cuts, Premium Quality Always From Farm Fresh to Your Family’s Table!",
-      para: "Bringing back the taste of tradition with meat you can truly trust.",
-    },
-    {
-      image:
-        "https://images.unsplash.com/photo-1682991136736-a2b44623eeba?q=80&w=1031&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      head: "சுத்தமாக வெட்டிய இறைச்சி,1 மணி நேரத்தில் உங்கள் வீட்டு வாசலில்.",
-      para: "சுவை,பசுமை, விரைவு – அனைத்தும் ஒரே இடத்தில், இறைச்சி கடையில்.",
-    },
-  ];
 
   const swiperRef = useRef(null);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [isPlaying, setIsPlaying] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
   const toggleAutoplay = () => {
@@ -90,18 +93,21 @@ const MobileBanner = () => {
                   className="lg:py-2 lg:px-5 cursor-pointer py-2 px-5 border rounded border-[#EE1c25] bg-[#EE1c25] text-white transition duration-300 hover:bg-transparent hover:text-[#EE1c25]"
                 /> */}
                 <button
-                  onClick = {()=> navigate('/collections/all')}
+                  onClick={() => navigate(src.url)}
                   className="lg:py-2 lg:px-5 cursor-pointer py-2 px-5 border rounded border-[#EE1c25] bg-[#EE1c25] text-white transition duration-300 hover:bg-transparent hover:text-[#EE1c25]"
-                >Order Now </button>
+                >
+                  Order Now{" "}
+                </button>
 
                 {/* View Products button */}
                 <button
-                  onClick = {()=> navigate('/collections/all')}
+                  onClick={() => navigate("/collections/all")}
                   className="lg:py-2 lg:px-5 cursor-pointer py-2 px-5 border bg-transparent rounded border-white text-white transition duration-300 hover:bg-[#EE1c25] hover:text-white hover:border-[#EE1c25]"
-                >View all </button>
+                >
+                  View all{" "}
+                </button>
               </div>
             </div>
-
           </SwiperSlide>
         ))}
       </Swiper>
@@ -111,12 +117,13 @@ const MobileBanner = () => {
         <Button
           ta={"Order Now"}
           en={"Order Now"}
+          onClick={() => navigate(images[activeIndex]?.url || "/collections/all")}
           className="py-2 px-5 border rounded border-[#EE1c25] bg-[#EE1c25] text-white transition duration-300 hover:bg-transparent hover:text-[#EE1c25]"
         />
         <Button
           ta={"View all"}
           en={"View all"}
-          onClick = {()=> navigate('/collections/all')}
+          onClick={() => navigate("/collections/all")}
           className="py-2 px-5 border  bg-transparent rounded border-white text-white transition duration-300 hover:bg-[#EE1c25] hover:text-white hover:border-[#EE1c25]"
         />
       </div>
@@ -159,7 +166,6 @@ const MobileBanner = () => {
           />
         )}
       </div> */}
-
     </div>
   );
 };

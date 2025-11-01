@@ -84,7 +84,7 @@ const Testimonials = () => {
                 </div>
                 {/* Top Quotation Mark */}
                 <div className="absolute -top-4 left-4 text-yellow-500 text-8xl">
-                 <img src="/quats.svg" alt="quats" className='w-7 h-7' />
+                 <img src="quats.svg" alt="quats" className='w-7 h-7' />
                 </div>
 
                 {/* Review Text */}
@@ -106,7 +106,7 @@ const Testimonials = () => {
 
                 {/* Bottom Quotation Mark */}
                 <div className="absolute -bottom-3 right-3 text-yellow-500 text-8xl">
-                  <img src="/quats2.svg" alt="quats" className='w-7 h-7' />
+                  <img src="quats2.svg" alt="quats" className='w-7 h-7' />
                 </div>
               </div>
             </SwiperSlide>
