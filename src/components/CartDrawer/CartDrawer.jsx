@@ -257,8 +257,8 @@ const CartDrawer = ({ onClose, onRemove, onAddToCart, onCartChange }) => {
                     </p>
                   )}
                   <div className="flex items-center justify-between">
-                    <span className="fw-semibold text-[#EE1c25]">
-                      ₹{item.price} X {item.quantity}
+                    <span className="font-semibold text-[#EE1c25]">
+                      ₹ {item.price?.toFixed(2)} X {item.quantity}
                     </span>
                     <div className="flex items-center border justify-between border-gray-400 rounded-full w-fit">
                       <button

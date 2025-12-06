@@ -54,12 +54,13 @@ const MobileBestseller = ({
       <div className="lg:flex lg:justify-between">
         <div>
           {subtitle && (
-            <p className="text-lg text-red-600 font-semibold mb-1">{subtitle}</p>
+            <p className="text-lg text-red-600 font-semibold mb-1">
+              {subtitle}
+            </p>
           )}
           <h2 className="text-3xl md:text-3xl font-extrabold leading-tight mb-4 text-gray-700">
             {title}
           </h2>
-
         </div>
         <div className="hidden lg:block mt-6 text-center">
           <button
@@ -143,11 +144,15 @@ const MobileBestseller = ({
                   <div className="flex items-center gap-1">
                     {item.weightOptions?.[0]?.discountPrice && (
                       <span className="text-gray-500 line-through text-[10px]">
-                        ₹{item.weightOptions[0].discountPrice}
+                        ₹
+                        {Number(item.weightOptions[0].discountPrice).toFixed(2)}
                       </span>
                     )}
-                    <span className="text-[#EE1c25] font-semibold text-ms">
-                      ₹{item.weightOptions?.[0]?.price ?? "-"}
+                    <span className="text-[#EE1c25] font-bold text-md">
+                      ₹
+                      {item.weightOptions?.[0]?.price
+                        ? Number(item.weightOptions[0].price).toFixed(2)
+                        : "-"}
                     </span>
                   </div>
 

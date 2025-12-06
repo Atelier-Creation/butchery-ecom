@@ -19,12 +19,12 @@ export default function usePushNotifications() {
   async function initPush() {
     try {
       const permission = await Notification.requestPermission();
+      console.log("Notification permission:", permission);
       if (permission !== "granted") return;
 
-      const reg = await navigator.serviceWorker.register("/sw.js");
-         console.log("Service Worker registered:", reg);
-      await navigator.serviceWorker.ready;
-       console.log("Service Worker ready");
+      const reg = await navigator.serviceWorker.ready; // Use SW from VitePWA
+      console.log("Service Worker ready:", reg);
+
       const subscription = await reg.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY),
@@ -35,6 +35,8 @@ export default function usePushNotifications() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(subscription),
       });
+
+      console.log("Push subscription successful!", subscription);
     } catch (err) {
       console.error("Push subscription failed", err);
     }

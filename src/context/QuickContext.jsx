@@ -133,6 +133,10 @@ export const QuickModal = ({ productId }) => {
       alert("Please select a cut type");
       return;
     }
+    if (selected?.stock === 0) {
+    alert("This weight is out of stock and cannot be added to the cart. Try another weight.");
+    return;
+  }
 
     const cartItem = {
       productId: product._id,
@@ -210,6 +214,10 @@ export const QuickModal = ({ productId }) => {
       alert("Please select a cut type");
       return;
     }
+    if (selected?.stock === 0) {
+    alert("This weight is out of stock and cannot be added to the cart. Try another weight.");
+    return;
+  }
 
     const purchaseItem = {
       id: product._id,

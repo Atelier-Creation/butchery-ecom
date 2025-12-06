@@ -9,11 +9,11 @@ import { Star } from "lucide-react";
 
 const testimonials = [
   {
-    text: "இறைச்சி கைடல வாங்குற Chicken செம்ம fresh! Country chicken taste vera level. Deliveryயும் delay இல்ல. Super service da!",
+    text: "இறைச்சி கடையிலா வாங்குற Chicken செம்ம fresh! Country chicken taste vera level. Deliveryயும் delay இல்ல. Super service!",
     name: " Ramesh, Singanallur",
   },
   {
-    text: "Inga vanguna mutton quality semma da! Na Singanallur side la iruken, time-ku delivery kudukraanga. Fresh-aum clean-aum iruku!",
+    text: "Inga vanguna mutton quality semma! Na Singanallur side la iruken, time-ku delivery kudukraanga. Freshaavum cleanaavum iruku!",
     name: "Karthik, Ramanathapuram ",
   },
   {
@@ -21,7 +21,7 @@ const testimonials = [
     name: " Lakshmi, Selvapuram ",
   },
   {
-    text: "Bro seriously, kadai’la kidaikaadha quality inga kidaikkum. Chicken soft-a irukum, smell illa. Biryani taste level-up!",
+    text: "Bro seriously, kadaila kidaikaadha quality inga kidaikuthu. Chicken soft ah iruku, smell illa. Biryani taste level-up",
     name: "Hari, Saibaba Colony",
   },
   {
@@ -80,7 +80,7 @@ const Testimonials = () => {
                 data-aos-delay={idx * 100}
               >
                 <div className="absolute border-8 border-white bg-gray-100 rounded-full right-0 lg:-right-4 -top-5 p-2">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" className="w-8 h-8" alt="" srcset="" />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" className="w-8 h-8" alt="google" />
                 </div>
                 {/* Top Quotation Mark */}
                 <div className="absolute -top-4 left-4 text-yellow-500 text-8xl">

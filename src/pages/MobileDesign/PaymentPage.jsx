@@ -1099,7 +1099,7 @@ function PaymentPage() {
                         {item.product?.name || item.title?.en || item.name}
                       </h3>
                       <p className="text-sm text-gray-500">
-                        {item.quantity} x ₹{item.price}
+                        {item.quantity} x ₹{item.price?.toFixed(2)}
                       </p>
                     </div>
                   </div>
@@ -1111,7 +1111,7 @@ function PaymentPage() {
           <div className="flex justify-between mt-4">
             <h6 className="text-lg font-bold">Total</h6>
             <span className="text-lg font-medium">
-              ₹{total.toLocaleString()}
+              ₹ {total?.toFixed(2).toLocaleString()}
             </span>
           </div>
           <div className="mt-2 text-sm text-gray-600">

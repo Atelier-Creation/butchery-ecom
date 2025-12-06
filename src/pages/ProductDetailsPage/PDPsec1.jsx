@@ -136,6 +136,10 @@ function PDPsec1() {
       alert("Please select a cut type");
       return;
     }
+     if (selected?.stock === 0) {
+    alert("This weight is out of stock and cannot be added to the cart. Try another weight.");
+    return;
+  }
 
     const token = localStorage.getItem("token");
 
@@ -210,6 +214,10 @@ function PDPsec1() {
       alert("Please select a cut type");
       return;
     }
+     if (selected?.stock === 0) {
+    alert("This size is out of stock and cannot be added to the cart.");
+    return;
+  }
 
     const purchaseItem = {
       id: product._id,
@@ -307,14 +315,14 @@ function PDPsec1() {
             <div className="flex flex-row gap-2 items-center">
               <p className="text-lg font-semibold">
                 Rs.{" "}
-                {selected?.price ??
-                  product?.weightOptions?.[0]?.price ??
+                {selected?.price?.toFixed(2) ??
+                  Number(product?.weightOptions?.[0]?.price).toFixed(2) ??
                   "0.00"}
               </p>
               <p className="text-gray-500 line-through">
                 Rs.{" "}
-                {selected?.discountPrice ??
-                  product?.weightOptions?.[0]?.discountPrice ??
+                {selected?.discountPrice?.toFixed(2) ??
+                  product?.weightOptions?.[0]?.discountPrice?.toFixed(2) ??
                   ""}
               </p>
               <button className="bg-[#EE1c25] text-white text-base px-5 py-0.5 rounded-md">
@@ -471,7 +479,7 @@ function PDPsec1() {
         </div>
       </div>
 
-      <PDPsec2 />
+      <PDPsec2 images={product?.images || []} />
       <PDPsec3
         title="You may also like"
         categoryId={product?.category}

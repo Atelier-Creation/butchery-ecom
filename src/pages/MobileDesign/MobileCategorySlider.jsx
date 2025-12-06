@@ -48,9 +48,7 @@ const MobileCategorySlider = () => {
 
   return (
     <div className="w-full px-5 lg:px-12 mb-6 lg:mt-6">
-      <p className="text-lg text-red-600 font-semibold mb-1">
-        Categories
-      </p>
+      <p className="text-lg text-red-600 font-semibold mb-1">Categories</p>
       <p className="text-3xl md:text-3xl font-extrabold leading-tight mb-4 text-gray-700">
         Enjoy Fresh Meat With The Best Quality
       </p>
@@ -99,7 +97,7 @@ const MobileCategorySlider = () => {
             <div
               key={item.id ?? idx + 2}
               onClick={() => navigate(`/collections/${item.id}`)}
-              className="relative h-27 flex flex-col overflow-hidden items-center bg-white rounded-2xl shadow-md p-2 cursor-pointer transition-transform duration-300 hover:scale-105"
+              className="relative h-full flex flex-col overflow-hidden items-center bg-white rounded-2xl shadow-md p-2 cursor-pointer transition-transform duration-300 hover:scale-105"
               data-aos="fade-up"
               data-aos-delay={(idx + 2) * 100}
             >
@@ -126,10 +124,6 @@ const MobileCategorySlider = () => {
         </div>
       </div>
 
-
-
-
-
       {/* 🖥️ Desktop View with Swiper (but same design) */}
       <div className="hidden md:block category">
         <Swiper
@@ -139,7 +133,11 @@ const MobileCategorySlider = () => {
           pagination={{ clickable: true }}
           autoplay={{ delay: 3000, disableOnInteraction: false }}
           className="py-10 "
-          style={{ overflowY: 'visible', paddingTop: "3rem", paddingBottom: "3rem" }}
+          style={{
+            overflowY: "visible",
+            paddingTop: "3rem",
+            paddingBottom: "3rem",
+          }}
         >
           {collections.map((item, idx) => (
             <SwiperSlide key={idx}>
@@ -161,16 +159,17 @@ const MobileCategorySlider = () => {
                       {item.subtitles}
                     </span>
                     <h3 className="text-4xl font-semibold mb-1 text-gray-50">
-                      {item.title.en.includes(" ") ? (
-                        item.title.en.split(" ").map((word, idx) =>
-                          idx === 1 ? <><br key={idx} />{word}</> : word
-                        )
-                      ) : (
-                        item.title.en
-                      )}
+                      {item.title.en.includes(" ")
+                        ? item.title.en.split(" ").map((word, i) => (
+                            <React.Fragment key={i}>
+                              {i === 1 && <br />}
+                              {word}{" "}
+                            </React.Fragment>
+                          ))
+                        : item.title.en}
+
                       <span className="block text-xs">( {item.title.ta} )</span>
                     </h3>
-
                   </div>
                   <p className="text-gray-100 text-sm opacity-90 mb-3">
                     {item.desc.en + " "}
