@@ -13,6 +13,9 @@ import { updateProfile } from "../../api/authApi"; // Though not used directly, 
 import { createOrderData } from "../../api/orderApi";
 import { PhoneNumberField } from "./PhoneNumberField";
 
+// NEW: coupon API
+import { verifyCoupon } from "../../api/couponApi";
+
 const indianStates = [
   "Andhra Pradesh",
   "Arunachal Pradesh",
@@ -92,7 +95,7 @@ function PaymentPage() {
   const [paymentload, setpaymentload] = useState(false);
   const [processingPayment, setProcessingPayment] = useState(false);
   const [showFields, setShowFields] = useState(false); // Consider removing if not used
-  const [showSuccessPopup, setShowSuccessPopup] = useState(false); // Consider removing if not used or integrate into order-confirmed page
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false); // used for coupon success
   const [location, setLocation] = useState(null);
   const [mapUrl, setMapUrl] = useState("");
   const [errors, setErrors] = useState({});
@@ -101,6 +104,13 @@ function PaymentPage() {
   // NEW STATES for payment failure feedback
   const [paymentErrorMessage, setPaymentErrorMessage] = useState("");
   const [showRetryOption, setShowRetryOption] = useState(false);
+
+  // ===== NEW: Coupon states =====
+  const [couponCodeInput, setCouponCodeInput] = useState("");
+  const [couponVerifying, setCouponVerifying] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState(null); // coupon details object from server
+  const [couponDiscount, setCouponDiscount] = useState(0); // amount in Rs
+  // =================================
 
   useEffect(() => {
     if (!showPaymentModal) return;
@@ -148,7 +158,7 @@ function PaymentPage() {
       localStorage.setItem("guest_cart", JSON.stringify(cartArray));
       try {
         window.dispatchEvent(new Event("guestCartChanged"));
-      } catch (e) {}
+      } catch (e) { }
     } catch (err) {
       console.error("Failed to save guest_cart", err);
     }
@@ -202,6 +212,11 @@ function PaymentPage() {
         setShippingState(data.shippingState || "Tamil Nadu");
         setShippingPinCode(data.shippingPinCode || "");
         setTotal(data.total || 0);
+        // restore coupon if present
+        if (data.couponCode) {
+          setCouponCodeInput(data.couponCode);
+          // we don't auto-verify here to avoid calling API; user can press Apply
+        }
         // Important: Do NOT remove retryPaymentData here. Only on successful payment.
         // Important: Do NOT redirect to /collections/all here if there's retry data.
         if (!items || items.length === 0) {
@@ -437,6 +452,118 @@ function PaymentPage() {
     };
   };
 
+  // ===== NEW: Apply / Verify coupon =====
+  const handleApplyCoupon = async () => {
+    const code = (couponCodeInput || "").trim();
+    if (!code) {
+      window.alert("Please enter a coupon code.");
+      return;
+    }
+    setCouponVerifying(true);
+    try {
+      const res = await verifyCoupon(code);
+      // expected shape: { valid: true, discountType: "percentage", percentage: X, details: coupon }
+      if (!res || !res.valid) {
+        window.alert(res?.message || "Coupon is not valid");
+        setAppliedCoupon(null);
+        setCouponDiscount(0);
+        setCouponVerifying(false);
+        return;
+      }
+
+      const details = res.details || res.coupon || res; // be flexible
+      const percentage = Number(res.percentage ?? details?.percentage ?? 0);
+      if (!percentage) {
+        window.alert("Coupon returned invalid percentage.");
+        setAppliedCoupon(null);
+        setCouponDiscount(0);
+        setCouponVerifying(false);
+        return;
+      }
+
+      // compute discount amount based on current total
+      const rawDiscount = (total * percentage) / 100;
+      const cap = Number(details?.maxDiscountAmount ?? 0) || Number(details?.maxDiscount ?? 0) || 0;
+      const appliedAmount = cap > 0 ? Math.min(rawDiscount, cap) : rawDiscount;
+
+      // check min order amount if present
+      const minOrder = Number(details?.minOrderAmount ?? 0) || 0;
+      if (total < minOrder) {
+        window.alert(`This coupon requires minimum order of ₹${minOrder}`);
+        setAppliedCoupon(null);
+        setCouponDiscount(0);
+        setCouponVerifying(false);
+        return;
+      }
+
+      setAppliedCoupon(details);
+      setCouponDiscount(Number(appliedAmount.toFixed(2)));
+      setShowSuccessPopup(true); // small confetti popup
+      // keep couponCodeInput as-is
+    } catch (err) {
+      console.error("Coupon verify error:", err);
+      window.alert(err?.response?.data?.message || err.message || "Failed to verify coupon");
+      setAppliedCoupon(null);
+      setCouponDiscount(0);
+    } finally {
+      setCouponVerifying(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponDiscount(0);
+    setCouponCodeInput("");
+  };
+  // ======================================
+
+  // ===== NEW helper: handle coupon-min-order error returned from backend =====
+  const handleCouponMinOrderError = (err) => {
+    // try to extract message from axios style error or plain error
+    const serverMsg =
+      err?.response?.data?.message ||
+      err?.message ||
+      (typeof err === "string" ? err : "");
+
+    const regex = /Minimum order amount ₹?(\d+)/i;
+    const m = serverMsg.match(regex);
+    if (m) {
+      const required = m[1];
+      // remove applied coupon locally and reset discount
+      setAppliedCoupon(null);
+      setCouponDiscount(0);
+      setCouponCodeInput("");
+      // update retry data without coupon
+      try {
+        localStorage.setItem(
+          "retryPaymentData",
+          JSON.stringify({
+            contactInfo,
+            mobileInfo,
+            shippingFirstName,
+            shippingLastName,
+            shippingAddress,
+            shippingCity,
+            shippingState,
+            shippingPinCode,
+            total,
+            cartItems,
+            couponCode: "", // removed
+          })
+        );
+      } catch (e) { }
+      // show friendly message
+      setPaymentErrorMessage(
+        `Coupon removed — minimum order ₹${required} required. Adjust your cart or reapply a different coupon.`
+      );
+      setShowRetryOption(true);
+      setShowPaymentModal(true);
+      return true;
+    }
+    return false;
+  };
+  // =======================================================================
+
   const confirmCODOrder = async () => {
     setShowCODConfirmModal(false);
     setpaymentload(true);
@@ -449,13 +576,13 @@ function PaymentPage() {
       const pingLocation =
         location?.latitude != null && location?.longitude != null
           ? {
-              type: "Point",
-              coordinates: [location.longitude, location.latitude],
-            }
+            type: "Point",
+            coordinates: [location.longitude, location.latitude],
+          }
           : {
-              type: "Point",
-              coordinates: [0, 0],
-            };
+            type: "Point",
+            coordinates: [0, 0],
+          };
 
       const productsForOrder = cartItems.map((p) => ({
         productId: p.product?._id || p.productId || p.id,
@@ -478,6 +605,9 @@ function PaymentPage() {
 
       const shippingAddressObj = buildShippingAddressObject();
 
+      // include couponCode and discount & finalAmount in payload
+      const finalAmountForOrder = Number((total - (couponDiscount || 0)).toFixed(2));
+
       const orderRes = await createOrderData({
         buyer: user?.id || null,
         buyerDetails: {
@@ -491,7 +621,11 @@ function PaymentPage() {
         paymentMethod: "COD",
         paymentStatus: "pending",
         products: productsForOrder,
+        subtotal: total,
         total,
+        discount: couponDiscount || 0,
+        couponCode: appliedCoupon?.code || couponCodeInput || "",
+        finalAmount: finalAmountForOrder,
       });
 
       // clear cart
@@ -537,28 +671,33 @@ function PaymentPage() {
     } catch (err) {
       console.error("COD order creation failed:", err);
 
-      // Save retry data (now storing structured shipping fields and product cutting type)
-      localStorage.setItem(
-        "retryPaymentData",
-        JSON.stringify({
-          contactInfo,
-          mobileInfo,
-          shippingFirstName,
-          shippingLastName,
-          shippingAddress,
-          shippingCity,
-          shippingState,
-          shippingPinCode,
-          total,
-          cartItems,
-        })
-      );
+      // If it's a coupon min-order error, handle gracefully (clear coupon + inform user)
+      const handled = handleCouponMinOrderError(err);
+      if (!handled) {
+        // Save retry data (now storing structured shipping fields and product cutting type)
+        localStorage.setItem(
+          "retryPaymentData",
+          JSON.stringify({
+            contactInfo,
+            mobileInfo,
+            shippingFirstName,
+            shippingLastName,
+            shippingAddress,
+            shippingCity,
+            shippingState,
+            shippingPinCode,
+            total,
+            cartItems,
+            couponCode: appliedCoupon?.code || couponCodeInput || "",
+          })
+        );
 
-      setPaymentErrorMessage(
-        `COD order failed: ${err.message || "Please try again."}`
-      );
-      setShowRetryOption(true);
-      setShowPaymentModal(true);
+        setPaymentErrorMessage(
+          `COD order failed: ${err.message || "Please try again."}`
+        );
+        setShowRetryOption(true);
+        setShowPaymentModal(true);
+      }
     } finally {
       setpaymentload(false);
       setProcessingPayment(false);
@@ -596,6 +735,7 @@ function PaymentPage() {
           total,
           cartItems,
           deliveryOption,
+          couponCode: appliedCoupon?.code || couponCodeInput || "",
         };
         localStorage.setItem("pendingCheckout", JSON.stringify(pending));
 
@@ -687,6 +827,9 @@ function PaymentPage() {
 
             const shippingAddressObj = buildShippingAddressObject();
 
+            // include couponCode, discount and finalAmount
+            const finalAmountForOrder = Number((total - (couponDiscount || 0)).toFixed(2));
+
             await createOrderData({
               buyer: user?.id || null,
               buyerDetails: {
@@ -705,6 +848,9 @@ function PaymentPage() {
               razorpaySignature: response.razorpay_signature,
               products: productsForOrder,
               total,
+              discount: couponDiscount || 0,
+              couponCode: appliedCoupon?.code || couponCodeInput || "",
+              finalAmount: finalAmountForOrder,
             });
 
             // --- Post-order creation (successful for Online) ---
@@ -760,28 +906,33 @@ function PaymentPage() {
             // Inner catch: Payment verified but order creation/cart clearing failed
             setProcessingPayment(false);
             console.error(err);
-            localStorage.setItem(
-              "retryPaymentData",
-              JSON.stringify({
-                contactInfo,
-                mobileInfo,
-                shippingFirstName,
-                shippingLastName,
-                shippingAddress,
-                shippingCity,
-                shippingState,
-                shippingPinCode,
-                total,
-                cartItems,
-              })
-            );
-            setPaymentErrorMessage(
-              `Payment failed post-verification: ${
-                err.message || "Please try again."
-              }`
-            );
-            setShowRetryOption(true); // Show retry button
-            setShowPaymentModal(true);
+
+            // If it's a coupon min-order error, clear coupon locally and inform user
+            const handled = handleCouponMinOrderError(err);
+            if (!handled) {
+              localStorage.setItem(
+                "retryPaymentData",
+                JSON.stringify({
+                  contactInfo,
+                  mobileInfo,
+                  shippingFirstName,
+                  shippingLastName,
+                  shippingAddress,
+                  shippingCity,
+                  shippingState,
+                  shippingPinCode,
+                  total,
+                  cartItems,
+                  couponCode: appliedCoupon?.code || couponCodeInput || "",
+                })
+              );
+              setPaymentErrorMessage(
+                `Payment failed post-verification: ${err.message || "Please try again."
+                }`
+              );
+              setShowRetryOption(true); // Show retry button
+              setShowPaymentModal(true);
+            }
             // DO NOT REDIRECT TO /payment-failed
           }
         },
@@ -803,6 +954,7 @@ function PaymentPage() {
                 shippingPinCode,
                 total,
                 cartItems,
+                couponCode: appliedCoupon?.code || couponCodeInput || "",
               })
             );
             setPaymentErrorMessage(
@@ -820,26 +972,33 @@ function PaymentPage() {
     } catch (err) {
       // Outer catch: Failed to create Razorpay order initially
       console.error(err);
-      localStorage.setItem(
-        "retryPaymentData",
-        JSON.stringify({
-          contactInfo,
-          mobileInfo,
-          shippingFirstName,
-          shippingLastName,
-          shippingAddress,
-          shippingCity,
-          shippingState,
-          shippingPinCode,
-          total,
-          cartItems,
-        })
-      );
-      setPaymentErrorMessage(
-        `Payment initiation failed: ${err.message || "Please try again."}`
-      );
-      setShowRetryOption(true); // Show retry button
-      setShowPaymentModal(true);
+
+      // If it's a coupon min-order error, clear coupon locally and inform user
+      const handled = handleCouponMinOrderError(err);
+      if (!handled) {
+        localStorage.setItem(
+          "retryPaymentData",
+          JSON.stringify({
+            contactInfo,
+            mobileInfo,
+            shippingFirstName,
+            shippingLastName,
+            shippingAddress,
+            shippingCity,
+            shippingState,
+            shippingPinCode,
+            total,
+            cartItems,
+            couponCode: appliedCoupon?.code || couponCodeInput || "",
+          })
+        );
+        setPaymentErrorMessage(
+          `Payment initiation failed: ${err.message || "Please try again."}`
+        );
+        setShowRetryOption(true); // Show retry button
+        setShowPaymentModal(true);
+      }
+
       // DO NOT REDIRECT TO /payment-failed
     } finally {
       setpaymentload(false);
@@ -864,7 +1023,7 @@ function PaymentPage() {
               style={{ width: 100, height: 100, margin: "0 auto" }}
             />
             <h2 className="text-xl font-bold">Coupon Applied!</h2>
-            <p className="text-gray-600">You saved ₹{0}</p>
+            <p className="text-gray-600">You saved ₹{couponDiscount?.toFixed(2) ?? "0.00"}</p>
             <button
               className="mt-4 bg-black text-white px-4 py-2 rounded"
               onClick={() => setShowSuccessPopup(false)}
@@ -919,11 +1078,10 @@ function PaymentPage() {
           <div className="space-y-4">
             <h3 className="text-2xl font-bold">DELIVERY</h3>
             <label
-              className={`flex items-center justify-between h-[52px] border rounded px-4 cursor-pointer ${
-                deliveryOption === "ship"
+              className={`flex items-center justify-between h-[52px] border rounded px-4 cursor-pointer ${deliveryOption === "ship"
                   ? "border-blue-600 bg-blue-50"
                   : "border-gray-300"
-              }`}
+                }`}
               onClick={() => setDeliveryOption("ship")}
             >
               <span className="flex items-center gap-2">
@@ -937,11 +1095,10 @@ function PaymentPage() {
             </label>
 
             <label
-              className={`flex items-center justify-between h-[52px] border rounded px-4 cursor-pointer ${
-                deliveryOption === "COD"
+              className={`flex items-center justify-between h-[52px] border rounded px-4 cursor-pointer ${deliveryOption === "COD"
                   ? "border-blue-600 bg-blue-50"
                   : "border-gray-300"
-              }`}
+                }`}
               onClick={() => setDeliveryOption("COD")}
             >
               <span className="flex items-center gap-2">
@@ -1103,8 +1260,8 @@ function PaymentPage() {
               {paymentload
                 ? "Redirecting to payment page"
                 : deliveryOption === "COD"
-                ? "Place Order (Cash on Delivery)"
-                : " Proceed to Pay"}
+                  ? "Place Order (Cash on Delivery)"
+                  : " Proceed to Pay"}
             </button>
           </div>
         </div>
@@ -1112,6 +1269,44 @@ function PaymentPage() {
         {/* RIGHT SIDE: Order Summary */}
         <div className="lg:w-2/5 w-full bg-gray-100 p-6 lg:sticky top-0 lg:h-screen">
           <h5 className="text-xl font-semibold mb-4">Order Summary</h5>
+
+          {/* ===== NEW: Coupon input area ===== */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Have a coupon?</label>
+            <div className="flex gap-2">
+              <input
+                value={couponCodeInput}
+                onChange={(e) => setCouponCodeInput(e.target.value.toUpperCase())}
+                placeholder="Enter coupon code"
+                className="flex-1 h-[44px] px-3 rounded border border-gray-300"
+              />
+              {!appliedCoupon ? (
+                <button
+                  onClick={handleApplyCoupon}
+                  disabled={couponVerifying}
+                  className="bg-indigo-600 text-white px-4 rounded"
+                >
+                  {couponVerifying ? "Checking..." : "Apply"}
+                </button>
+              ) : (
+                <button
+                  onClick={handleRemoveCoupon}
+                  className="bg-red-600 text-white px-4 rounded"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+            {appliedCoupon && (
+              <div className="mt-2 text-sm text-green-700">
+                Applied: <strong>{appliedCoupon.name || appliedCoupon.code}</strong>{" "}
+                — {appliedCoupon.percentage}% off
+                {appliedCoupon.maxDiscountAmount ? ` (max ₹${appliedCoupon.maxDiscountAmount})` : ""}
+              </div>
+            )}
+          </div>
+          {/* ================================= */}
+
           <div className="space-y-4 overflow-y-auto max-h-[70vh] pr-2 cart-items-wrapper">
             {cartItems.length === 0 ? (
               <p>Your cart is empty</p>
@@ -1145,14 +1340,14 @@ function PaymentPage() {
                         item.cutting ||
                         item.cut
                       ) && (
-                        <p className="text-sm text-gray-400 mt-1">
-                          Cutting:{" "}
-                          {item.cuttingType ||
-                            item.selectedCuttingType ||
-                            item.cutting ||
-                            item.cut}
-                        </p>
-                      )}
+                          <p className="text-sm text-gray-400 mt-1">
+                            Cutting:{" "}
+                            {item.cuttingType ||
+                              item.selectedCuttingType ||
+                              item.cutting ||
+                              item.cut}
+                          </p>
+                        )}
                     </div>
                   </div>
                   {/* optionally add remove button */}
@@ -1160,15 +1355,30 @@ function PaymentPage() {
               ))
             )}
           </div>
-          <div className="flex justify-between mt-4">
-            <h6 className="text-lg font-bold">Total</h6>
-            <span className="text-lg font-medium">
-              ₹ {total?.toFixed(2).toLocaleString()}
-            </span>
-          </div>
-          <div className="mt-2 text-sm text-gray-600">
-            <strong>Payment:</strong>{" "}
-            {deliveryOption === "COD" ? "Cash on Delivery" : "Online Payment"}
+
+          {/* Show discount breakdown */}
+          <div className="mt-4 pt-4">
+            <div className="flex justify-between">
+              <span className="text-gray-600">Subtotal</span>
+              <span className="font-medium">₹ {total?.toFixed(2)}</span>
+            </div>
+
+            <div className="flex justify-between mt-2">
+              <span className="text-gray-600">Discount</span>
+              <span className="font-medium text-green-600">- ₹ {couponDiscount?.toFixed(2) ?? "0.00"}</span>
+            </div>
+
+            <div className="flex justify-between mt-2">
+              <h6 className="text-lg font-bold">Payable</h6>
+              <span className="text-lg font-medium">
+                ₹ {(Math.max(0, (total || 0) - (couponDiscount || 0))).toFixed(2)}
+              </span>
+            </div>
+
+            <div className="mt-2 text-sm text-gray-600">
+              <strong>Payment:</strong>{" "}
+              {deliveryOption === "COD" ? "Cash on Delivery" : "Online Payment"}
+            </div>
           </div>
         </div>
       </div>
