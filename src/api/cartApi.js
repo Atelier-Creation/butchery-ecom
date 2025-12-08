@@ -15,8 +15,8 @@ CART_API.interceptors.request.use((config) => {
 });
 
 // Add item to cart
-export const addToCartAPI = async (productId, quantity, price, weightOptionId, unit) => {
-  const res = await CART_API.post("/add", { productId, quantity, price, weightOptionId, unit });
+export const addToCartAPI = async (productId, quantity, price, weightOptionId, unit, cuttingType) => {
+  const res = await CART_API.post("/add", { productId, quantity, price, weightOptionId, unit, cuttingType });
   return res.data;
 };
 

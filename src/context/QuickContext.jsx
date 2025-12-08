@@ -134,16 +134,18 @@ export const QuickModal = ({ productId }) => {
       return;
     }
     if (selected?.stock === 0) {
-    alert("This weight is out of stock and cannot be added to the cart. Try another weight.");
-    return;
-  }
+      alert(
+        "This weight is out of stock and cannot be added to the cart. Try another weight."
+      );
+      return;
+    }
 
     const cartItem = {
       productId: product._id,
       quantity,
       size: `${selected.weight}`,
       unit: selected.unit,
-      cutType: selectedDrop || "",
+      cuttingType: selectedDrop || "", // <-- standardized field
       price: selected.price,
       stock: selected.stock,
       discountPrice: selected.discountPrice,
@@ -173,7 +175,15 @@ export const QuickModal = ({ productId }) => {
 
     // Logged-in user → normal API flow
     try {
-      await addToCartAPI(product._id, quantity, selected.price, selected._id);
+      // include cuttingType in API call (keeps existing signature plus new param)
+      await addToCartAPI(
+        product._id,
+        quantity,
+        selected.price,
+        selected._id,
+        selected.unit,
+        selectedDrop || ""
+      );
 
       addToCart(cartItem);
       toggleDrawer(true);
@@ -215,9 +225,11 @@ export const QuickModal = ({ productId }) => {
       return;
     }
     if (selected?.stock === 0) {
-    alert("This weight is out of stock and cannot be added to the cart. Try another weight.");
-    return;
-  }
+      alert(
+        "This weight is out of stock and cannot be added to the cart. Try another weight."
+      );
+      return;
+    }
 
     const purchaseItem = {
       id: product._id,
@@ -227,7 +239,7 @@ export const QuickModal = ({ productId }) => {
         selected?.unit ? ` ${selected.unit}` : ""
       }`,
       unit: selected?.unit ?? "",
-      cutType: selectedDrop || "",
+      cuttingType: selectedDrop || "", // <-- standardized field
       price: selected?.price ?? 0,
       discountPrice: selected?.discountPrice ?? 0,
       image: product?.images?.[0] || "",
@@ -337,28 +349,29 @@ export const QuickModal = ({ productId }) => {
           <p className="text-base">Size</p>
           <div className="flex lg:flex-row lg:gap-3 lg:my-3 my-2 gap-2 flex-wrap">
             {product?.weightOptions?.map((opt) => {
-                  const isOutOfStock = opt.stock === 0;
+              const isOutOfStock = opt.stock === 0;
 
-                  return (
-                    <div className="flex flex-col">
-                      <button
-                      key={opt._id}
-                      onClick={() => !isOutOfStock && setSelected(opt)}
-                      disabled={isOutOfStock}
-                      className={`lg:px-5 lg:py-2 px-3 py-2 rounded-md cursor-pointer text-base border transition duration-300 ${
-                        isOutOfStock
-                          ? "bg-gray-200 text-gray-500 border-gray-300 cursor-not-allowed"
-                          : selected?._id === opt._id
-                          ? "bg-[#EE1c25] text-white border-[#EE1c25]"
-                          : "bg-transparent text-black border-gray-400"
-                      }`}
-                    >
-                      {opt.weight} {opt.unit} 
-                    </button>
-                    <p className="mt-1 text-[#EE1c25]">{isOutOfStock && `${opt.weight}${opt.unit} (Out of Stock)`}</p>
-                    </div>
-                  );
-                })}
+              return (
+                <div className="flex flex-col" key={opt._id}>
+                  <button
+                    onClick={() => !isOutOfStock && setSelected(opt)}
+                    disabled={isOutOfStock}
+                    className={`lg:px-5 lg:py-2 px-3 py-2 rounded-md cursor-pointer text-base border transition duration-300 ${
+                      isOutOfStock
+                        ? "bg-gray-200 text-gray-500 border-gray-300 cursor-not-allowed"
+                        : selected?._id === opt._id
+                        ? "bg-[#EE1c25] text-white border-[#EE1c25]"
+                        : "bg-transparent text-black border-gray-400"
+                    }`}
+                  >
+                    {opt.weight} {opt.unit}
+                  </button>
+                  <p className="mt-1 text-[#EE1c25]">
+                    {isOutOfStock && `${opt.weight}${opt.unit} (Out of Stock)`}
+                  </p>
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -402,7 +415,7 @@ export const QuickModal = ({ productId }) => {
             <FaPlus size={15} />
           </button>
         </div>
-{quantityError && (
+        {quantityError && (
           <p className="text-red-500 text-sm mt-0">{quantityError}</p>
         )}
         <div className="flex flex-col gap-3">
@@ -419,7 +432,7 @@ export const QuickModal = ({ productId }) => {
             Buy it now
           </button>
         </div>
-        
+
         <div>
           <p className="text-base">Order Notes</p>
           <textarea className="border border-gray-400 rounded-md w-full h-30 my-3" />
@@ -434,19 +447,13 @@ export const QuickModal = ({ productId }) => {
               <FaBook />
               <p className="text-base font-semibold">Description</p>
             </div>
-            {openDescription ? (
-              <FaChevronUp size={15} />
-            ) : (
-              <FaChevronDown size={15} />
-            )}
+            {openDescription ? <FaChevronUp size={15} /> : <FaChevronDown size={15} />}
           </div>
           {openDescription && (
             <ul className="mt-2 ml-8 list-disc text-gray-600">
               {product.description
                 ?.split("\n")
-                ?.map((desc, idx) => <li key={idx}>{desc}</li>) || (
-                <li>{product.description}</li>
-              )}
+                ?.map((desc, idx) => <li key={idx}>{desc}</li>) || <li>{product.description}</li>}
             </ul>
           )}
         </div>

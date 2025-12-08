@@ -106,12 +106,12 @@ function PDPsec1() {
 
   const mergeGuestCartItem = (newItem) => {
     const cart = getGuestCart();
-    // merge if same product id + size + cutType exists
+    // merge if same product id + size + cuttingType exists
     const idx = cart.findIndex(
       (c) =>
         c.id === newItem.id &&
         c.size === newItem.size &&
-        (c.cutType || "") === (newItem.cutType || "")
+        (c.cuttingType || "") === (newItem.cuttingType || "")
     );
 
     if (idx > -1) {
@@ -136,21 +136,22 @@ function PDPsec1() {
       alert("Please select a cut type");
       return;
     }
-     if (selected?.stock === 0) {
-    alert("This weight is out of stock and cannot be added to the cart. Try another weight.");
-    return;
-  }
+    if (selected?.stock === 0) {
+      alert(
+        "This weight is out of stock and cannot be added to the cart. Try another weight."
+      );
+      return;
+    }
 
     const token = localStorage.getItem("token");
 
     const cartItem = {
       productId: product?._id,
       quantity,
-      size: `${selected?.weight ?? ""}${
-        selected?.unit ? ` ${selected.unit}` : ""
-      }`,
+      size: `${selected?.weight ?? ""}${selected?.unit ? ` ${selected.unit}` : ""
+        }`,
       unit: selected?.unit ?? "",
-      cutType: selectedDrop || "",
+      cuttingType: selectedDrop || "", // <-- standardized field name
       price: selected?.price ?? 0,
       stock: selected.stock,
       discountPrice: selected?.discountPrice ?? 0,
@@ -160,6 +161,17 @@ function PDPsec1() {
     };
 
     if (!token) {
+      // Save guest cart locally and redirect to login to force auth
+      try {
+        // merge with existing guest cart
+        mergeGuestCartItem({
+          ...cartItem,
+          id: product._id,
+        });
+      } catch (e) {
+        console.warn("Could not merge to guest cart:", e);
+      }
+
       localStorage.setItem(
         "postLoginRedirect",
         JSON.stringify({
@@ -170,18 +182,22 @@ function PDPsec1() {
       return;
     }
 
+    // If logged in, try server API (best-effort) but still update local cart UI
     try {
       await addToCartAPI(
         product._id,
         quantity,
         selected?.price ?? 0,
         selected?._id ?? null,
-        selected?.unit ?? null
+        selected?.unit ?? null,
+        selectedDrop || ""  // <-- NEW
       );
     } catch (err) {
       console.warn("addToCartAPI failed:", err);
     }
 
+
+    // Update local cart context (so UI updates immediately) — include cuttingType
     addToCart({
       ...cartItem,
       id: product._id,
@@ -214,20 +230,19 @@ function PDPsec1() {
       alert("Please select a cut type");
       return;
     }
-     if (selected?.stock === 0) {
-    alert("This size is out of stock and cannot be added to the cart.");
-    return;
-  }
+    if (selected?.stock === 0) {
+      alert("This size is out of stock and cannot be added to the cart.");
+      return;
+    }
 
     const purchaseItem = {
       id: product._id,
       product,
       quantity,
-      size: `${selected?.weight ?? ""}${
-        selected?.unit ? ` ${selected.unit}` : ""
-      }`,
+      size: `${selected?.weight ?? ""}${selected?.unit ? ` ${selected.unit}` : ""
+        }`,
       unit: selected?.unit ?? "",
-      cutType: selectedDrop || "",
+      cuttingType: selectedDrop || "", // <-- standardized field name
       price: selected?.price ?? 0,
       discountPrice: selected?.discountPrice ?? 0,
       image: product?.images?.[0] || "",
@@ -259,8 +274,6 @@ function PDPsec1() {
     }
 
     // IMPORTANT: Do NOT add to server cart for Buy Now — skip addToCartAPI entirely.
-    // (If you previously had a fire-and-forget addToCartAPI call, it's removed here.)
-
     // redirect to checkout with query params + state (so checkout page can use either)
     const query = `?buyNow=true&productId=${encodeURIComponent(product._id)}`;
     navigate(`/checkout${query}`, { state: { buyNow: true, purchaseItem } });
@@ -293,9 +306,8 @@ function PDPsec1() {
                 src={img}
                 alt={`thumb-${idx}`}
                 onClick={() => setMainImage(img)}
-                className={`lg:w-32 lg:h-32 w-20 h-20 aspect-square object-cover lg:rounded-3xl rounded border-2 cursor-pointer transition-transform hover:scale-105 ${
-                  mainImage === img ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`lg:w-32 lg:h-32 w-20 h-20 aspect-square object-cover lg:rounded-3xl rounded border-2 cursor-pointer transition-transform hover:scale-105 ${mainImage === img ? "border-red-500" : "border-gray-300"
+                  }`}
               />
             ))}
           </div>
@@ -337,22 +349,22 @@ function PDPsec1() {
                   const isOutOfStock = opt.stock === 0;
 
                   return (
-                    <div className="flex flex-col">
+                    <div className="flex flex-col" key={opt._id}>
                       <button
-                      key={opt._id}
-                      onClick={() => !isOutOfStock && setSelected(opt)}
-                      disabled={isOutOfStock}
-                      className={`lg:px-5 lg:py-2 px-3 py-2 rounded-md cursor-pointer text-base border transition duration-300 ${
-                        isOutOfStock
-                          ? "bg-gray-200 text-gray-500 border-gray-300 cursor-not-allowed"
-                          : selected?._id === opt._id
-                          ? "bg-[#EE1c25] text-white border-[#EE1c25]"
-                          : "bg-transparent text-black border-gray-400"
-                      }`}
-                    >
-                      {opt.weight} {opt.unit} 
-                    </button>
-                    <p className="mt-1 text-[#EE1c25]">{isOutOfStock && `${opt.weight}${opt.unit} (Out of Stock)`}</p>
+                        onClick={() => !isOutOfStock && setSelected(opt)}
+                        disabled={isOutOfStock}
+                        className={`lg:px-5 lg:py-2 px-3 py-2 rounded-md cursor-pointer text-base border transition duration-300 ${isOutOfStock
+                            ? "bg-gray-200 text-gray-500 border-gray-300 cursor-not-allowed"
+                            : selected?._id === opt._id
+                              ? "bg-[#EE1c25] text-white border-[#EE1c25]"
+                              : "bg-transparent text-black border-gray-400"
+                          }`}
+                      >
+                        {opt.weight} {opt.unit}
+                      </button>
+                      <p className="mt-1 text-[#EE1c25]">
+                        {isOutOfStock && `${opt.weight}${opt.unit} (Out of Stock)`}
+                      </p>
                     </div>
                   );
                 })}
@@ -463,14 +475,14 @@ function PDPsec1() {
                 <ul className="mt-2 ml-8 list-disc text-gray-600">
                   {product?.description
                     ? product.description
-                        .split("\n")
-                        .map((desc, idx) => <li key={`en-${idx}`}>{desc}</li>)
+                      .split("\n")
+                      .map((desc, idx) => <li key={`en-${idx}`}>{desc}</li>)
                     : null}
 
                   {product?.tamilDescription
                     ? product.tamilDescription
-                        .split("\n")
-                        .map((desc, idx) => <li key={`ta-${idx}`}>{desc}</li>)
+                      .split("\n")
+                      .map((desc, idx) => <li key={`ta-${idx}`}>{desc}</li>)
                     : null}
                 </ul>
               )}

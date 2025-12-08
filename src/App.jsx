@@ -70,7 +70,7 @@ function App() {
           console.log("Popup element found:", popup);
           if (popup) popup.style.display = "block";
         }
-      }, 10000);
+      }, 3000);
 
       return () => {
         clearTimeout(timer);

@@ -422,6 +422,21 @@ function PaymentPage() {
     return false; // No errors found or no ref for the error
   };
 
+  // Helper: build structured shipping address object from current fields
+  const buildShippingAddressObject = () => {
+    // We keep addressLine1 as the entered shippingAddress string, addressLine2 blank.
+    return {
+      firstName: shippingFirstName,
+      lastName: shippingLastName,
+      addressLine1: shippingAddress,
+      addressLine2: "",
+      city: shippingCity,
+      state: shippingState,
+      pincode: shippingPinCode,
+      country: shippingCountry || "India",
+    };
+  };
+
   const confirmCODOrder = async () => {
     setShowCODConfirmModal(false);
     setpaymentload(true);
@@ -451,7 +466,17 @@ function PaymentPage() {
         quantity: p.quantity,
         unit: p.unit || "",
         weight: p.weight,
+        // send cuttingType if available on the cart item (common keys tried)
+        cuttingType:
+          p.cuttingType ||
+          p.selectedCuttingType ||
+          p.cutting ||
+          p.cut ||
+          (p.options && p.options.cuttingType) ||
+          "",
       }));
+
+      const shippingAddressObj = buildShippingAddressObject();
 
       const orderRes = await createOrderData({
         buyer: user?.id || null,
@@ -460,7 +485,7 @@ function PaymentPage() {
           email: user?.email || contactInfo,
           phone: user?.phone || mobileInfo,
         },
-        shippingAddress,
+        shippingAddress: shippingAddressObj,
         location: mapUrl,
         pingLocation,
         paymentMethod: "COD",
@@ -511,6 +536,8 @@ function PaymentPage() {
       );
     } catch (err) {
       console.error("COD order creation failed:", err);
+
+      // Save retry data (now storing structured shipping fields and product cutting type)
       localStorage.setItem(
         "retryPaymentData",
         JSON.stringify({
@@ -526,6 +553,7 @@ function PaymentPage() {
           cartItems,
         })
       );
+
       setPaymentErrorMessage(
         `COD order failed: ${err.message || "Please try again."}`
       );
@@ -648,7 +676,16 @@ function PaymentPage() {
               quantity: p.quantity,
               unit: p.unit || "",
               weight: p.weight,
+              cuttingType:
+                p.cuttingType ||
+                p.selectedCuttingType ||
+                p.cutting ||
+                p.cut ||
+                (p.options && p.options.cuttingType) ||
+                "",
             }));
+
+            const shippingAddressObj = buildShippingAddressObject();
 
             await createOrderData({
               buyer: user?.id || null,
@@ -657,7 +694,7 @@ function PaymentPage() {
                 email: user?.email || contactInfo,
                 phone: user?.phone || mobileInfo,
               },
-              shippingAddress,
+              shippingAddress: shippingAddressObj,
               location: mapUrl,
               pingLocation,
               paymentMethod: "online",
@@ -1101,6 +1138,21 @@ function PaymentPage() {
                       <p className="text-sm text-gray-500">
                         {item.quantity} x ₹{item.price?.toFixed(2)}
                       </p>
+                      {/** Display cuttingType in summary if present */}
+                      {(
+                        item.cuttingType ||
+                        item.selectedCuttingType ||
+                        item.cutting ||
+                        item.cut
+                      ) && (
+                        <p className="text-sm text-gray-400 mt-1">
+                          Cutting:{" "}
+                          {item.cuttingType ||
+                            item.selectedCuttingType ||
+                            item.cutting ||
+                            item.cut}
+                        </p>
+                      )}
                     </div>
                   </div>
                   {/* optionally add remove button */}
