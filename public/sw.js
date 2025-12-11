@@ -17,22 +17,19 @@ self.addEventListener("message", (event) => {
 
 // PUSH
 self.addEventListener("push", (event) => {
-  const data = event.data ? event.data.json() : {
-    title: "Notification",
-    body: "",
-  };
+  console.log("[SW] Push received:", event);
 
-  event.waitUntil(
-    self.registration.showNotification(data.title, {
-      body: data.body,
-      icon: "/logo.svg",
-      data,
-    })
-  );
+  const data = event.data ? event.data.json() : { title: "No payload", body: "" };
+
+  self.registration.showNotification(data.title, {
+    body: data.body,
+    icon: "/logo.svg", // your icon
+  });
 });
 
-// NOTIFICATION CLICK
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  event.waitUntil(clients.openWindow("/"));
+  event.waitUntil(
+    clients.openWindow("/") // opens your site on click
+  );
 });
