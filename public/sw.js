@@ -1,22 +1,3 @@
-// INSTALL
-self.addEventListener("install", (event) => {
-  console.log("SW installing…");
-});
-
-// ACTIVATE
-self.addEventListener("activate", (event) => {
-  console.log("SW activated");
-});
-
-// LISTEN FOR SKIP WAITING REQUEST FROM PAGE
-self.addEventListener("message", (event) => {
-  if (event.data === "SKIP_WAITING") {
-    self.skipWaiting();
-  }
-});
-
-// PUSH
-// sw.js
 
 // PUSH
 self.addEventListener("push", (event) => {
@@ -41,3 +22,21 @@ self.addEventListener("notificationclick", (event) => {
     clients.openWindow("/") // opens your site on click
   );
 });
+
+// INSTALL
+self.addEventListener("install", (event) => {
+  console.log("SW installing…");
+});
+
+// ACTIVATE
+self.addEventListener("activate", (event) => {
+  console.log("SW activated");
+});
+
+// LISTEN FOR SKIP WAITING REQUEST FROM PAGE
+self.addEventListener("message", (event) => {
+  if (event.data === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});
+
