@@ -1,17 +1,38 @@
+// Install
+self.addEventListener("install", (event) => {
+  console.log("SW installing…");
+  self.skipWaiting(); // <-- IMPORTANT
+});
+
+// Activate
+self.addEventListener("activate", (event) => {
+  console.log("SW activated");
+  event.waitUntil(self.clients.claim()); // <-- IMPORTANT
+});
+
+// PUSH
 self.addEventListener("push", (event) => {
   console.log("[SW] Push received:", event);
 
-  const data = event.data ? event.data.json() : { title: "No payload", body: "" };
+  const data = event.data ? event.data.json() : {
+    title: "Notification",
+    body: "",
+  };
 
-  self.registration.showNotification(data.title, {
-    body: data.body,
-    icon: "/logo.svg", // your icon
-  });
+  event.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: "/logo.svg",
+      data, // keep data
+    })
+  );
 });
 
+// CLICK
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
+
   event.waitUntil(
-    clients.openWindow("/") // opens your site on click
+    clients.openWindow("/") // open app
   );
 });

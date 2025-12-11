@@ -192,7 +192,7 @@ const Navbar = () => {
         <div className="lg:flex items-center gap-4 ms-60 hidden ">
           <div className="flex items-center gap-1">
             <FaPhoneAlt size={16} />
-            <span className="text-gray-600">1800-313-3903</span>
+            <span className="text-gray-600">9487280241</span>
           </div>
           <div className="flex items-center gap-1">
             <IoMail size={16} />

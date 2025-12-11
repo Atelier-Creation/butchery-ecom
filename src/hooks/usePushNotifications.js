@@ -22,7 +22,7 @@ export default function usePushNotifications() {
       console.log("Notification permission:", permission);
       if (permission !== "granted") return;
 
-      const reg = await navigator.serviceWorker.ready; // Use SW from VitePWA
+      const reg = await navigator.serviceWorker.ready;
       console.log("Service Worker ready:", reg);
 
       const subscription = await reg.pushManager.subscribe({
@@ -30,10 +30,19 @@ export default function usePushNotifications() {
         applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY),
       });
 
+      // get current logged in userId
+      const user = JSON.parse(localStorage.getItem("user"));
+      console.log("Current user:", user);
+      const userId = user?.id;
+
       await fetch(`${import.meta.env.VITE_API_URL}/notifications/subscribe`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(subscription),
+        body: JSON.stringify({
+          endpoint: subscription.endpoint,
+          keys: subscription.toJSON().keys,     // important!
+          userId,
+        }),
       });
 
       console.log("Push subscription successful!", subscription);

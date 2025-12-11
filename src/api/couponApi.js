@@ -46,3 +46,13 @@ export const verifyCoupon = async (couponCode) => {
   });
   return res.data;
 };
+
+
+// ------------------------------
+// AVAILABLE COUPONS
+// ------------------------------
+
+export const getAvailableCoupons = async () => {
+  const res = await axios.get(`${BASE_URL}/available/list`);
+  return res.data;
+};
