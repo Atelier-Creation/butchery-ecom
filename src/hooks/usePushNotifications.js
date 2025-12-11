@@ -19,41 +19,22 @@ export default function usePushNotifications() {
   async function initPush() {
     try {
       const permission = await Notification.requestPermission();
-      console.log("Notification permission:", permission);
       if (permission !== "granted") return;
 
-      const reg = await navigator.serviceWorker.ready;
-      console.log("Service Worker ready:", reg);
+      const reg = await navigator.serviceWorker.register("/sw.js");
+         console.log("Service Worker registered:", reg);
+      await navigator.serviceWorker.ready;
+       console.log("Service Worker ready");
+      const subscription = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY),
+      });
 
-      // 🟢 CHECK EXISTING SUBSCRIPTION
-      let subscription = await reg.pushManager.getSubscription();
-
-      if (!subscription) {
-        console.log("No subscription found — creating new one...");
-        subscription = await reg.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY),
-        });
-      } else {
-        console.log("Existing subscription found:", subscription);
-      }
-
-      // Get current logged in userId
-      const user = JSON.parse(localStorage.getItem("user"));
-      const userId = user?.id;
-
-      // Always sync subscription (backend should upsert)
       await fetch(`${import.meta.env.VITE_API_URL}/notifications/subscribe`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          endpoint: subscription.endpoint,
-          keys: subscription.toJSON().keys,
-          userId,
-        }),
+        body: JSON.stringify(subscription),
       });
-
-      console.log("Push subscription successful!", subscription);
     } catch (err) {
       console.error("Push subscription failed", err);
     }
