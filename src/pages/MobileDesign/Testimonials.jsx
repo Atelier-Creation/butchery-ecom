@@ -49,7 +49,8 @@ const Testimonials = () => {
   }, []);
 
   return (
-    <div className="w-full pt-4 md:pt-8 pb-4  bg-white testimonial">
+    <div className="w-full relative pt-4 md:pt-8 pb-4  bg-white testimonial">
+      
       <div className="max-w-6xl mx-auto px-4 text-center">
         <h2 className="text-xl font-bold mb-4 md:mb-8 lg:mb-2 lg:text-4xl lg:font-bold">
           Customer Reviews

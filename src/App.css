@@ -47,7 +47,7 @@ p .english-font{
 }
 .testimonial .swiper-wrapper{
   overflow-y: visible !important;
-  padding: 3rem 0rem;
+  padding: 3rem 1rem;
 }
 
 @keyframes spin-slow {

@@ -1,19 +1,22 @@
-// Install
+// INSTALL
 self.addEventListener("install", (event) => {
   console.log("SW installing…");
-  self.skipWaiting(); // <-- IMPORTANT
 });
 
-// Activate
+// ACTIVATE
 self.addEventListener("activate", (event) => {
   console.log("SW activated");
-  event.waitUntil(self.clients.claim()); // <-- IMPORTANT
+});
+
+// LISTEN FOR SKIP WAITING REQUEST FROM PAGE
+self.addEventListener("message", (event) => {
+  if (event.data === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
 });
 
 // PUSH
 self.addEventListener("push", (event) => {
-  console.log("[SW] Push received:", event);
-
   const data = event.data ? event.data.json() : {
     title: "Notification",
     body: "",
@@ -23,16 +26,13 @@ self.addEventListener("push", (event) => {
     self.registration.showNotification(data.title, {
       body: data.body,
       icon: "/logo.svg",
-      data, // keep data
+      data,
     })
   );
 });
 
-// CLICK
+// NOTIFICATION CLICK
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-
-  event.waitUntil(
-    clients.openWindow("/") // open app
-  );
+  event.waitUntil(clients.openWindow("/"));
 });

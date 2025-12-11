@@ -25,22 +25,30 @@ export default function usePushNotifications() {
       const reg = await navigator.serviceWorker.ready;
       console.log("Service Worker ready:", reg);
 
-      const subscription = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY),
-      });
+      // 🟢 CHECK EXISTING SUBSCRIPTION
+      let subscription = await reg.pushManager.getSubscription();
 
-      // get current logged in userId
+      if (!subscription) {
+        console.log("No subscription found — creating new one...");
+        subscription = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY),
+        });
+      } else {
+        console.log("Existing subscription found:", subscription);
+      }
+
+      // Get current logged in userId
       const user = JSON.parse(localStorage.getItem("user"));
-      console.log("Current user:", user);
       const userId = user?.id;
 
+      // Always sync subscription (backend should upsert)
       await fetch(`${import.meta.env.VITE_API_URL}/notifications/subscribe`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           endpoint: subscription.endpoint,
-          keys: subscription.toJSON().keys,     // important!
+          keys: subscription.toJSON().keys,
           userId,
         }),
       });
