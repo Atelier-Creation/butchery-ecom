@@ -16,15 +16,23 @@ self.addEventListener("message", (event) => {
 });
 
 // PUSH
+// sw.js
+
+// PUSH
 self.addEventListener("push", (event) => {
   console.log("[SW] Push received:", event);
 
-  const data = event.data ? event.data.json() : { title: "No payload", body: "" };
-
-  self.registration.showNotification(data.title, {
-    body: data.body,
-    icon: "/logo.svg", // your icon
-  });
+  const data = event.data ? event.data.json() : { title: "New Message", body: "Check out what's new." };
+console.log("from notification sw:",data)
+  event.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: "/logo.svg", // your icon
+      data: {
+        notificationId: data.notificationId // Good practice to include custom data
+      }
+    })
+  );
 });
 
 self.addEventListener("notificationclick", (event) => {
